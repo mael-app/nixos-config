@@ -8,6 +8,10 @@ Résultat : une clé qui contient tout (démarrage + système chiffré), qui
 démarre depuis le menu de démarrage du BIOS. Les disques internes (Pop!_OS
 et Windows) et les entrées de démarrage du PC ne sont pas modifiés.
 
+> **Raccourci** : `bash scripts/install-usb.sh` fait les étapes 1 à 7
+> automatiquement (avec confirmations). Le détail ci-dessous explique ce
+> qu'il fait, ou permet de le faire à la main.
+
 Disposition de la clé (déjà décrite dans `hosts/usb/hardware-configuration.nix`) :
 
 | Partition | Taille | Contenu |
