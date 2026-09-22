@@ -28,6 +28,8 @@
 
   home.packages = with pkgs; [
     starship
+    btop
+    noto-fonts
   ];
 
   home.sessionVariables = {
@@ -55,7 +57,7 @@
     extraConfig = {
       modi = "drun,run,window";
       show-icons = true;
-      icon-theme = "Adwaita";
+      icon-theme = "Papirus-Dark";
       display-drun = "Applications";
       display-run = "Run";
       display-window = "Windows";
@@ -100,6 +102,71 @@
     };
   };
 
+  # Dark GTK theme, icons and cursor
+  gtk = {
+    enable = true;
+    theme = {
+      name = "adw-gtk3-dark";
+      package = pkgs.adw-gtk3;
+    };
+    iconTheme = {
+      name = "Papirus-Dark";
+      package = pkgs.papirus-icon-theme;
+    };
+    font = {
+      name = "Noto Sans";
+      size = 11;
+    };
+  };
+
+  home.pointerCursor = {
+    gtk.enable = true;
+    package = pkgs.bibata-cursors;
+    name = "Bibata-Modern-Classic";
+    size = 24;
+  };
+
+  dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";
+
+  qt = {
+    enable = true;
+    platformTheme.name = "gtk3";
+  };
+
+  # Lock after 5 min idle, screen off after 10 min
+  services.hypridle = {
+    enable = true;
+    settings = {
+      general = {
+        lock_cmd = "pidof swaylock || swaylock -f --screenshots --clock --indicator --effect-blur 7x5 --effect-vignette 0.5:0.5 --ring-color 89b4fa --key-hl-color a6e3a1 --inside-color 1e1e2e88 --text-color cdd6f4";
+        before_sleep_cmd = "loginctl lock-session";
+      };
+      listener = [
+        {
+          timeout = 300;
+          on-timeout = "loginctl lock-session";
+        }
+        {
+          timeout = 600;
+          on-timeout = "hyprctl dispatch 'hl.dsp.dpms({ action = \"disable\" })'";
+          on-resume = "hyprctl dispatch 'hl.dsp.dpms({ action = \"enable\" })'";
+        }
+      ];
+    };
+  };
+
+  # Clipboard history (SUPER + SHIFT + V)
+  services.cliphist.enable = true;
+
+  # Authentication prompts for apps asking for root (polkit)
+  services.hyprpolkitagent.enable = true;
+
+  # Volume / brightness on-screen popups
+  services.swayosd.enable = true;
+
+  # Tray applets
+  services.blueman-applet.enable = true;
+
   xdg.configFile."nwg-dock-hyprland/style.css".text = ''
     window {
       background: rgba(26, 27, 38, 0.85);
@@ -136,36 +203,121 @@
       mainBar = {
         layer = "top";
         position = "top";
-        height = 30;
-        modules-left = [ "custom/launcher" "hyprland/workspaces" ];
-        modules-center = [ "hyprland/window" ];
-        modules-right = [ "network" "pulseaudio" "clock" ];
+        height = 34;
+        margin-top = 6;
+        margin-left = 10;
+        margin-right = 10;
+        spacing = 4;
+        modules-left = [ "custom/launcher" "hyprland/workspaces" "hyprland/window" ];
+        modules-center = [ "clock" ];
+        modules-right = [
+          "tray"
+          "idle_inhibitor"
+          "pulseaudio"
+          "backlight"
+          "network"
+          "bluetooth"
+          "battery"
+          "cpu"
+          "memory"
+          "custom/power"
+        ];
+
         "custom/launcher" = {
-          format = "Applications";
+          format = "󱄅";
           on-click = "rofi -show drun";
           tooltip = false;
         };
         "hyprland/workspaces" = {
           format = "{name}";
+          on-scroll-up = "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'";
+          on-scroll-down = "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'";
         };
         "hyprland/window" = {
-          max-length = 60;
-        };
-        network = {
-          format-wifi = "{essid} {signalStrength}%";
-          format-ethernet = "Ethernet";
-          format-disconnected = "Offline";
-          tooltip-format = "{ifname}: {ipaddr}/{cidr}";
-        };
-        pulseaudio = {
-          format = "{volume}% {icon}";
-          format-muted = "Muted";
-          format-icons = [ "" "" "" ];
-          on-click = "pavucontrol";
+          max-length = 40;
+          separate-outputs = true;
         };
         clock = {
-          format = "{:%a %d/%m  %H:%M}";
-          tooltip-format = "{:%A %d %B %Y}";
+          format = "󰥔  {:%H:%M}";
+          format-alt = "󰃭  {:%A %d %B %Y}";
+          tooltip-format = "<tt><small>{calendar}</small></tt>";
+          calendar = {
+            mode = "month";
+            weeks-pos = "right";
+            format = {
+              today = "<span color='#fab387'><b><u>{}</u></b></span>";
+            };
+          };
+        };
+        tray = {
+          icon-size = 16;
+          spacing = 8;
+        };
+        idle_inhibitor = {
+          format = "{icon}";
+          format-icons = {
+            activated = "󰅶";
+            deactivated = "󰾪";
+          };
+          tooltip-format-activated = "Mise en veille désactivée";
+          tooltip-format-deactivated = "Mise en veille activée";
+        };
+        pulseaudio = {
+          format = "{icon}  {volume}%";
+          format-muted = "󰝟  muet";
+          format-icons = {
+            default = [ "󰕿" "󰖀" "󰕾" ];
+            headphone = "󰋋";
+          };
+          scroll-step = 5;
+          on-click = "pavucontrol";
+          on-click-right = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+        };
+        backlight = {
+          format = "{icon}  {percent}%";
+          format-icons = [ "󰃞" "󰃟" "󰃠" ];
+          on-scroll-up = "brightnessctl set 5%+";
+          on-scroll-down = "brightnessctl set 5%-";
+        };
+        network = {
+          format-wifi = "󰖩  {essid}";
+          format-ethernet = "󰈀  {ipaddr}";
+          format-disconnected = "󰖪  Hors ligne";
+          tooltip-format = "{ifname}: {ipaddr}/{cidr}";
+          tooltip-format-wifi = "{essid} ({signalStrength}%)";
+          on-click = "nm-connection-editor";
+        };
+        bluetooth = {
+          format = "󰂯";
+          format-disabled = "󰂲";
+          format-off = "󰂲";
+          format-connected = "󰂱  {device_alias}";
+          tooltip-format = "{controller_alias}";
+          on-click = "blueman-manager";
+        };
+        battery = {
+          states = {
+            warning = 30;
+            critical = 15;
+          };
+          format = "{icon}  {capacity}%";
+          format-charging = "󰂄  {capacity}%";
+          format-icons = [ "󰁺" "󰁼" "󰁾" "󰂀" "󰁹" ];
+        };
+        cpu = {
+          format = "󰍛  {usage}%";
+          interval = 5;
+          on-click = "kitty -e btop";
+        };
+        memory = {
+          format = "󰘚  {percentage}%";
+          interval = 5;
+          on-click = "kitty -e btop";
+        };
+        "custom/power" = {
+          format = "⏻";
+          on-click = "wlogout";
+          tooltip = false;
         };
       };
     };
@@ -180,78 +332,122 @@
       }
 
       window#waybar {
-        background: rgba(26, 27, 38, 0.85);
+        background: rgba(26, 27, 38, 0.80);
         color: #cdd6f4;
-        border-bottom: 2px solid rgba(137, 180, 250, 0.3);
+        border: 2px solid rgba(137, 180, 250, 0.3);
+        border-radius: 12px;
       }
 
-      #workspaces button,
       #custom-launcher,
+      #workspaces,
+      #window,
       #clock,
-      #network,
+      #tray,
+      #idle_inhibitor,
       #pulseaudio,
-      #window {
-        padding: 0 12px;
-        margin: 0 2px;
-        background: transparent;
-        color: #cdd6f4;
+      #backlight,
+      #network,
+      #bluetooth,
+      #battery,
+      #cpu,
+      #memory,
+      #custom-power {
+        padding: 0 10px;
+        margin: 4px 0;
+        border-radius: 8px;
+        background: rgba(205, 214, 244, 0.06);
       }
 
       #custom-launcher {
-        color: #a6e3a1;
-        font-weight: bold;
-        font-size: 15px;
-        padding: 0 15px;
-        background: rgba(166, 227, 161, 0.1);
-        border-radius: 8px;
-        margin: 4px 8px;
-      }
-
-      #custom-launcher:hover {
-        background: rgba(166, 227, 161, 0.2);
+        color: #89b4fa;
+        font-size: 18px;
+        margin-left: 4px;
+        padding: 0 12px 0 10px;
       }
 
       #workspaces {
-        background: transparent;
+        padding: 0 2px;
       }
 
       #workspaces button {
         color: #7f849c;
-        border-radius: 8px;
-        margin: 4px 2px;
-        transition: all 0.3s ease;
+        padding: 0 6px;
+        border-radius: 6px;
       }
 
       #workspaces button.active {
-        color: #89b4fa;
-        background: rgba(137, 180, 250, 0.2);
+        color: #1e1e2e;
+        background: #89b4fa;
       }
 
       #workspaces button:hover {
-        background: rgba(137, 180, 250, 0.1);
+        background: rgba(137, 180, 250, 0.2);
         color: #89b4fa;
       }
 
       #window {
         color: #cba6f7;
-        font-style: italic;
       }
 
-      #network {
-        color: #89dceb;
+      window#waybar.empty #window {
+        background: transparent;
+      }
+
+      #clock {
+        color: #fab387;
       }
 
       #pulseaudio {
         color: #f9e2af;
       }
 
-      #clock {
+      #pulseaudio.muted {
+        color: #7f849c;
+      }
+
+      #backlight {
+        color: #f5c2e7;
+      }
+
+      #network {
+        color: #89dceb;
+      }
+
+      #network.disconnected {
+        color: #f38ba8;
+      }
+
+      #bluetooth {
+        color: #74c7ec;
+      }
+
+      #battery {
+        color: #a6e3a1;
+      }
+
+      #battery.warning {
+        color: #f9e2af;
+      }
+
+      #battery.critical {
+        color: #f38ba8;
+      }
+
+      #cpu {
+        color: #94e2d5;
+      }
+
+      #memory {
+        color: #b4befe;
+      }
+
+      #idle_inhibitor.activated {
         color: #fab387;
-        font-weight: bold;
-        padding: 0 15px;
-        background: rgba(250, 179, 135, 0.1);
-        border-radius: 8px;
-        margin: 4px 8px 4px 4px;
+      }
+
+      #custom-power {
+        color: #f38ba8;
+        margin-right: 4px;
       }
 
       tooltip {
@@ -451,7 +647,13 @@
       hl.bind("SHIFT + Print", hl.dsp.exec_cmd('grim ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png'))
 
       -- Lock screen
-      hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("swaylock -f -c 000000"))
+      hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("loginctl lock-session"))
+
+      -- Power menu
+      hl.bind(mainMod .. " + Escape", hl.dsp.exec_cmd("wlogout"))
+
+      -- Clipboard history
+      hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("cliphist list | rofi -dmenu -p Clipboard | cliphist decode | wl-copy"))
 
       -- Exit Hyprland
       hl.bind(mainMod .. " + M", hl.dsp.exit())
@@ -532,12 +734,13 @@
         hl.exec_cmd("notify-send 'Auto-tiling " .. (autoTile and "on" or "off") .. "'")
       end)
 
-      -- Media keys
-      hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true })
-      hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"), { locked = true, repeating = true })
-      hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true })
-      hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl set 5%+"), { locked = true, repeating = true })
-      hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl set 5%-"), { locked = true, repeating = true })
+      -- Media keys (swayosd shows an on-screen popup)
+      hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("swayosd-client --output-volume raise"), { locked = true, repeating = true })
+      hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("swayosd-client --output-volume lower"), { locked = true, repeating = true })
+      hl.bind("XF86AudioMute", hl.dsp.exec_cmd("swayosd-client --output-volume mute-toggle"), { locked = true })
+      hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("swayosd-client --input-volume mute-toggle"), { locked = true })
+      hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("swayosd-client --brightness raise"), { locked = true, repeating = true })
+      hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("swayosd-client --brightness lower"), { locked = true, repeating = true })
       hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
       hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true })
       hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })

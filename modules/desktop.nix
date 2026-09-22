@@ -63,6 +63,21 @@
 
   security.polkit.enable = true;
 
+  # Without this PAM service swaylock can't check the password to unlock
+  security.pam.services.swaylock = { };
+
+  # Needed for Home Manager dconf settings (dark mode for GTK4 apps)
+  programs.dconf.enable = true;
+
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+  };
+  services.blueman.enable = true;
+
+  # Battery / power info for waybar
+  services.upower.enable = true;
+
   services.pipewire = {
     enable = true;
     alsa.enable = true;
