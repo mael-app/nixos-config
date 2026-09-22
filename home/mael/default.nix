@@ -650,6 +650,8 @@
       hl.on("hyprland.start", function()
         hl.exec_cmd("nm-applet --indicator")
         hl.exec_cmd("awww-daemon")
+        -- Always-visible dock with pinnable apps
+        hl.exec_cmd("nwg-dock-hyprland -x -i 40 -mb 8 -c 'rofi -show drun'")
         -- Wallpaper (the image lives in this repo and ends up in the Nix store)
         hl.exec_cmd("sleep 1 && awww img ${./wallpapers/bg.png} --transition-type fade")
       end)
