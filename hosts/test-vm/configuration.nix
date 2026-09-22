@@ -49,6 +49,7 @@
       "terraform"
       "vscode"
       "discord"
+      "discord-unwrapped"
       "1password"
       "1password-cli"
     ];
