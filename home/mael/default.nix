@@ -21,6 +21,83 @@
     starship
   ];
 
+  home.sessionVariables = {
+    GDK_SCALE = "1";
+    QT_AUTO_SCREEN_SCALE_FACTOR = "0";
+    QT_SCALE_FACTOR = "1";
+  };
+
+  xdg.userDirs = {
+    enable = true;
+    setSessionVariables = true;
+    createDirectories = true;
+    desktop = "$HOME/Desktop";
+    documents = "$HOME/Documents";
+    download = "$HOME/Downloads";
+    music = "$HOME/Music";
+    pictures = "$HOME/Pictures";
+    videos = "$HOME/Videos";
+  };
+
+  programs.waybar = {
+    enable = true;
+    settings = {
+      mainBar = {
+        layer = "top";
+        position = "top";
+        height = 30;
+        modules-left = [ "hyprland/workspaces" ];
+        modules-center = [ "hyprland/window" ];
+        modules-right = [ "network" "pulseaudio" "clock" ];
+        "hyprland/workspaces" = {
+          format = "{name}";
+        };
+        "hyprland/window" = {
+          max-length = 60;
+        };
+        network = {
+          format-wifi = "{essid} {signalStrength}%";
+          format-ethernet = "Ethernet";
+          format-disconnected = "Offline";
+          tooltip-format = "{ifname}: {ipaddr}/{cidr}";
+        };
+        pulseaudio = {
+          format = "{volume}% {icon}";
+          format-muted = "Muted";
+          format-icons = [ "" "" "" ];
+          on-click = "pavucontrol";
+        };
+        clock = {
+          format = "{:%a %d/%m  %H:%M}";
+          tooltip-format = "{:%A %d %B %Y}";
+        };
+      };
+    };
+    style = ''
+      * {
+        font-family: "JetBrainsMono Nerd Font";
+        font-size: 13px;
+      }
+
+      window#waybar {
+        background: rgba(30, 30, 30, 0.92);
+        color: #eeeeee;
+      }
+
+      #workspaces button,
+      #clock,
+      #network,
+      #pulseaudio,
+      #window {
+        padding: 0 10px;
+      }
+
+      #workspaces button.active {
+        color: #8ec07c;
+      }
+    '';
+  };
+
   # Hyprland 0.55+ uses Lua configuration.
   #
   # Explicitly set configType because home.stateVersion is kept at 25.11
@@ -71,7 +148,6 @@
       })
 
       -- Applications / services
-      hl.exec_cmd("waybar")
       hl.exec_cmd("dunst")
       hl.exec_cmd("nm-applet --indicator")
 

@@ -6,6 +6,12 @@
     xwayland.enable = true;
   };
 
+  xdg.portal = {
+    enable = true;
+    config.common.default = "*";
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+  };
+
   # Use the recommended Hyprland launcher rather than invoking Hyprland
   # directly. This avoids the "started without start-hyprland" warning.
   services.greetd = {
@@ -21,6 +27,11 @@
   environment.systemPackages = with pkgs; [
     firefox
     spotify
+
+    adwaita-icon-theme
+    hicolor-icon-theme
+    man-pages
+    tldr
 
     kitty
     waybar
@@ -38,6 +49,13 @@
     playerctl
     libnotify
     wlogout
+  ];
+
+  fonts.packages = with pkgs; [
+    dejavu_fonts
+    liberation_ttf
+    noto-fonts-emoji
+    nerd-fonts.jetbrains-mono
   ];
 
   security.polkit.enable = true;
