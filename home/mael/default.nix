@@ -175,6 +175,9 @@
     "kitty"
     "thunar"
     "spotify"
+    "code"
+    "discord"
+    "1password"
     "mullvad-vpn"
   ];
 

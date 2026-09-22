@@ -6,6 +6,11 @@
     xwayland.enable = true;
   };
 
+  # Run Electron/Chromium apps (VS Code, Discord, 1Password...) as native
+  # Wayland clients instead of through XWayland: sharp text with fractional
+  # scaling. NixOS wrappers only add the Wayland flags when this is set.
+  environment.sessionVariables.NIXOS_OZONE_WL = "1";
+
   xdg.portal = {
     enable = true;
     config.common.default = "*";
