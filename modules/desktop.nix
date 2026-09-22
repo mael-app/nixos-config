@@ -12,8 +12,8 @@
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.hyprland}/bin/start-hyprland";
-        user = "mael";
+        command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd ${pkgs.hyprland}/bin/start-hyprland";
+        user = "greeter";
       };
     };
   };
@@ -33,6 +33,11 @@
     slurp
     pavucontrol
     networkmanagerapplet
+
+    brightnessctl
+    playerctl
+    libnotify
+    wlogout
   ];
 
   security.polkit.enable = true;
