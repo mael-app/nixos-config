@@ -6,6 +6,11 @@
     device = "/dev/vda";
   };
 
+  services.xserver.xkb = {
+    layout = "fr";
+    variant = "";
+  };
+
   networking.hostName = "nixos-test";
 
   networking.networkmanager.enable = true;
