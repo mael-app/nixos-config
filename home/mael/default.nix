@@ -17,6 +17,13 @@
     syntaxHighlighting.enable = true;
   };
 
+  programs.kitty = {
+    enable = true;
+    settings = {
+      font_size = 11;
+    };
+  };
+
   home.packages = with pkgs; [
     starship
   ];
@@ -41,6 +48,7 @@
 
   programs.waybar = {
     enable = true;
+    systemd.enable = true;
     settings = {
       mainBar = {
         layer = "top";
@@ -72,6 +80,22 @@
           tooltip-format = "{:%A %d %B %Y}";
         };
       };
+
+      dock = {
+        layer = "top";
+        position = "bottom";
+        height = 44;
+        exclusive = false;
+        modules-center = [ "wlr/taskbar" ];
+        "wlr/taskbar" = {
+          format = "{icon}";
+          icon-size = 26;
+          tooltip-format = "{title}";
+          on-click = "activate";
+          on-click-middle = "close";
+          on-click-right = "context";
+        };
+      };
     };
     style = ''
       * {
@@ -94,6 +118,15 @@
 
       #workspaces button.active {
         color: #8ec07c;
+      }
+
+      #taskbar button {
+        padding: 0 8px;
+        margin: 4px 2px;
+      }
+
+      #taskbar button.active {
+        background: rgba(142, 192, 124, 0.25);
       }
     '';
   };
