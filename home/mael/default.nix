@@ -482,7 +482,7 @@
 
       -- Monitor: use the highest resolution available with a fixed scale
       -- (the default "auto" can upscale everything, especially in a VM).
-      hl.monitor({ output = "", mode = "highres", position = "auto", scale = 1.25 })
+      hl.monitor({ output = "", mode = "highres", position = "auto", scale = 1.5 })
 
       hl.config({
         input = {
