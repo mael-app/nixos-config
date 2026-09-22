@@ -54,7 +54,7 @@
   fonts.packages = with pkgs; [
     dejavu_fonts
     liberation_ttf
-    noto-fonts-emoji
+    noto-fonts-color-emoji
     nerd-fonts.jetbrains-mono
   ];
 
