@@ -89,10 +89,11 @@ fi
 
 step "5. Installation de NixOS (plusieurs Go à télécharger)"
 echo "En Chine : vérifie que Mullvad est connecté, sinon GitHub risque d'échouer."
-read -rp "Utiliser aussi les miroirs chinois du cache Nix (USTC) ? [o/N] " mirrors
+read -rp "Utiliser les miroirs chinois du cache Nix (Mullvad déconnecté) ? [o/N] " mirrors
 extra=""
 if [[ "$mirrors" =~ ^[oOyY]$ ]]; then
-  extra='--option substituters "https://mirrors.ustc.edu.cn/nix-channels/store https://cache.nixos.org"'
+  # priority=10 beats cache.nixos.org (40), so the mirrors are tried first
+  extra='--option substituters "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store?priority=10 https://mirrors.ustc.edu.cn/nix-channels/store?priority=20 https://cache.nixos.org"'
 fi
 
 cd "$REPO"

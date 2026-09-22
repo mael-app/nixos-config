@@ -119,8 +119,12 @@ sudo env "PATH=$PATH" nixos-install --root /mnt --flake .#usb --no-root-passwd
 >
 > ```sh
 > sudo env "PATH=$PATH" nixos-install --root /mnt --flake .#usb --no-root-passwd \
->   --option substituters "https://mirrors.ustc.edu.cn/nix-channels/store https://cache.nixos.org"
+>   --option substituters "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store?priority=10 https://mirrors.ustc.edu.cn/nix-channels/store?priority=20 https://cache.nixos.org"
 > ```
+>
+> `priority` fait passer les miroirs avant le cache officiel. Les miroirs
+> chinois refusent souvent les connexions venant d'un VPN : déconnecte
+> Mullvad pour les utiliser.
 
 ## 6. Mot de passe utilisateur
 
