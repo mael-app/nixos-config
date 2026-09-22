@@ -100,6 +100,35 @@
     };
   };
 
+  xdg.configFile."nwg-dock-hyprland/style.css".text = ''
+    window {
+      background: rgba(26, 27, 38, 0.85);
+      border-radius: 14px;
+      border: 2px solid rgba(137, 180, 250, 0.3);
+    }
+
+    #box {
+      padding: 6px;
+    }
+
+    button {
+      background: transparent;
+      border: none;
+      border-radius: 10px;
+      padding: 4px;
+      margin: 0 2px;
+      color: #cdd6f4;
+    }
+
+    button:hover {
+      background: rgba(205, 214, 244, 0.1);
+    }
+
+    button:focus {
+      background: rgba(137, 180, 250, 0.2);
+    }
+  '';
+
   programs.waybar = {
     enable = true;
     systemd.enable = true;
@@ -137,22 +166,6 @@
         clock = {
           format = "{:%a %d/%m  %H:%M}";
           tooltip-format = "{:%A %d %B %Y}";
-        };
-      };
-
-      dock = {
-        layer = "top";
-        position = "bottom";
-        height = 44;
-        exclusive = false;
-        modules-center = [ "wlr/taskbar" ];
-        "wlr/taskbar" = {
-          format = "{icon}";
-          icon-size = 26;
-          tooltip-format = "{title}";
-          on-click = "activate";
-          on-click-middle = "close";
-          on-click-right = "context";
         };
       };
     };
@@ -241,28 +254,6 @@
         margin: 4px 8px 4px 4px;
       }
 
-      #taskbar {
-        background: transparent;
-      }
-
-      #taskbar button {
-        padding: 0 10px;
-        margin: 6px 4px;
-        background: rgba(205, 214, 244, 0.05);
-        border-radius: 8px;
-        color: #cdd6f4;
-        transition: all 0.3s ease;
-      }
-
-      #taskbar button:hover {
-        background: rgba(205, 214, 244, 0.1);
-      }
-
-      #taskbar button.active {
-        background: rgba(137, 180, 250, 0.2);
-        color: #89b4fa;
-      }
-
       tooltip {
         background: rgba(26, 27, 38, 0.95);
         border: 2px solid rgba(137, 180, 250, 0.3);
@@ -293,9 +284,9 @@
 
       local mainMod = "SUPER"
 
-      -- Monitor: force scale 1 (the default "auto" can upscale everything,
-      -- especially in a VM) and use the highest resolution available.
-      hl.monitor({ output = "", mode = "highres", position = "auto", scale = 1 })
+      -- Monitor: use the highest resolution available with a fixed scale
+      -- (the default "auto" can upscale everything, especially in a VM).
+      hl.monitor({ output = "", mode = "highres", position = "auto", scale = 1.25 })
 
       hl.config({
         input = {
@@ -377,6 +368,8 @@
       hl.on("hyprland.start", function()
         hl.exec_cmd("nm-applet --indicator")
         hl.exec_cmd("awww-daemon")
+        -- Always-visible dock with pinnable apps (right-click an icon > Pin)
+        hl.exec_cmd("nwg-dock-hyprland -x -i 40 -mb 8 -c 'rofi -show drun'")
         -- Set a wallpaper once awww-daemon is up, e.g.:
         -- hl.exec_cmd("sleep 1 && awww img ~/Pictures/wallpaper.jpg")
       end)

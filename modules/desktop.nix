@@ -50,6 +50,7 @@
     libnotify
     wlogout
     awww
+    nwg-dock-hyprland
     swaylock-effects
   ];
 
