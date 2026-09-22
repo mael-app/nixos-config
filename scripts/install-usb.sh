@@ -3,8 +3,13 @@
 # Automates docs/install-usb.md. ERASES THE USB SSD.
 #
 # Usage (from the repo root, as your user, not root):
-#   bash scripts/install-usb.sh
+#   bash scripts/install-usb.sh                 # full install (steps 1-7)
+#   bash scripts/install-usb.sh --install-only  # resume at step 5, when the
+#                                               # drive is already mounted on /mnt
 set -euo pipefail
+
+INSTALL_ONLY=false
+[ "${1:-}" = "--install-only" ] && INSTALL_ONLY=true
 
 MODEL_PATTERN="SSK Portable SSD"
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
@@ -15,6 +20,11 @@ die() { printf '\033[1;31mErreur : %s\033[0m\n' "$*" >&2; exit 1; }
 [ "$(id -u)" -ne 0 ] || die "lance ce script avec ton utilisateur, pas en root (il utilise sudo lui-même)"
 [ -f "$REPO/flake.nix" ] || die "flake.nix introuvable dans $REPO"
 command -v nix >/dev/null || die "nix n'est pas installé"
+
+if [ "$INSTALL_ONLY" = true ]; then
+  findmnt /mnt/boot >/dev/null && findmnt /mnt/nix >/dev/null \
+    || die "la clé n'est pas montée sur /mnt (lance le script sans --install-only)"
+else
 
 step "1. Recherche de la clé USB ($MODEL_PATTERN)"
 mapfile -t matches < <(lsblk -dnpo NAME,TRAN,MODEL | awk -v m="$MODEL_PATTERN" '$2 == "usb" && index($0, m) { print $1 }')
@@ -73,7 +83,9 @@ sudo mkdir -p /mnt/home /mnt/nix /mnt/boot
 sudo mount -o "subvol=@home,$opts" /dev/mapper/cryptroot /mnt/home
 sudo mount -o "subvol=@nix,$opts" /dev/mapper/cryptroot /mnt/nix
 sudo mount -o fmask=0077,dmask=0077 "$BOOT_PART" /mnt/boot
-findmnt -R /mnt
+findmnt -R -l /mnt
+
+fi
 
 step "5. Installation de NixOS (plusieurs Go à télécharger)"
 echo "En Chine : vérifie que Mullvad est connecté, sinon GitHub risque d'échouer."

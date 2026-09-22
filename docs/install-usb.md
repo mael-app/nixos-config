@@ -96,7 +96,7 @@ sudo mount -o subvol=@home,compress=zstd,noatime /dev/mapper/cryptroot /mnt/home
 sudo mount -o subvol=@nix,compress=zstd,noatime /dev/mapper/cryptroot /mnt/nix
 sudo mount -o fmask=0077,dmask=0077 "${DISK}1" /mnt/boot
 
-findmnt -R /mnt   # 4 points de montage : /mnt, /mnt/home, /mnt/nix, /mnt/boot
+findmnt -R -l /mnt   # 4 points de montage : /mnt, /mnt/home, /mnt/nix, /mnt/boot
 ```
 
 ## 5. Installer
