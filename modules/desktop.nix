@@ -27,6 +27,8 @@
   environment.systemPackages = with pkgs; [
     firefox
     spotify
+    discord
+    vlc
 
     adwaita-icon-theme
     hicolor-icon-theme
@@ -62,6 +64,14 @@
   ];
 
   security.polkit.enable = true;
+
+  # 1Password: CLI + desktop app. polkitPolicyOwners enables system
+  # authentication unlock and the CLI integration for this user.
+  programs._1password.enable = true;
+  programs._1password-gui = {
+    enable = true;
+    polkitPolicyOwners = [ "mael" ];
+  };
 
   # Without this PAM service swaylock can't check the password to unlock
   security.pam.services.swaylock = { };

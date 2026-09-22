@@ -13,6 +13,9 @@
     fd
     tmux
     neovim
+    fastfetch
+    vscode
+    opencode
 
     docker
     kubectl

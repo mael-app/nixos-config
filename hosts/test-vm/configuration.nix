@@ -47,6 +47,10 @@
     builtins.elem (pkgs.lib.getName pkg) [
       "spotify"
       "terraform"
+      "vscode"
+      "discord"
+      "1password"
+      "1password-cli"
     ];
 
   security.sudo.wheelNeedsPassword = true;
