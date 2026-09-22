@@ -167,6 +167,17 @@
   # Tray applets
   services.blueman-applet.enable = true;
 
+  # Apps pinned in the dock, in order. Each entry is a .desktop file name
+  # without the extension (see /run/current-system/sw/share/applications).
+  # The file is read-only, so right-click > Pin in the dock no longer persists.
+  xdg.cacheFile."nwg-dock-pinned".text = lib.concatLines [
+    "firefox"
+    "kitty"
+    "thunar"
+    "spotify"
+    "mullvad-vpn"
+  ];
+
   xdg.configFile."nwg-dock-hyprland/style.css".text = ''
     window {
       background: rgba(26, 27, 38, 0.85);
