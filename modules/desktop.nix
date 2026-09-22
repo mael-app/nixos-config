@@ -6,7 +6,6 @@
     xwayland.enable = true;
   };
 
-  # Login manager for the VM.
   services.greetd = {
     enable = true;
     settings = {
@@ -33,10 +32,8 @@
     networkmanagerapplet
   ];
 
-  # Useful for desktop applications that need a polkit authentication agent.
   security.polkit.enable = true;
 
-  # Audio.
   services.pipewire = {
     enable = true;
     alsa.enable = true;

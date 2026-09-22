@@ -1,71 +1,17 @@
 # NixOS configuration
 
-## Current target
+Declarative NixOS + Home Manager configuration for the test VM.
 
-`test-vm` — x86_64 NixOS VM running Hyprland.
+Includes Hyprland, French AZERTY, Firefox, Spotify, Kitty, Waybar,
+Rofi, Dunst, Git, Zsh, Neovim, Docker and common DevOps tools.
 
-## What is included
+Target: `x86_64-linux`, QEMU/KVM, legacy BIOS/GRUB.
 
-- Hyprland + XWayland
-- greetd + tuigreet
-- Firefox
-- Spotify
-- Kitty
-- Waybar
-- Rofi
-- Dunst
-- PipeWire
-- NetworkManager
-- Git
-- Zsh
-- Neovim
-- tmux
-- Docker
-- kubectl
-- Helm
-- Terraform
-- Ansible
-- Python
-- Node.js
-- Go
+For an already-installed VM:
 
-## Installation
+```bash
+cp /etc/nixos/hardware-configuration.nix hosts/test-vm/
+nixos-rebuild switch --flake .#test-vm
+```
 
-From the NixOS live ISO:
-
-1. Partition and mount the VM disk.
-2. Generate hardware configuration:
-
-   `nixos-generate-config --root /mnt`
-
-3. Copy the generated file into this repo:
-
-   `cp /mnt/etc/nixos/hardware-configuration.nix /path/to/nixos-config/hosts/test-vm/`
-
-4. Build/install:
-
-   `nixos-install --flake /path/to/nixos-config#test-vm`
-
-5. Reboot.
-
-6. Set Maël's password:
-
-   `passwd mael`
-
-## After boot
-
-Update the system with:
-
-`sudo nixos-rebuild switch --flake ~/nixos-config#test-vm`
-
-## Important
-
-Never commit:
-
-- passwords
-- SSH private keys
-- API tokens
-- cloud credentials
-- `.env` files containing secrets
-
-For secrets, use a tool such as sops-nix later.
+Do not commit passwords, private keys, API tokens or cloud credentials.
