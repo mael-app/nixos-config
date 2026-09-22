@@ -8,6 +8,11 @@
   };
 
   networking.hostName = "nixos-test";
+
+  # Guest integration for virt-manager: SPICE clipboard sharing and the
+  # QEMU guest agent (clean shutdown, IP shown in virt-manager).
+  services.spice-vdagentd.enable = true;
+  services.qemuGuest.enable = true;
   networking.networkmanager.enable = true;
 
   time.timeZone = "Asia/Shanghai";

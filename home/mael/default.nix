@@ -558,6 +558,12 @@
         xwayland = {
           enabled = true,
         },
+
+        -- Virtual GPUs (QEMU/virtio) often draw an invisible or offset
+        -- hardware cursor; software cursors are reliable there.
+        cursor = {
+          no_hardware_cursors = 1,
+        },
       })
 
       -- Floating windows by default (Pop!_OS / macOS style).
