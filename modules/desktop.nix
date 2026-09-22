@@ -49,6 +49,8 @@
     playerctl
     libnotify
     wlogout
+    swww
+    swaylock-effects
   ];
 
   fonts.packages = with pkgs; [
