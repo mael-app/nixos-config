@@ -132,7 +132,7 @@ L'utilisateur `mael` n'a pas encore de mot de passe (nécessaire pour se
 connecter, `sudo` et déverrouiller l'écran) :
 
 ```sh
-sudo env "PATH=$PATH" nixos-enter --root /mnt -c 'passwd mael'
+sudo env "PATH=$PATH" nixos-enter --root /mnt -c '/nix/var/nix/profiles/system/sw/bin/passwd mael'
 ```
 
 Puis quitte le `nix shell` (`exit`).

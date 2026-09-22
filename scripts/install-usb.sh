@@ -103,7 +103,8 @@ nix shell .#nixosConfigurations.usb.pkgs.nixos-install-tools --command bash -c "
 
   echo
   echo '==> 6. Mot de passe de l utilisateur mael (connexion, sudo, déverrouillage)'
-  sudo env \"PATH=\$PATH\" nixos-enter --root /mnt -c 'passwd mael'
+  # Full path: /run/wrappers (where passwd usually lives) doesn't exist in the chroot
+  sudo env \"PATH=\$PATH\" nixos-enter --root /mnt -c '/nix/var/nix/profiles/system/sw/bin/passwd mael'
 "
 
 step "7. Démontage"
