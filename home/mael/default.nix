@@ -318,12 +318,12 @@
         cpu = {
           format = "󰍛  {usage}%";
           interval = 5;
-          on-click = "kitty -e btop";
+          on-click = "kitty --class btop -e btop";
         };
         memory = {
           format = "󰘚  {percentage}%";
           interval = 5;
-          on-click = "kitty -e btop";
+          on-click = "kitty --class btop -e btop";
         };
         "custom/power" = {
           format = "⏻";
@@ -577,6 +577,15 @@
         center = true,
       })
       local autoTile = false
+
+      -- System monitor opened from waybar: btop needs at least 80x24 cells
+      hl.window_rule({
+        name = "btop-size",
+        match = { class = "^btop$" },
+        float = true,
+        size = { "(monitor_w*0.8)", "(monitor_h*0.8)" },
+        center = true,
+      })
 
       -- Usable area of a monitor (global logical coordinates), minus bars/dock
       local gap = 10
