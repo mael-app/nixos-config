@@ -22,6 +22,7 @@
           ./hosts/test-vm/hardware-configuration.nix
           ./modules/desktop.nix
           ./modules/devops.nix
+          ./modules/vpn.nix
 
           home-manager.nixosModules.home-manager
           {
