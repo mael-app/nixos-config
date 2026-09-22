@@ -301,6 +301,11 @@
           gaps_out = 10,
           border_size = 2,
           layout = "dwindle",
+          -- Magnetic snapping of floating windows to screen edges and each other
+          snap = {
+            enabled = true,
+            respect_gaps = true,
+          },
           col = {
             active_border = { colors = { "rgba(89b4faee)", "rgba(a6e3a1ee)" }, angle = 45 },
             inactive_border = "rgba(595959aa)",
@@ -347,6 +352,57 @@
           enabled = true,
         },
       })
+
+      -- Floating windows by default (Pop!_OS / macOS style).
+      -- SUPER + T toggles auto-tiling, SUPER + V tiles/floats a single window.
+      local floatRule = hl.window_rule({
+        name = "float-by-default",
+        match = { class = ".*" },
+        float = true,
+        size = { "(monitor_w*0.6)", "(monitor_h*0.65)" },
+        center = true,
+      })
+      local autoTile = false
+
+      -- Usable area of a monitor (global logical coordinates), minus bars/dock
+      local gap = 10
+      local function usable_area(mon)
+        local r = mon.reserved
+        return {
+          x = mon.x + r.left + gap,
+          y = mon.y + r.top + gap,
+          w = mon.width / mon.scale - r.left - r.right - 2 * gap,
+          h = mon.height / mon.scale - r.top - r.bottom - 2 * gap,
+        }
+      end
+
+      -- Snap the active window to a zone of its monitor
+      local function snap(zone)
+        local win = hl.get_active_window()
+        if not win or not win.monitor then return end
+        if not win.floating then
+          hl.dispatch(hl.dsp.window.float({ action = "set" }))
+        end
+
+        local a = usable_area(win.monitor)
+        local g = gap / 2
+        local hw, hh = a.w / 2, a.h / 2
+        local zones = {
+          left         = { a.x,          a.y,          hw - g,   a.h },
+          right        = { a.x + hw + g, a.y,          hw - g,   a.h },
+          maximize     = { a.x,          a.y,          a.w,      a.h },
+          center       = { a.x + a.w * 0.2, a.y + a.h * 0.175, a.w * 0.6, a.h * 0.65 },
+          top_left     = { a.x,          a.y,          hw - g,   hh - g },
+          top_right    = { a.x + hw + g, a.y,          hw - g,   hh - g },
+          bottom_left  = { a.x,          a.y + hh + g, hw - g,   hh - g },
+          bottom_right = { a.x + hw + g, a.y + hh + g, hw - g,   hh - g },
+        }
+        local z = zones[zone]
+        if not z then return end
+
+        hl.dispatch(hl.dsp.window.resize({ x = math.floor(z[3]), y = math.floor(z[4]), relative = false }))
+        hl.dispatch(hl.dsp.window.move({ x = math.floor(z[1]), y = math.floor(z[2]), relative = false }))
+      end
 
       -- Animations
       hl.curve("easeOutQuint", { type = "bezier", points = { {0.23, 1}, {0.32, 1} } })
@@ -432,6 +488,49 @@
       -- Move/resize windows with mainMod + LMB/RMB and dragging
       hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
       hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
+
+      -- Drop a floating window against a screen edge to tile it:
+      -- left/right edge = half screen, top edge = maximize, corners = quarter
+      local edge = 24
+      hl.bind(mainMod .. " + mouse:272", function()
+        local win = hl.get_active_window()
+        local c = hl.get_cursor_pos()
+        local mon = hl.get_monitor_at_cursor()
+        if not win or not win.floating or not c or not mon then return end
+
+        local left = c.x - mon.x < edge
+        local right = mon.x + mon.width / mon.scale - c.x < edge
+        local top = c.y - mon.y < edge
+        local bottom = mon.y + mon.height / mon.scale - c.y < edge
+
+        if top and left then snap("top_left")
+        elseif top and right then snap("top_right")
+        elseif bottom and left then snap("bottom_left")
+        elseif bottom and right then snap("bottom_right")
+        elseif left then snap("left")
+        elseif right then snap("right")
+        elseif top then snap("maximize")
+        end
+      end, { drag = true })
+
+      -- Keyboard snapping
+      hl.bind(mainMod .. " + ALT + left", function() snap("left") end)
+      hl.bind(mainMod .. " + ALT + right", function() snap("right") end)
+      hl.bind(mainMod .. " + ALT + up", function() snap("maximize") end)
+      hl.bind(mainMod .. " + ALT + down", function() snap("center") end)
+
+      -- Toggle auto-tiling (Pop!_OS style) for new windows and the current workspace
+      hl.bind(mainMod .. " + T", function()
+        autoTile = not autoTile
+        floatRule:set_enabled(not autoTile)
+        local ws = hl.get_active_workspace()
+        if ws then
+          for _, win in ipairs(ws:get_windows()) do
+            hl.dispatch(hl.dsp.window.float({ window = win, action = autoTile and "unset" or "set" }))
+          end
+        end
+        hl.exec_cmd("notify-send 'Auto-tiling " .. (autoTile and "on" or "off") .. "'")
+      end)
 
       -- Media keys
       hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true })
