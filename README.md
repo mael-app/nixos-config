@@ -1,6 +1,16 @@
 # NixOS configuration
 
-NixOS + Home Manager configuration for the QEMU/KVM test VM.
+NixOS + Home Manager configuration.
+
+## Hosts
+
+| Host | Machine | Rebuild |
+| --- | --- | --- |
+| `test-vm` | QEMU/KVM VM in virt-manager | `sudo nixos-rebuild switch --flake .#test-vm` |
+| `usb` | External USB SSD booted on the laptop, see [docs/install-usb.md](docs/install-usb.md) | `sudo nixos-rebuild switch --flake .#usb` |
+
+Shared settings live in `modules/` and `home/mael/`; each `hosts/<name>/`
+only holds boot, hardware and screen settings.
 
 ## Hyprland
 

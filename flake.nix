@@ -13,13 +13,16 @@
   outputs = { self, nixpkgs, home-manager, ... }:
     let
       system = "x86_64-linux";
-    in {
-      nixosConfigurations.test-vm = nixpkgs.lib.nixosSystem {
+
+      # Modules shared by every machine; each host only adds its own
+      # configuration.nix and hardware-configuration.nix.
+      mkHost = host: nixpkgs.lib.nixosSystem {
         inherit system;
 
         modules = [
-          ./hosts/test-vm/configuration.nix
-          ./hosts/test-vm/hardware-configuration.nix
+          ./hosts/${host}/configuration.nix
+          ./hosts/${host}/hardware-configuration.nix
+          ./modules/common.nix
           ./modules/desktop.nix
           ./modules/devops.nix
           ./modules/vpn.nix
@@ -32,5 +35,11 @@
           }
         ];
       };
+    in {
+      # QEMU/KVM test VM (virt-manager)
+      nixosConfigurations.test-vm = mkHost "test-vm";
+
+      # External USB SSD, booted on the laptop
+      nixosConfigurations.usb = mkHost "usb";
     };
 }

@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ lib, ... }:
 
 {
   # QEMU/KVM VM: legacy BIOS + GRUB.
@@ -13,48 +13,18 @@
   # QEMU guest agent (clean shutdown, IP shown in virt-manager).
   services.spice-vdagentd.enable = true;
   services.qemuGuest.enable = true;
-  networking.networkmanager.enable = true;
 
-  time.timeZone = "Asia/Shanghai";
+  home-manager.users.mael.wayland.windowManager.hyprland.extraConfig = lib.mkAfter ''
+    -- Monitor: "preferred" follows the virt-manager window size (virtio-gpu)
+    hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1.0 })
 
-  i18n.defaultLocale = "en_US.UTF-8";
-  console.keyMap = "fr";
-
-  # TTY / login keyboard.
-  services.xserver.xkb = {
-    layout = "fr";
-    variant = "";
-  };
-
-  users.users.mael = {
-    isNormalUser = true;
-    description = "Maël";
-    extraGroups = [
-      "wheel"
-      "networkmanager"
-      "docker"
-    ];
-  };
-
-  # Nix CLI + flakes globally enabled.
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
-
-  # Only the non-free packages we explicitly use.
-  nixpkgs.config.allowUnfreePredicate = pkg:
-    builtins.elem (pkgs.lib.getName pkg) [
-      "spotify"
-      "terraform"
-      "vscode"
-      "discord"
-      "discord-unwrapped"
-      "1password"
-      "1password-cli"
-    ];
-
-  security.sudo.wheelNeedsPassword = true;
+    -- Virtual GPUs often draw an invisible or offset hardware cursor
+    hl.config({
+      cursor = {
+        no_hardware_cursors = 1,
+      },
+    })
+  '';
 
   system.stateVersion = "25.11";
 }

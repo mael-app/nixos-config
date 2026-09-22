@@ -494,10 +494,7 @@
 
       local mainMod = "SUPER"
 
-      -- Monitor: "preferred" follows the display's native mode (in the VM,
-      -- virtio-gpu reports the virt-manager window size). Fixed scale because
-      -- "auto" can upscale everything.
-      hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1.0 })
+      -- Monitor rules are per machine, see hosts/<name>/configuration.nix
 
       hl.config({
         input = {
@@ -562,12 +559,13 @@
         xwayland = {
           enabled = true,
         },
+      })
 
-        -- Virtual GPUs (QEMU/virtio) often draw an invisible or offset
-        -- hardware cursor; software cursors are reliable there.
-        cursor = {
-          no_hardware_cursors = 1,
-        },
+      -- Touchpad: 3-finger horizontal swipe switches workspaces
+      hl.gesture({
+        fingers = 3,
+        direction = "horizontal",
+        action = "workspace",
       })
 
       -- Floating windows by default (Pop!_OS / macOS style).
