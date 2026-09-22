@@ -49,7 +49,7 @@
     playerctl
     libnotify
     wlogout
-    swww
+    awww
     swaylock-effects
   ];
 

@@ -289,6 +289,7 @@
     extraConfig = ''
       -- Mael's Hyprland configuration
       -- Hyprland 0.55+ / Lua
+      -- Reference: https://github.com/hyprwm/Hyprland/blob/main/example/hyprland.lua
 
       local mainMod = "SUPER"
 
@@ -305,62 +306,46 @@
           gaps_out = 10,
           border_size = 2,
           layout = "dwindle",
-          "col.active_border" = "rgba(8ec07cee) rgba(b8bb26ee) 45deg",
-          "col.inactive_border" = "rgba(595959aa)",
+          col = {
+            active_border = { colors = { "rgba(89b4faee)", "rgba(a6e3a1ee)" }, angle = 45 },
+            inactive_border = "rgba(595959aa)",
+          },
         },
 
         decoration = {
           rounding = 10,
+          rounding_power = 2,
           active_opacity = 1.0,
           inactive_opacity = 0.95,
           fullscreen_opacity = 1.0,
 
-          drop_shadow = true,
-          shadow_range = 8,
-          shadow_render_power = 2,
-          "col.shadow" = "rgba(1a1a1aee)",
+          shadow = {
+            enabled = true,
+            range = 8,
+            render_power = 3,
+            color = 0xee1a1a1a,
+          },
 
           blur = {
             enabled = true,
             size = 6,
             passes = 3,
-            new_optimizations = true,
+            vibrancy = 0.1696,
             ignore_opacity = true,
             xray = false,
           },
         },
 
-        animations = {
-          enabled = true,
-          bezier = {
-            "myBezier, 0.05, 0.9, 0.1, 1.05",
-            "linear, 0.0, 0.0, 1.0, 1.0",
-            "wind, 0.05, 0.9, 0.1, 1.05",
-            "winIn, 0.1, 1.1, 0.1, 1.0",
-            "winOut, 0.3, -0.3, 0, 1",
-          },
-          animation = {
-            "windows, 1, 6, wind, slide",
-            "windowsIn, 1, 6, winIn, slide",
-            "windowsOut, 1, 5, winOut, slide",
-            "windowsMove, 1, 5, wind, slide",
-            "border, 1, 10, default",
-            "fade, 1, 10, default",
-            "workspaces, 1, 5, wind",
-          },
-        },
-
         dwindle = {
-          pseudotile = true,
           preserve_split = true,
         },
 
         misc = {
+          force_default_wallpaper = 0,
           disable_hyprland_logo = true,
           disable_splash_rendering = true,
           mouse_move_enables_dpms = true,
           key_press_enables_dpms = true,
-          vrr = 0,
         },
 
         xwayland = {
@@ -368,14 +353,29 @@
         },
       })
 
-      -- Applications / services
-      hl.exec_cmd("nm-applet --indicator")
-      hl.exec_cmd("swww-daemon")
+      -- Animations
+      hl.curve("easeOutQuint", { type = "bezier", points = { {0.23, 1}, {0.32, 1} } })
+      hl.curve("linear", { type = "bezier", points = { {0, 0}, {1, 1} } })
+      hl.curve("almostLinear", { type = "bezier", points = { {0.5, 0.5}, {0.75, 1} } })
+      hl.curve("quick", { type = "bezier", points = { {0.15, 0}, {0.1, 1} } })
+      hl.curve("easy", { type = "spring", mass = 1, stiffness = 238.1191, damping = 24.21279333 })
 
-      -- Set a random wallpaper on startup (you can change the path)
-      -- hl.exec_cmd("swww img ~/Pictures/wallpaper.jpg")
-      -- Or use a solid color:
-      -- hl.exec_cmd("swww img -c 1e1e2e")
+      hl.animation({ leaf = "global", enabled = true, speed = 10, bezier = "default" })
+      hl.animation({ leaf = "border", enabled = true, speed = 5.39, bezier = "easeOutQuint" })
+      hl.animation({ leaf = "windows", enabled = true, speed = 4.79, spring = "easy" })
+      hl.animation({ leaf = "windowsIn", enabled = true, speed = 4.1, spring = "easy", style = "slide" })
+      hl.animation({ leaf = "windowsOut", enabled = true, speed = 1.49, bezier = "linear", style = "popin 87%" })
+      hl.animation({ leaf = "fade", enabled = true, speed = 3.03, bezier = "quick" })
+      hl.animation({ leaf = "layers", enabled = true, speed = 3.81, bezier = "easeOutQuint" })
+      hl.animation({ leaf = "workspaces", enabled = true, speed = 3, bezier = "easeOutQuint", style = "slide" })
+
+      -- Autostart (runs once at session start, not on every reload)
+      hl.on("hyprland.start", function()
+        hl.exec_cmd("nm-applet --indicator")
+        hl.exec_cmd("awww-daemon")
+        -- Set a wallpaper once awww-daemon is up, e.g.:
+        -- hl.exec_cmd("sleep 1 && awww img ~/Pictures/wallpaper.jpg")
+      end)
 
       -- Terminal
       hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd("kitty"))
@@ -388,13 +388,14 @@
 
       -- Window management
       hl.bind(mainMod .. " + C", hl.dsp.window.close())
-      hl.bind(mainMod .. " + V", hl.dsp.window.float())
-      hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen())
+      hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
+      hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ action = "toggle" }))
       hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
+      hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))
 
       -- Screenshots
-      hl.bind(", Print", hl.dsp.exec_cmd("grim -g \"$(slurp)\" - | wl-copy"))
-      hl.bind("SHIFT, Print", hl.dsp.exec_cmd("grim ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png"))
+      hl.bind("Print", hl.dsp.exec_cmd('grim -g "$(slurp)" - | wl-copy'))
+      hl.bind("SHIFT + Print", hl.dsp.exec_cmd('grim ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png'))
 
       -- Lock screen
       hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("swaylock -f -c 000000"))
@@ -403,39 +404,47 @@
       hl.bind(mainMod .. " + M", hl.dsp.exit())
 
       -- Window focus
-      hl.bind(mainMod .. " + left", hl.dsp.focus("l"))
-      hl.bind(mainMod .. " + right", hl.dsp.focus("r"))
-      hl.bind(mainMod .. " + up", hl.dsp.focus("u"))
-      hl.bind(mainMod .. " + down", hl.dsp.focus("d"))
+      hl.bind(mainMod .. " + left", hl.dsp.focus({ direction = "left" }))
+      hl.bind(mainMod .. " + right", hl.dsp.focus({ direction = "right" }))
+      hl.bind(mainMod .. " + up", hl.dsp.focus({ direction = "up" }))
+      hl.bind(mainMod .. " + down", hl.dsp.focus({ direction = "down" }))
 
       -- Move windows
-      hl.bind(mainMod .. " + SHIFT + left", hl.dsp.window.move("l"))
-      hl.bind(mainMod .. " + SHIFT + right", hl.dsp.window.move("r"))
-      hl.bind(mainMod .. " + SHIFT + up", hl.dsp.window.move("u"))
-      hl.bind(mainMod .. " + SHIFT + down", hl.dsp.window.move("d"))
+      hl.bind(mainMod .. " + SHIFT + left", hl.dsp.window.move({ direction = "left" }))
+      hl.bind(mainMod .. " + SHIFT + right", hl.dsp.window.move({ direction = "right" }))
+      hl.bind(mainMod .. " + SHIFT + up", hl.dsp.window.move({ direction = "up" }))
+      hl.bind(mainMod .. " + SHIFT + down", hl.dsp.window.move({ direction = "down" }))
 
       -- Resize windows
-      hl.bind(mainMod .. " + CTRL + left", hl.dsp.window.resize({ x = -50, y = 0 }))
-      hl.bind(mainMod .. " + CTRL + right", hl.dsp.window.resize({ x = 50, y = 0 }))
-      hl.bind(mainMod .. " + CTRL + up", hl.dsp.window.resize({ x = 0, y = -50 }))
-      hl.bind(mainMod .. " + CTRL + down", hl.dsp.window.resize({ x = 0, y = 50 }))
+      hl.bind(mainMod .. " + CTRL + left", hl.dsp.window.resize({ x = -50, y = 0, relative = true }), { repeating = true })
+      hl.bind(mainMod .. " + CTRL + right", hl.dsp.window.resize({ x = 50, y = 0, relative = true }), { repeating = true })
+      hl.bind(mainMod .. " + CTRL + up", hl.dsp.window.resize({ x = 0, y = -50, relative = true }), { repeating = true })
+      hl.bind(mainMod .. " + CTRL + down", hl.dsp.window.resize({ x = 0, y = 50, relative = true }), { repeating = true })
 
-      -- Workspaces
+      -- Workspaces (10 maps to key 0)
       for i = 1, 10 do
-        hl.bind(
-          mainMod .. " + " .. tostring(i % 10),
-          hl.dsp.focus({ workspace = i })
-        )
-
-        hl.bind(
-          mainMod .. " + SHIFT + " .. tostring(i % 10),
-          hl.dsp.window.move({ workspace = i })
-        )
+        local key = i % 10
+        hl.bind(mainMod .. " + " .. key, hl.dsp.focus({ workspace = i }))
+        hl.bind(mainMod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = i }))
       end
 
-      -- Mouse bindings
-      hl.bind("mouse:" .. mainMod .. " + button:272", hl.dsp.window.move())
-      hl.bind("mouse:" .. mainMod .. " + button:273", hl.dsp.window.resize())
+      -- Scroll through existing workspaces
+      hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
+      hl.bind(mainMod .. " + mouse_up", hl.dsp.focus({ workspace = "e-1" }))
+
+      -- Move/resize windows with mainMod + LMB/RMB and dragging
+      hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
+      hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
+
+      -- Media keys
+      hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true })
+      hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"), { locked = true, repeating = true })
+      hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true })
+      hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl set 5%+"), { locked = true, repeating = true })
+      hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl set 5%-"), { locked = true, repeating = true })
+      hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
+      hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true })
+      hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
     '';
 
     # Home Manager's systemd integration is enabled by default.
