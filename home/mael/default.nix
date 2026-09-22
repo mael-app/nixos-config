@@ -293,6 +293,10 @@
 
       local mainMod = "SUPER"
 
+      -- Monitor: force scale 1 (the default "auto" can upscale everything,
+      -- especially in a VM) and use the highest resolution available.
+      hl.monitor({ output = "", mode = "highres", position = "auto", scale = 1 })
+
       hl.config({
         input = {
           kb_layout = "fr",
@@ -358,7 +362,7 @@
       hl.curve("linear", { type = "bezier", points = { {0, 0}, {1, 1} } })
       hl.curve("almostLinear", { type = "bezier", points = { {0.5, 0.5}, {0.75, 1} } })
       hl.curve("quick", { type = "bezier", points = { {0.15, 0}, {0.1, 1} } })
-      hl.curve("easy", { type = "spring", mass = 1, stiffness = 238.1191, damping = 24.21279333 })
+      hl.curve("easy", { type = "spring", mass = 1, stiffness = 238.1191, dampening = 24.21279333 })
 
       hl.animation({ leaf = "global", enabled = true, speed = 10, bezier = "default" })
       hl.animation({ leaf = "border", enabled = true, speed = 5.39, bezier = "easeOutQuint" })
