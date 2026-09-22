@@ -6,12 +6,14 @@
     xwayland.enable = true;
   };
 
+  # Use the recommended Hyprland launcher rather than invoking Hyprland
+  # directly. This avoids the "started without start-hyprland" warning.
   services.greetd = {
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd Hyprland";
-        user = "greeter";
+        command = "${pkgs.hyprland}/bin/start-hyprland";
+        user = "mael";
       };
     };
   };
@@ -24,6 +26,7 @@
     waybar
     rofi
     dunst
+    thunar
 
     wl-clipboard
     grim

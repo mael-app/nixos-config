@@ -15,7 +15,7 @@
   i18n.defaultLocale = "fr_FR.UTF-8";
   console.keyMap = "fr";
 
-  # Login/TTY keyboard.
+  # TTY / login keyboard.
   services.xserver.xkb = {
     layout = "fr";
     variant = "";
@@ -31,11 +31,13 @@
     ];
   };
 
+  # Nix CLI + flakes globally enabled.
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
   ];
 
+  # Only the non-free packages we explicitly use.
   nixpkgs.config.allowUnfreePredicate = pkg:
     builtins.elem (pkgs.lib.getName pkg) [
       "spotify"

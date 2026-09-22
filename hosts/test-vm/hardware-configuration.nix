@@ -1,16 +1,15 @@
-# Replace this placeholder with the hardware configuration generated
-# specifically for this VM.
+# Replace this file with the hardware configuration generated for THIS VM.
 #
-# Existing installed VM:
+# Since this VM is already installed, run:
+#
 #   cp /etc/nixos/hardware-configuration.nix hosts/test-vm/
 #
-# Live ISO:
-#   nixos-generate-config --root /mnt
-#   then copy /mnt/etc/nixos/hardware-configuration.nix here.
+# Do not use a hardware configuration from another machine.
 
 { ... }:
 
 throw ''
-  Replace hosts/test-vm/hardware-configuration.nix with the hardware
-  configuration generated for this VM.
+  Replace hosts/test-vm/hardware-configuration.nix with:
+    /etc/nixos/hardware-configuration.nix
+  from this VM.
 ''
