@@ -494,7 +494,7 @@
       -- Monitor: "preferred" follows the display's native mode (in the VM,
       -- virtio-gpu reports the virt-manager window size). Fixed scale because
       -- "auto" can upscale everything.
-      hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1.5 })
+      hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1.2 })
 
       hl.config({
         input = {
