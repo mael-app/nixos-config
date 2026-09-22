@@ -20,7 +20,7 @@
   programs.kitty = {
     enable = true;
     settings = {
-      font_size = 11;
+      font_size = 9;
     };
   };
 
@@ -54,9 +54,14 @@
         layer = "top";
         position = "top";
         height = 30;
-        modules-left = [ "hyprland/workspaces" ];
+        modules-left = [ "custom/launcher" "hyprland/workspaces" ];
         modules-center = [ "hyprland/window" ];
         modules-right = [ "network" "pulseaudio" "clock" ];
+        "custom/launcher" = {
+          format = "Applications";
+          on-click = "rofi -show drun";
+          tooltip = false;
+        };
         "hyprland/workspaces" = {
           format = "{name}";
         };
@@ -109,11 +114,17 @@
       }
 
       #workspaces button,
+      #custom-launcher,
       #clock,
       #network,
       #pulseaudio,
       #window {
         padding: 0 10px;
+      }
+
+      #custom-launcher {
+        color: #8ec07c;
+        font-weight: bold;
       }
 
       #workspaces button.active {
