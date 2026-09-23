@@ -710,6 +710,10 @@
       hl.bind(mainMod .. " + up", hl.dsp.focus({ direction = "up" }))
       hl.bind(mainMod .. " + down", hl.dsp.focus({ direction = "down" }))
 
+      -- Switch between open windows
+      hl.bind("ALT + TAB", hl.dsp.focus({ last = true }))
+      hl.bind("ALT + SHIFT + TAB", hl.dsp.focus({ last = true }))
+
       -- Move windows
       hl.bind(mainMod .. " + SHIFT + left", hl.dsp.window.move({ direction = "left" }))
       hl.bind(mainMod .. " + SHIFT + right", hl.dsp.window.move({ direction = "right" }))
