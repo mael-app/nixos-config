@@ -45,6 +45,8 @@
     rofi
     dunst
     thunar
+    file-roller
+    thunar-archive-plugin
 
     wl-clipboard
     grim
