@@ -1,93 +1,96 @@
-# Remplacer Pop!_OS par NixOS sur le disque interne
+# Replace Pop!_OS with NixOS on the internal disk
 
-L'installation se fait **depuis la clé USB NixOS**, qui contient déjà tout
-ce qu'il faut. Si quelque chose se passe mal, la clé reste un système de
-secours complet.
+The installation runs **from the NixOS USB drive**, which already contains
+everything needed. If something goes wrong, the drive remains a complete
+rescue system.
 
-Windows n'est pas touché : il est sur l'autre disque (`nvme1n1`), et le
-script refuse tout disque contenant un volume BitLocker.
+Windows is not touched: it is on the other disk (`nvme1n1`), and the script
+refuses any disk containing a BitLocker volume.
 
-## Disposition du disque interne (`nvme0n1`, 954 Go)
+## Internal disk layout (`nvme0n1`, 954 GB)
 
 | Partition | Taille | Contenu |
 | --- | --- | --- |
-| `LAPBOOT` | 1 Gio | FAT32, démarrage (systemd-boot) |
-| `LAPCRYPT` | 199 Gio | LUKS2 → btrfs `nixos-sys` : sous-volumes `@` (racine) et `@nix` |
-| `LAPHOME` | le reste (~754 Go) | LUKS2 → btrfs `nixos-home` : sous-volume `@home` |
+| `LAPBOOT` | 1 GiB | FAT32, boot (systemd-boot) |
+| `LAPCRYPT` | 199 GiB | LUKS2 -> btrfs `nixos-sys`: subvolumes `@` (root) and `@nix` |
+| `LAPHOME` | remainder (~754 GB) | LUKS2 -> btrfs `nixos-home`: subvolume `@home` |
 
-`/home` est dans son **propre volume chiffré** : tu peux réinstaller le
-système sans toucher à tes données. Les deux volumes partagent la même
-phrase de passe, et systemd la garde en mémoire le temps du démarrage :
-tu ne la tapes qu'une fois.
+`/home` is on its **own encrypted volume**: you can reinstall the system
+without touching your data. Both volumes use the same passphrase, and systemd
+caches it during boot: you only type it once.
 
-Pour changer la taille du système :
+To change the system size:
 `SYS_SIZE=300GiB bash scripts/install-laptop.sh`
 
 ## 0. Avant de commencer
 
-- [ ] **Sauvegarde Pop!_OS** : le disque est entièrement effacé. Pousse tes
-      dépôts Git, copie le reste sur un disque externe, et n'oublie pas les
-      clés SSH/GPG et les fichiers de config.
-- [ ] Clé de récupération BitLocker notée (par précaution).
+- [ ] **Back up Pop!_OS**: the disk is erased completely. Push your Git
+      repositories, copy everything else to an external disk, and do not
+      forget your SSH/GPG keys and configuration files.
+- [ ] BitLocker recovery key recorded (as a precaution).
 
 ## 1. Installer
 
-Démarre sur la clé USB, connecte-toi au Wi-Fi, puis :
+Boot from the USB drive, connect to Wi-Fi, then:
 
 ```sh
 git clone https://github.com/mael-app/nixos-config ~/nixos-config
 cd ~/nixos-config
-bash scripts/install-laptop.sh
+nix shell nixpkgs#parted nixpkgs#cryptsetup nixpkgs#dosfstools \
+      nixpkgs#btrfs-progs nixpkgs#util-linux \
+      -c bash scripts/install-laptop.sh
 ```
 
-Le script vérifie le disque, demande de taper `EFFACER`, puis fait tout :
-partitionnement, chiffrement, formatage, installation, mot de passe de
-`mael`, démontage.
+The `nix shell` command provides the partitioning, encryption, and formatting
+tools needed in the USB drive's live environment.
 
-## 2. Premier démarrage
+The script checks the disk, asks you to type `ERASE`, then performs
+partitioning, encryption, formatting, installation, the `mael` password, and
+unmounting.
 
-Redémarre et **retire la clé**. NixOS démarre depuis le disque interne :
-il s'enregistre cette fois dans le BIOS (`canTouchEfiVariables = true`).
+## 2. First boot
 
-Tape la phrase de passe, puis connecte-toi.
+Reboot and **remove the drive**. NixOS boots from the internal disk and this
+time registers itself in the BIOS (`canTouchEfiVariables = true`).
 
-## 3. Déverrouillage automatique par le TPM
+Enter the passphrase, then log in.
 
-Pour ne plus taper la phrase à chaque démarrage :
+## 3. Automatic TPM unlocking
+
+To stop entering the passphrase at every boot:
 
 ```sh
 cd ~/nixos-config
 bash scripts/enroll-tpm.sh
 ```
 
-La puce TPM du portable déverrouille alors les deux volumes. La phrase de
-passe reste utilisable : si le TPM refuse (BIOS mis à jour, Secure Boot
-changé, disque déplacé sur une autre machine), elle est redemandée.
+The laptop's TPM then unlocks both volumes. The passphrase remains available:
+if the TPM refuses (updated BIOS, changed Secure Boot, or the disk moved to
+another machine), it is requested again.
 
-## 4. Nettoyage
+## 4. Cleanup
 
-L'entrée de démarrage « Pop!_OS » reste dans le BIOS sans plus rien
-derrière :
+The old "Pop!_OS" boot entry remains in the BIOS with nothing behind it:
 
 ```sh
-sudo efibootmgr              # repère le numéro de Pop!_OS
-sudo efibootmgr -b <n> -B    # supprime l'entrée
+sudo efibootmgr              # find the Pop!_OS entry number
+sudo efibootmgr -b <n> -B    # remove the entry
 ```
 
-Windows reste accessible par le menu de démarrage du BIOS.
+Windows remains available from the BIOS boot menu.
 
-## Mises à jour
+## Updates
 
 ```sh
 cd ~/nixos-config
 sudo nixos-rebuild switch --flake .#laptop
 ```
 
-## Dépannage
+## Troubleshooting
 
-| Problème | Solution |
+| Problem | Solution |
 | --- | --- |
-| « le disque porte le système en cours d'exécution » | Le script vise `/dev/nvme0n1` par défaut ; vérifie avec `lsblk` et corrige avec `TARGET=...` |
-| Le système ne démarre pas après l'installation | Démarre sur la clé USB, remonte les volumes et relance `bash scripts/install-laptop.sh --install-only` |
-| La phrase de passe est demandée deux fois | Le cache de systemd n'a pas fonctionné : vérifie que `boot.initrd.systemd.enable` est bien activé |
-| Le TPM redemande la phrase | État du Secure Boot ou du BIOS modifié : relance `scripts/enroll-tpm.sh` |
+| "the disk contains the running system" | The script targets `/dev/nvme0n1` by default; check with `lsblk` and override with `TARGET=...` |
+| The system does not boot after installation | Boot from the USB drive, mount the volumes again, and rerun `bash scripts/install-laptop.sh --install-only` |
+| The passphrase is requested twice | systemd caching did not work: check that `boot.initrd.systemd.enable` is enabled |
+| The TPM requests the passphrase again | Secure Boot or BIOS state changed: rerun `scripts/enroll-tpm.sh` |

@@ -8,29 +8,29 @@
 set -euo pipefail
 
 step() { printf '\n\033[1;34m==> %s\033[0m\n' "$*"; }
-die() { printf '\033[1;31mErreur : %s\033[0m\n' "$*" >&2; exit 1; }
+die() { printf '\033[1;31mError: %s\033[0m\n' "$*" >&2; exit 1; }
 
-[ -e /dev/tpm0 ] || [ -e /dev/tpmrm0 ] || die "aucune puce TPM détectée"
+[ -e /dev/tpm0 ] || [ -e /dev/tpmrm0 ] || die "no TPM chip detected"
 
 for label in LAPCRYPT LAPHOME; do
   dev="/dev/disk/by-label/$label"
-  [ -e "$dev" ] || die "$dev introuvable (ce script est pour la machine 'laptop')"
+  [ -e "$dev" ] || die "$dev not found (this script is for the 'laptop' machine)"
 
-  step "Enrôlement du TPM pour $label"
-  echo "Tape ta phrase de passe LUKS quand elle est demandée."
+  step "Enrolling the TPM for $label"
+  echo "Enter your LUKS passphrase when prompted."
   # PCR 7 = Secure Boot state, PCR 0 = firmware. Changing either falls
   # back to the passphrase, which stays enrolled.
   sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+7 "$dev"
 done
 
-step "Terminé"
+step "Done"
 cat <<'MSG'
-Redémarre pour vérifier : le système doit démarrer sans demander la phrase.
+Reboot to verify: the system should boot without requesting the passphrase.
 
-Si elle est encore demandée, le TPM a refusé (état du Secure Boot ou du
-BIOS différent de l'enrôlement) : relance ce script pour ré-enrôler.
+If it is still requested, the TPM refused (Secure Boot or BIOS state differs
+from enrollment): run this script again to re-enroll.
 
-Pour retirer le déverrouillage automatique :
+To remove automatic unlocking:
   sudo systemd-cryptenroll --wipe-slot=tpm2 /dev/disk/by-label/LAPCRYPT
   sudo systemd-cryptenroll --wipe-slot=tpm2 /dev/disk/by-label/LAPHOME
 MSG

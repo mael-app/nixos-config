@@ -30,30 +30,30 @@
   boot.initrd.systemd.enable = true;
 
   boot.initrd.luks.devices = {
-    cryptroot = {
+    laptop-cryptroot = {
       device = "/dev/disk/by-label/LAPCRYPT";
       allowDiscards = true;
     };
-    crypthome = {
+    laptop-crypthome = {
       device = "/dev/disk/by-label/LAPHOME";
       allowDiscards = true;
     };
   };
 
   fileSystems."/" = {
-    device = "/dev/disk/by-label/nixos-sys";
+    device = "/dev/mapper/laptop-cryptroot";
     fsType = "btrfs";
     options = [ "subvol=@" "compress=zstd" "noatime" ];
   };
 
   fileSystems."/nix" = {
-    device = "/dev/disk/by-label/nixos-sys";
+    device = "/dev/mapper/laptop-cryptroot";
     fsType = "btrfs";
     options = [ "subvol=@nix" "compress=zstd" "noatime" ];
   };
 
   fileSystems."/home" = {
-    device = "/dev/disk/by-label/nixos-home";
+    device = "/dev/mapper/laptop-crypthome";
     fsType = "btrfs";
     options = [ "subvol=@home" "compress=zstd" "noatime" ];
   };

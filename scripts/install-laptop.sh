@@ -19,40 +19,50 @@ INSTALL_ONLY=false
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 
 step() { printf '\n\033[1;34m==> %s\033[0m\n' "$*"; }
-die() { printf '\033[1;31mErreur : %s\033[0m\n' "$*" >&2; exit 1; }
+die() { printf '\033[1;31mError: %s\033[0m\n' "$*" >&2; exit 1; }
 
-[ "$(id -u)" -ne 0 ] || die "lance ce script avec ton utilisateur, pas en root"
-[ -f "$REPO/flake.nix" ] || die "flake.nix introuvable dans $REPO"
-command -v nixos-install >/dev/null || die "lance ce script depuis le NixOS de la clé USB"
+[ "$(id -u)" -ne 0 ] || die "run this script as your user, not as root"
+[ -f "$REPO/flake.nix" ] || die "flake.nix not found in $REPO"
+command -v nixos-install >/dev/null || die "run this script from the NixOS USB system"
+
+for command in parted cryptsetup mkfs.fat mkfs.btrfs; do
+  command -v "$command" >/dev/null \
+    || die "missing command: $command (see docs/install-laptop.md)"
+done
 
 if [ "$INSTALL_ONLY" = true ]; then
   findmnt /mnt/boot >/dev/null && findmnt /mnt/home >/dev/null \
-    || die "le disque n'est pas monté sur /mnt (relance sans --install-only)"
+    || die "the disk is not mounted on /mnt (rerun without --install-only)"
 else
 
-step "1. Vérification du disque cible ($TARGET)"
-[ -b "$TARGET" ] || die "$TARGET n'existe pas"
+step "1. Checking target disk ($TARGET)"
+[ -b "$TARGET" ] || die "$TARGET does not exist"
+
+[ ! -e /dev/mapper/laptop-cryptroot ] \
+  || die "/dev/mapper/laptop-cryptroot is already active; close the old volume before retrying"
+[ ! -e /dev/mapper/laptop-crypthome ] \
+  || die "/dev/mapper/laptop-crypthome is already active; close the old volume before retrying"
 
 # Never touch the disk the running system boots from (the USB drive).
 # lsblk lists the whole tree of TARGET, including dm/LUKS devices, so a
 # running root sitting anywhere under it is caught.
 running_src="$(findmnt -no SOURCE / || true)"
 if [ -n "$running_src" ] && lsblk -npo NAME "$TARGET" | grep -qxF "$running_src"; then
-  die "$TARGET porte le système en cours d'exécution"
+  die "$TARGET contains the running system"
 fi
 
 # Never touch the Windows disk.
 if lsblk -no FSTYPE "$TARGET" | grep -qi bitlocker; then
-  die "$TARGET contient un volume BitLocker (Windows), abandon"
+  die "$TARGET contains a BitLocker volume (Windows); aborting"
 fi
 
 lsblk -o NAME,SIZE,FSTYPE,LABEL,MOUNTPOINTS "$TARGET"
-printf '\n\033[1;31mTOUT LE CONTENU DE %s (Pop!_OS) VA ÊTRE EFFACÉ.\033[0m\n' "$TARGET"
-echo "Système : $SYS_SIZE   /home : le reste du disque"
-read -rp "Tape EFFACER pour continuer : " answer
-[ "$answer" = "EFFACER" ] || die "annulé"
+printf '\n\033[1;31mALL CONTENTS OF %s (Pop!_OS) WILL BE ERASED.\033[0m\n' "$TARGET"
+echo "System: $SYS_SIZE   /home: the rest of the disk"
+read -rp "Type ERASE to continue: " answer
+[ "$answer" = "ERASE" ] || die "cancelled"
 
-step "2. Partitionnement"
+step "2. Partitioning"
 for part in "$TARGET"?*; do
   [ -b "$part" ] && sudo umount "$part" 2>/dev/null || true
 done
@@ -73,72 +83,79 @@ case "$TARGET" in
 esac
 BOOT_PART="${P}1"; SYS_PART="${P}2"; HOME_PART="${P}3"
 for p in "$BOOT_PART" "$SYS_PART" "$HOME_PART"; do
-  [ -b "$p" ] || die "partition $p introuvable"
+  [ -b "$p" ] || die "partition $p not found"
 done
 
-step "3. Chiffrement et formatage"
-echo "Une seule phrase de passe pour les deux volumes (système et /home)."
-echo "systemd la met en cache : tu ne la tapes qu'une fois au démarrage."
+step "3. Encryption and formatting"
+echo "One passphrase for both volumes (system and /home)."
+echo "systemd caches it: you only type it once at boot."
 while :; do
-  read -rsp "Phrase de passe : " PASS; echo
-  read -rsp "Confirme        : " PASS2; echo
+  read -rsp "Passphrase: " PASS; echo
+  read -rsp "Confirm:    " PASS2; echo
   [ -n "$PASS" ] && [ "$PASS" = "$PASS2" ] && break
-  echo "Vide ou différente, recommence."
+  echo "Empty or different; try again."
 done
 
 sudo mkfs.fat -F 32 -n LAPBOOT "$BOOT_PART"
 printf '%s' "$PASS" | sudo cryptsetup luksFormat --type luks2 --label LAPCRYPT --batch-mode --key-file - "$SYS_PART"
 printf '%s' "$PASS" | sudo cryptsetup luksFormat --type luks2 --label LAPHOME --batch-mode --key-file - "$HOME_PART"
-printf '%s' "$PASS" | sudo cryptsetup open --key-file - "$SYS_PART" cryptroot
-printf '%s' "$PASS" | sudo cryptsetup open --key-file - "$HOME_PART" crypthome
+printf '%s' "$PASS" | sudo cryptsetup open --key-file - "$SYS_PART" laptop-cryptroot
+printf '%s' "$PASS" | sudo cryptsetup open --key-file - "$HOME_PART" laptop-crypthome
 unset PASS PASS2
 
-sudo mkfs.btrfs -f -L nixos-sys /dev/mapper/cryptroot
-sudo mkfs.btrfs -f -L nixos-home /dev/mapper/crypthome
+sudo mkfs.btrfs -f -L nixos-sys /dev/mapper/laptop-cryptroot
+sudo mkfs.btrfs -f -L nixos-home /dev/mapper/laptop-crypthome
 
-step "4. Sous-volumes et montage"
+step "4. Subvolumes and mounting"
 opts="compress=zstd,noatime"
 
-sudo mount /dev/mapper/cryptroot /mnt
+sudo mount /dev/mapper/laptop-cryptroot /mnt
 sudo btrfs subvolume create /mnt/@ /mnt/@nix
 sudo umount /mnt
-sudo mount -o "subvol=@,$opts" /dev/mapper/cryptroot /mnt
+sudo mount -o "subvol=@,$opts" /dev/mapper/laptop-cryptroot /mnt
 sudo mkdir -p /mnt/nix /mnt/home /mnt/boot
-sudo mount -o "subvol=@nix,$opts" /dev/mapper/cryptroot /mnt/nix
+sudo mount -o "subvol=@nix,$opts" /dev/mapper/laptop-cryptroot /mnt/nix
 
-sudo mount /dev/mapper/crypthome /mnt/home
+sudo mount /dev/mapper/laptop-crypthome /mnt/home
 sudo btrfs subvolume create /mnt/home/@home
 sudo umount /mnt/home
-sudo mount -o "subvol=@home,$opts" /dev/mapper/crypthome /mnt/home
+sudo mount -o "subvol=@home,$opts" /dev/mapper/laptop-crypthome /mnt/home
 
 sudo mount -o fmask=0077,dmask=0077 "$BOOT_PART" /mnt/boot
 findmnt -R -l /mnt
 
 fi
 
-step "5. Installation de NixOS"
+cleanup() {
+  sudo umount -R /mnt 2>/dev/null || true
+  sudo cryptsetup close laptop-cryptroot 2>/dev/null || true
+  sudo cryptsetup close laptop-crypthome 2>/dev/null || true
+}
+trap cleanup EXIT
+
+step "5. Installing NixOS"
 cd "$REPO"
 sudo nixos-install --root /mnt --flake .#laptop --no-root-passwd
 
-step "6. Mot de passe de l'utilisateur mael"
-sudo nixos-enter --root /mnt -c '/nix/var/nix/profiles/system/sw/bin/passwd mael'
+step "6. Password for the mael user"
+until sudo nixos-enter --root /mnt -c '/nix/var/nix/profiles/system/sw/bin/passwd mael'; do
+  echo "Passwords do not match; try again."
+done
 
-step "7. Démontage"
-sudo umount -R /mnt
-sudo cryptsetup close cryptroot
-sudo cryptsetup close crypthome
+step "7. Unmounting"
+cleanup
 
-step "Terminé !"
+step "Done!"
 cat <<'EOF'
-Redémarre, retire la clé USB : NixOS démarre depuis le disque interne.
+Reboot and remove the USB drive: NixOS boots from the internal disk.
 
-Ensuite, pour ne plus taper la phrase de passe à chaque démarrage
-(déverrouillage par la puce TPM) :
+Then, to stop entering the passphrase at every boot
+(unlocking with the TPM):
 
   bash scripts/enroll-tpm.sh
 
-Pour supprimer l'ancienne entrée de démarrage Pop!_OS du BIOS :
+To remove the old Pop!_OS boot entry from the BIOS:
 
-  sudo efibootmgr                  # repère le numéro de « Pop!_OS »
-  sudo efibootmgr -b <numéro> -B
+  sudo efibootmgr                  # find the Pop!_OS entry number
+  sudo efibootmgr -b <number> -B
 EOF

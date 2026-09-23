@@ -15,34 +15,34 @@ MODEL_PATTERN="SSK Portable SSD"
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 
 step() { printf '\n\033[1;34m==> %s\033[0m\n' "$*"; }
-die() { printf '\033[1;31mErreur : %s\033[0m\n' "$*" >&2; exit 1; }
+die() { printf '\033[1;31mError: %s\033[0m\n' "$*" >&2; exit 1; }
 
-[ "$(id -u)" -ne 0 ] || die "lance ce script avec ton utilisateur, pas en root (il utilise sudo lui-même)"
-[ -f "$REPO/flake.nix" ] || die "flake.nix introuvable dans $REPO"
-command -v nix >/dev/null || die "nix n'est pas installé"
+[ "$(id -u)" -ne 0 ] || die "run this script as your user, not as root (it uses sudo itself)"
+[ -f "$REPO/flake.nix" ] || die "flake.nix not found in $REPO"
+command -v nix >/dev/null || die "nix is not installed"
 
 if [ "$INSTALL_ONLY" = true ]; then
   findmnt /mnt/boot >/dev/null && findmnt /mnt/nix >/dev/null \
-    || die "la clé n'est pas montée sur /mnt (lance le script sans --install-only)"
+    || die "the drive is not mounted on /mnt (run the script without --install-only)"
 else
 
-step "1. Recherche de la clé USB ($MODEL_PATTERN)"
+step "1. Finding the USB drive ($MODEL_PATTERN)"
 mapfile -t matches < <(lsblk -dnpo NAME,TRAN,MODEL | awk -v m="$MODEL_PATTERN" '$2 == "usb" && index($0, m) { print $1 }')
-[ "${#matches[@]}" -eq 1 ] || die "il faut exactement une clé « $MODEL_PATTERN » branchée en USB (trouvé : ${#matches[@]})"
+[ "${#matches[@]}" -eq 1 ] || die "exactly one USB drive matching \"$MODEL_PATTERN\" must be connected (found: ${#matches[@]})"
 DISK="${matches[0]}"
 case "$DISK" in
-  /dev/nvme*) die "$DISK est un disque interne, abandon" ;;
+  /dev/nvme*) die "$DISK is an internal disk; aborting" ;;
 esac
 
 lsblk -o NAME,SIZE,FSTYPE,LABEL,MOUNTPOINTS,TRAN,MODEL "$DISK"
-printf '\n\033[1;31mTOUT LE CONTENU DE %s VA ÊTRE EFFACÉ.\033[0m\n' "$DISK"
-read -rp "Tape EFFACER pour continuer : " answer
-[ "$answer" = "EFFACER" ] || die "annulé"
+printf '\n\033[1;31mALL CONTENTS OF %s WILL BE ERASED.\033[0m\n' "$DISK"
+read -rp "Type ERASE to continue: " answer
+[ "$answer" = "ERASE" ] || die "cancelled"
 
-step "Installation des outils manquants (btrfs-progs)"
+step "Installing missing tools (btrfs-progs)"
 sudo apt-get install -y btrfs-progs parted cryptsetup dosfstools
 
-step "2. Partitionnement"
+step "2. Partitioning"
 for part in "$DISK"?*; do
   [ -b "$part" ] && sudo umount "$part" 2>/dev/null || true
 done
@@ -56,23 +56,23 @@ sudo partprobe "$DISK"
 sudo udevadm settle
 BOOT_PART="${DISK}1"
 CRYPT_PART="${DISK}2"
-[ -b "$BOOT_PART" ] && [ -b "$CRYPT_PART" ] || die "partitions introuvables après partitionnement"
+[ -b "$BOOT_PART" ] && [ -b "$CRYPT_PART" ] || die "partitions not found after partitioning"
 
 # Pop!_OS may auto-mount the new partitions
 sudo umount "$BOOT_PART" "$CRYPT_PART" 2>/dev/null || true
 
-step "3. Formatage et chiffrement"
+step "3. Formatting and encryption"
 sudo mkfs.fat -F 32 -n NIXBOOT "$BOOT_PART"
 echo
-echo "Choisis la phrase de passe du chiffrement (demandée à chaque démarrage)."
-echo "Tape YES en majuscules quand cryptsetup le demande."
+echo "Choose the encryption passphrase (requested at every boot)."
+echo "Type YES in uppercase when cryptsetup asks for it."
 sudo cryptsetup luksFormat --type luks2 --label NIXCRYPT "$CRYPT_PART"
 echo
-echo "Retape la phrase de passe pour ouvrir le volume :"
+echo "Re-enter the passphrase to open the volume:"
 sudo cryptsetup open "$CRYPT_PART" cryptroot
 sudo mkfs.btrfs -f -L nixos /dev/mapper/cryptroot
 
-step "4. Sous-volumes et montage"
+step "4. Subvolumes and mounting"
 sudo mount /dev/mapper/cryptroot /mnt
 sudo btrfs subvolume create /mnt/@ /mnt/@home /mnt/@nix
 sudo umount /mnt
@@ -87,9 +87,9 @@ findmnt -R -l /mnt
 
 fi
 
-step "5. Installation de NixOS (plusieurs Go à télécharger)"
-echo "En Chine : vérifie que Mullvad est connecté, sinon GitHub risque d'échouer."
-read -rp "Utiliser les miroirs chinois du cache Nix (Mullvad déconnecté) ? [o/N] " mirrors
+step "5. Installing NixOS (several GB to download)"
+echo "In China: make sure Mullvad is connected, or GitHub may fail."
+read -rp "Use Chinese Nix cache mirrors (Mullvad disconnected)? [y/N] " mirrors
 extra=""
 if [[ "$mirrors" =~ ^[oOyY]$ ]]; then
   # priority=10 beats cache.nixos.org (40), so the mirrors are tried first
@@ -102,20 +102,20 @@ nix shell .#nixosConfigurations.usb.pkgs.nixos-install-tools --command bash -c "
   sudo env \"PATH=\$PATH\" nixos-install --root /mnt --flake .#usb --no-root-passwd $extra
 
   echo
-  echo '==> 6. Mot de passe de l utilisateur mael (connexion, sudo, déverrouillage)'
+  echo '==> 6. Password for the mael user (login, sudo, unlocking)'
   # Full path: /run/wrappers (where passwd usually lives) doesn't exist in the chroot
   sudo env \"PATH=\$PATH\" nixos-enter --root /mnt -c '/nix/var/nix/profiles/system/sw/bin/passwd mael'
 "
 
-step "7. Démontage"
+step "7. Unmounting"
 sudo umount -R /mnt
 sudo cryptsetup close cryptroot
 
-step "Terminé !"
+step "Done!"
 cat <<'EOF'
-Pour démarrer sur la clé :
-  1. BIOS : désactive le Secure Boot (note ta clé BitLocker avant).
-  2. Menu de démarrage (F12 / F8 / Échap...) : choisis la clé SSK.
-  3. Phrase de passe LUKS, puis connexion.
-Suite : docs/install-usb.md, section 9.
+To boot from the drive:
+  1. BIOS: disable Secure Boot (note your BitLocker recovery key first).
+  2. Boot menu (F12 / F8 / Esc...): choose the SSK drive.
+  3. LUKS passphrase, then log in.
+Next: docs/install-usb.md, section 9.
 EOF

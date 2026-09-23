@@ -273,12 +273,12 @@
             activated = "󰅶";
             deactivated = "󰾪";
           };
-          tooltip-format-activated = "Mise en veille désactivée";
-          tooltip-format-deactivated = "Mise en veille activée";
+          tooltip-format-activated = "Idle inhibition enabled";
+          tooltip-format-deactivated = "Idle inhibition disabled";
         };
         pulseaudio = {
           format = "{icon}  {volume}%";
-          format-muted = "󰝟  muet";
+          format-muted = "󰝟  muted";
           format-icons = {
             default = [ "󰕿" "󰖀" "󰕾" ];
             headphone = "󰋋";
