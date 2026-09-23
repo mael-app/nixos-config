@@ -15,8 +15,8 @@
   networking.hostName = "nixos-laptop";
 
   home-manager.users.mael.wayland.windowManager.hyprland.extraConfig = lib.mkAfter ''
-    -- Laptop screen: 2560x1600. Valid scales: 1, 1.0667, 1.25, 1.3333, 1.6, 2
-    hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1.25 })
+    -- Laptop screen: 2560x1600. Use integer scaling for crisp dock icons.
+    hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })
   '';
 
   system.stateVersion = "25.11";

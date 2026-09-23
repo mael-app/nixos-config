@@ -8,19 +8,36 @@
 
   programs.home-manager.enable = true;
 
-  programs.git.enable = true;
+  programs.git = {
+    enable = true;
+    settings.user = {
+      name = "Maël";
+      email = "mael.app@proton.me";
+    };
+    signing = {
+      key = "~/.ssh/id_ed25519.pub";
+      signByDefault = true;
+      format = "ssh";
+    };
+  };
 
   programs.zsh = {
     enable = true;
     enableCompletion = true;
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
+    oh-my-zsh = {
+      enable = true;
+      theme = "robbyrussell";
+      plugins = [ "git" ];
+    };
   };
 
   programs.kitty = {
     enable = true;
     settings = {
-      font_size = 10;
+      font_family = "JetBrainsMono Nerd Font";
+      font_size = 12;
       background_opacity = "0.92";
       confirm_os_window_close = 0;
     };
@@ -30,6 +47,7 @@
     starship
     btop
     noto-fonts
+    qbittorrent
   ];
 
   home.sessionVariables = {
@@ -62,7 +80,7 @@
       display-run = "Run";
       display-window = "Windows";
       drun-display-format = "{name}";
-      font = "JetBrainsMono Nerd Font 11";
+      font = "JetBrainsMono Nerd Font 13";
       me-select-entry = "";
       me-accept-entry = "MousePrimary";
     };
@@ -115,7 +133,7 @@
     };
     font = {
       name = "Noto Sans";
-      size = 11;
+      size = 12;
     };
   };
 
@@ -338,7 +356,7 @@
     style = ''
       * {
         font-family: "JetBrainsMono Nerd Font";
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 600;
         border: none;
         border-radius: 0;
@@ -649,7 +667,7 @@
         hl.exec_cmd("nm-applet --indicator")
         hl.exec_cmd("awww-daemon")
         -- Always-visible dock with pinnable apps
-        hl.exec_cmd("nwg-dock-hyprland -x -i 40 -mb 8 -c 'rofi -show drun'")
+        hl.exec_cmd("nwg-dock-hyprland -x -i 48 -mb 8 -c 'rofi -show drun'")
         -- Wallpaper (the image lives in this repo and ends up in the Nix store)
         hl.exec_cmd("sleep 1 && awww img ${./wallpapers/bg.png} --transition-type fade")
       end)
