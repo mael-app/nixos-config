@@ -41,5 +41,8 @@
 
       # External USB SSD, booted on the laptop
       nixosConfigurations.usb = mkHost "usb";
+
+      # Laptop internal NVMe
+      nixosConfigurations.laptop = mkHost "laptop";
     };
 }
