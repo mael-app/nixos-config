@@ -1,6 +1,13 @@
 { pkgs, ... }:
 
 {
+  programs.nh = {
+    enable = true;
+    flake = "/home/mael/nixos-config";
+  };
+
+  programs.nix-index-database.comma.enable = true;
+
   environment.systemPackages = with pkgs; [
     git
     curl

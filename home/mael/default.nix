@@ -33,6 +33,38 @@
     };
   };
 
+  programs.direnv = {
+    enable = true;
+    enableZshIntegration = true;
+    nix-direnv.enable = true;
+  };
+
+  programs.hyprlock = {
+    enable = true;
+    settings = {
+      background = [{ path = "screenshot"; blur_passes = 2; blur_size = 4; }];
+      label = [{
+        text = "$TIME";
+        color = "rgba(205, 214, 244, 1.0)";
+        font_size = 64;
+        position = "0, 180";
+        halign = "center";
+        valign = "center";
+      }];
+      input-field = [{
+        size = "300, 60";
+        position = "0, -80";
+        dots_center = true;
+        fade_on_empty = false;
+        outline_thickness = 2;
+        outer_color = "rgb(137, 180, 250)";
+        inner_color = "rgba(30, 30, 46, 0.8)";
+        font_color = "rgb(205, 214, 244)";
+        placeholder_text = "Password...";
+      }];
+    };
+  };
+
   programs.kitty = {
     enable = true;
     settings = {
@@ -121,6 +153,28 @@
 
   xdg.portal.config.common.default = "*";
 
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      "application/zip" = "org.gnome.FileRoller.desktop";
+      "application/x-7z-compressed" = "org.gnome.FileRoller.desktop";
+      "application/x-rar" = "org.gnome.FileRoller.desktop";
+      "image/jpeg" = "imv.desktop";
+      "image/png" = "imv.desktop";
+      "video/mp4" = "vlc.desktop";
+      "video/webm" = "vlc.desktop";
+      "video/x-matroska" = "vlc.desktop";
+      "video/x-msvideo" = "vlc.desktop";
+      "video/mpeg" = "vlc.desktop";
+      "video/ogg" = "vlc.desktop";
+      "video/mp2t" = "vlc.desktop";
+      "video/x-flv" = "vlc.desktop";
+      "audio/mpeg" = "mpv.desktop";
+      "audio/ogg" = "mpv.desktop";
+    };
+  };
+  xdg.configFile."mimeapps.list".force = true;
+
   qt = {
     enable = true;
     platformTheme.name = "gtk3";
@@ -131,7 +185,7 @@
     enable = true;
     settings = {
       general = {
-        lock_cmd = "pidof swaylock || swaylock -f --screenshots --clock --indicator --effect-blur 7x5 --effect-vignette 0.5:0.5 --ring-color 89b4fa --key-hl-color a6e3a1 --inside-color 1e1e2e88 --text-color cdd6f4";
+        lock_cmd = "pidof hyprlock || hyprlock";
         before_sleep_cmd = "loginctl lock-session";
       };
       listener = [
@@ -749,6 +803,8 @@
         hl.exec_cmd("nm-applet --indicator")
         hl.exec_cmd("awww-daemon")
         hl.exec_cmd("swaync")
+        hl.exec_cmd("wl-clip-persist --clipboard regular")
+        hl.exec_cmd("poweralertd")
         -- Always-visible dock with pinnable apps
         hl.exec_cmd("nwg-dock-hyprland -x -i 48 -mb 8 -c 'rofi -show drun'")
         -- Wallpaper (the image lives in this repo and ends up in the Nix store)
@@ -772,8 +828,9 @@
       hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))
 
       -- Screenshots
-      hl.bind("Print", hl.dsp.exec_cmd('grim -g "$(slurp)" - | wl-copy'))
-      hl.bind("SHIFT + Print", hl.dsp.exec_cmd('grim ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png'))
+      hl.bind("Print", hl.dsp.exec_cmd("grimblast copy area"))
+      hl.bind("SHIFT + Print", hl.dsp.exec_cmd("grimblast save output"))
+      hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprpicker | wl-copy"))
 
       -- Lock screen
       hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("loginctl lock-session"))

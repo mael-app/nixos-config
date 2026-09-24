@@ -55,13 +55,22 @@ sudo reboot
 - Waybar
 - Rofi
 - SwayNC notification center
+- Hyprlock
 - Thunar
+- File Roller
 - Firefox
 - Spotify
+- mpv
+- imv
+- Grimblast
+- Hyprpicker
 - PipeWire
 - NetworkManager
 - Git
 - Zsh + Starship
+- direnv + nix-direnv
+- nh
+- nix-index database
 - Neovim
 - tmux
 - Docker

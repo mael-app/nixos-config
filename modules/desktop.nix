@@ -48,6 +48,12 @@
     thunar
     file-roller
     thunar-archive-plugin
+    grimblast
+    hyprpicker
+    imv
+    mpv
+    poweralertd
+    wl-clip-persist
 
     wl-clipboard
     grim
@@ -83,6 +89,7 @@
 
   # Without this PAM service swaylock can't check the password to unlock
   security.pam.services.swaylock = { };
+  security.pam.services.hyprlock = { };
 
   # Needed for Home Manager dconf settings (dark mode for GTK4 apps)
   programs.dconf.enable = true;
