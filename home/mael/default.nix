@@ -968,7 +968,8 @@ in
       -- Terminal
       hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd("kitty"))
 
-      -- Application launcher
+      -- Application launcher, on both SUPER + Space and the original SUPER + R
+      hl.bind(mainMod .. " + SPACE", hl.dsp.exec_cmd("rofi -show drun"))
       hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("rofi -show drun"))
 
       -- File manager
