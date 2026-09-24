@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, username, ... }:
 
 {
   programs.hyprland = {
@@ -35,9 +35,9 @@
     };
   };
 
-  # Only what the system itself needs. Everything mael runs is installed by
-  # Home Manager, so `home-manager switch` can update it without rebuilding
-  # the system; see home/mael/default.nix.
+  # Only what the system itself needs. Everything the desktop account runs is
+  # installed by Home Manager, so `home-manager switch` can update it without
+  # rebuilding the system; see ../home.
   environment.systemPackages = with pkgs; [
     # Icon fallbacks every GTK application expects to find, including those
     # run by other users such as the greeter.
@@ -45,16 +45,6 @@
     hicolor-icon-theme
 
     man-pages
-  ];
-
-  # System-wide so that fontconfig resolves them for every user, not just
-  # mael. Noto Sans is what the Home Manager GTK theme asks for.
-  fonts.packages = with pkgs; [
-    dejavu_fonts
-    liberation_ttf
-    noto-fonts
-    noto-fonts-color-emoji
-    nerd-fonts.jetbrains-mono
   ];
 
   # Thunar must come from its module: plugins are baked into the wrapper it
@@ -73,7 +63,7 @@
   programs._1password.enable = true;
   programs._1password-gui = {
     enable = true;
-    polkitPolicyOwners = [ "mael" ];
+    polkitPolicyOwners = [ username ];
   };
 
   # hyprlock is configured by Home Manager, which only writes its config; the
@@ -85,19 +75,6 @@
   # Needed for Home Manager dconf settings (dark mode for GTK4 apps)
   programs.dconf.enable = true;
 
-  hardware.bluetooth = {
-    enable = true;
-    powerOnBoot = true;
-  };
-  services.blueman.enable = true;
-
   # Battery / power info for waybar
   services.upower.enable = true;
-
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-  };
 }

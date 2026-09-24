@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, username, ... }:
 
 {
   # QEMU/KVM VM: legacy BIOS + GRUB.
@@ -14,7 +14,7 @@
   services.spice-vdagentd.enable = true;
   services.qemuGuest.enable = true;
 
-  home-manager.users.mael.wayland.windowManager.hyprland.extraConfig = lib.mkAfter ''
+  home-manager.users.${username}.wayland.windowManager.hyprland.extraConfig = lib.mkAfter ''
     -- Monitor: "preferred" follows the virt-manager window size (virtio-gpu)
     hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1.0 })
 

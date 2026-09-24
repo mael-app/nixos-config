@@ -19,12 +19,12 @@
     {
       self,
       nixpkgs,
-      home-manager,
       nix-index-database,
       ...
-    }:
+    }@inputs:
     let
       system = "x86_64-linux";
+      username = "mael";
 
       # Modules shared by every machine. Each host adds its own
       # configuration.nix and hardware-configuration.nix, plus whatever
@@ -35,28 +35,31 @@
       mkHost =
         host: extraModules:
         nixpkgs.lib.nixosSystem {
+          # Reaches every module, including the Home Manager ones, which
+          # ./modules/user.nix forwards them to. Nothing has to name the host
+          # or the account again.
+          specialArgs = {
+            inherit
+              inputs
+              self
+              host
+              username
+              ;
+          };
+
           modules = [
             ./hosts/${host}/configuration.nix
             ./hosts/${host}/hardware-configuration.nix
+            ./modules/audio.nix
+            ./modules/bluetooth.nix
             ./modules/common.nix
             ./modules/desktop.nix
             ./modules/devops.nix
+            ./modules/fonts.nix
+            ./modules/user.nix
             ./modules/vpn.nix
 
-            home-manager.nixosModules.home-manager
             nix-index-database.nixosModules.nix-index
-            {
-              # Record the commit a generation was built from, so
-              # `nixos-version --configuration-revision` can identify it.
-              system.configurationRevision = self.rev or self.dirtyRev or null;
-
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              # Without this, activation aborts as soon as a file it manages
-              # already exists in $HOME instead of moving the old one aside.
-              home-manager.backupFileExtension = "hm-bak";
-              home-manager.users.mael = import ./home/mael;
-            }
           ]
           ++ extraModules;
         };

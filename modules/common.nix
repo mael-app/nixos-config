@@ -16,16 +16,6 @@
   };
   console.useXkbConfig = true;
 
-  users.users.mael = {
-    isNormalUser = true;
-    description = "Maël";
-    extraGroups = [
-      "wheel"
-      "networkmanager"
-      "docker"
-    ];
-  };
-
   # Nix CLI + flakes globally enabled.
   nix.settings.experimental-features = [
     "nix-command"
