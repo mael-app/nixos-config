@@ -16,10 +16,22 @@
 
   networking.hostName = "nixos-usb";
 
+  # / , /nix and /home are all subvolumes of the one LUKS container on the
+  # stick, so a single mount point covers the whole filesystem.
+  services.btrfs.autoScrub.fileSystems = [ "/" ];
+
   home-manager.users.mael.wayland.windowManager.hyprland.extraConfig = lib.mkAfter ''
     -- Laptop screen: 2560x1600. Valid scales: 1, 1.0667, 1.25, 1.3333, 1.6, 2
     hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1.25 })
   '';
+
+  # Scale 1.25 leaves 2048x1280 logical pixels instead of the laptop's
+  # 2560x1600, and wlogout margins are absolute, so the defaults would leave
+  # the power menu 40 pixels tall.
+  home-manager.users.mael.local.powerMenu = {
+    verticalMargin = 480;
+    horizontalMargin = 380;
+  };
 
   system.stateVersion = "25.11";
 }

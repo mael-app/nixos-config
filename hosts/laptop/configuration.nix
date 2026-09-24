@@ -12,6 +12,13 @@
 
   networking.hostName = "nixos-laptop";
 
+  # / and /nix are subvolumes of the same LUKS container, so scrubbing both
+  # would read laptop-cryptroot twice. /home is a separate container.
+  services.btrfs.autoScrub.fileSystems = [
+    "/"
+    "/home"
+  ];
+
   home-manager.users.mael.wayland.windowManager.hyprland.extraConfig = lib.mkAfter ''
     -- Laptop screen: 2560x1600. Use integer scaling for crisp dock icons.
     hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })

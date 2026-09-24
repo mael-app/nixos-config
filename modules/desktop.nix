@@ -17,7 +17,10 @@
   # predictable than the "*" catch-all.
   xdg.portal = {
     enable = true;
-    config.common.default = [ "hyprland" "gtk" ];
+    config.common.default = [
+      "hyprland"
+      "gtk"
+    ];
   };
 
   # Use the recommended Hyprland launcher rather than invoking Hyprland
@@ -32,44 +35,24 @@
     };
   };
 
+  # Only what the system itself needs. Everything mael runs is installed by
+  # Home Manager, so `home-manager switch` can update it without rebuilding
+  # the system; see home/mael/default.nix.
   environment.systemPackages = with pkgs; [
-    firefox
-    spotify
-    discord
-    notion-electron
-    vlc
-
+    # Icon fallbacks every GTK application expects to find, including those
+    # run by other users such as the greeter.
     adwaita-icon-theme
     hicolor-icon-theme
+
     man-pages
-    tldr
-
-    kitty
-    waybar
-    rofi
-    file-roller
-    grimblast
-    hyprpicker
-    imv
-    mpv
-
-    wl-clipboard
-    grim
-    slurp
-    pavucontrol
-    networkmanagerapplet
-
-    brightnessctl
-    playerctl
-    libnotify
-    wlogout
-    awww
-    nwg-dock-hyprland
   ];
 
+  # System-wide so that fontconfig resolves them for every user, not just
+  # mael. Noto Sans is what the Home Manager GTK theme asks for.
   fonts.packages = with pkgs; [
     dejavu_fonts
     liberation_ttf
+    noto-fonts
     noto-fonts-color-emoji
     nerd-fonts.jetbrains-mono
   ];

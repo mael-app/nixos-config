@@ -8,33 +8,13 @@
 
   programs.nix-index-database.comma.enable = true;
 
+  # The toolchains and editors are mael's, so they live in Home Manager.
+  # Only the two fetchers stay system-wide: NixOS puts neither on the path by
+  # default (environment.defaultPackages is perl, rsync and strace), and root
+  # shells and scripts expect them to exist.
   environment.systemPackages = with pkgs; [
     curl
     wget
-    jq
-    yq
-    tree
-    htop
-    ripgrep
-    fd
-    tmux
-    neovim
-    fastfetch
-    vscode
-    opencode
-    claude-code
-
-    kubectl
-    minikube
-    kubernetes-helm
-    terraform
-    ansible
-
-    python3
-    nodejs
-    go
-    gcc
-    gnumake
   ];
 
   # Installs the matching docker CLI; listing pkgs.docker as well would risk
