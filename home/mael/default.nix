@@ -320,23 +320,35 @@ in
       # black and they disappear on a dark button. Recolour them at build time
       # rather than vendoring our own copies: one set for the resting button,
       # one for the inverted hover state.
-      icons = pkgs.runCommand "wlogout-icons" { } ''
+      #
+      # They are rasterised here instead of being referenced as SVG, because
+      # loading an SVG needs the librsvg gdk-pixbuf loader and wlogout is not
+      # wrapped. Started from the waybar button it inherits waybar's
+      # GDK_PIXBUF_MODULE_FILE and the icons appear; started from SUPER +
+      # Escape there is no such variable, gdk-pixbuf falls back to its built-in
+      # loaders, and the icons silently do not render. PNG is built in, so the
+      # same menu now looks the same whoever launches it.
+      icons = pkgs.runCommand "wlogout-icons" { nativeBuildInputs = [ pkgs.librsvg ]; } ''
         mkdir -p "$out"
         for name in lock logout suspend reboot shutdown; do
           svg="${pkgs.wlogout}/share/wlogout/assets/$name.svg"
-          sed 's|<svg |<svg fill="#cdd6f4" |' "$svg" > "$out/$name.svg"
-          sed 's|<svg |<svg fill="#1e1e2e" |' "$svg" > "$out/$name-active.svg"
+          sed 's|<svg |<svg fill="#cdd6f4" |' "$svg" > resting.svg
+          sed 's|<svg |<svg fill="#1e1e2e" |' "$svg" > active.svg
+          # Rendered well above the 64px the stylesheet draws them at, so the
+          # tiles stay sharp on a scaled monitor.
+          rsvg-convert -w 192 -h 192 -o "$out/$name.png" resting.svg
+          rsvg-convert -w 192 -h 192 -o "$out/$name-active.png" active.svg
         done
       '';
 
       icon = label: ''
         #${label} {
-          background-image: url("${icons}/${label}.svg");
+          background-image: url("${icons}/${label}.png");
         }
 
         #${label}:hover,
         #${label}:focus {
-          background-image: url("${icons}/${label}-active.svg");
+          background-image: url("${icons}/${label}-active.png");
         }
       '';
     in
