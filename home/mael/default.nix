@@ -150,8 +150,6 @@
 
   dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";
 
-  xdg.portal.config.common.default = "*";
-
   xdg.mimeApps = {
     enable = true;
     defaultApplications = {
@@ -654,8 +652,11 @@
   wayland.windowManager.hyprland = {
     enable = true;
 
-    # Hyprland is already installed by the NixOS module above.
+    # Hyprland and its portal are already installed by the NixOS module above.
+    # portalPackage = null keeps Home Manager from enabling a second,
+    # user-level xdg.portal whose portals.conf would shadow the system one.
     package = null;
+    portalPackage = null;
 
     configType = "lua";
 

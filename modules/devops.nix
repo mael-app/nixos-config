@@ -9,7 +9,6 @@
   programs.nix-index-database.comma.enable = true;
 
   environment.systemPackages = with pkgs; [
-    git
     curl
     wget
     jq
@@ -25,7 +24,6 @@
     opencode
     claude-code
 
-    docker
     kubectl
     minikube
     kubernetes-helm
@@ -39,8 +37,11 @@
     gnumake
   ];
 
+  # Installs the matching docker CLI; listing pkgs.docker as well would risk
+  # a client/daemon version split.
   virtualisation.docker.enable = true;
 
+  # Installs git system-wide.
   programs.git.enable = true;
   programs.zsh.enable = true;
   users.defaultUserShell = pkgs.zsh;

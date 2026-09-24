@@ -11,10 +11,13 @@
   # scaling. NixOS wrappers only add the Wayland flags when this is set.
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
+  # Portals are managed here only. programs.hyprland already contributes both
+  # xdg-desktop-portal-hyprland and xdg-desktop-portal-gtk, so extraPortals
+  # stays empty; naming the two implementations explicitly is more
+  # predictable than the "*" catch-all.
   xdg.portal = {
     enable = true;
-    config.common.default = "*";
-    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+    config.common.default = [ "hyprland" "gtk" ];
   };
 
   # Use the recommended Hyprland launcher rather than invoking Hyprland
@@ -62,7 +65,6 @@
     wlogout
     awww
     nwg-dock-hyprland
-    swaylock-effects
   ];
 
   fonts.packages = with pkgs; [
@@ -91,8 +93,10 @@
     polkitPolicyOwners = [ "mael" ];
   };
 
-  # Without this PAM service swaylock can't check the password to unlock
-  security.pam.services.swaylock = { };
+  # hyprlock is configured by Home Manager, which only writes its config; the
+  # PAM service is what lets it check the password. programs.hyprlock is not
+  # used here because it would also enable the NixOS hypridle unit on top of
+  # the Home Manager one.
   security.pam.services.hyprlock = { };
 
   # Needed for Home Manager dconf settings (dark mode for GTK4 apps)
