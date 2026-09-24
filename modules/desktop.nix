@@ -45,9 +45,7 @@
     waybar
     rofi
     swaynotificationcenter
-    thunar
     file-roller
-    thunar-archive-plugin
     grimblast
     hyprpicker
     imv
@@ -76,6 +74,15 @@
     noto-fonts-color-emoji
     nerd-fonts.jetbrains-mono
   ];
+
+  # Thunar must come from its module: plugins are baked into the wrapper it
+  # builds, so a plugin listed in environment.systemPackages is never loaded.
+  # The module also pulls in programs.xfconf, which Thunar needs to persist
+  # its own settings.
+  programs.thunar = {
+    enable = true;
+    plugins = [ pkgs.thunar-archive-plugin ];
+  };
 
   security.polkit.enable = true;
 
