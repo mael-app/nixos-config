@@ -44,14 +44,11 @@
     kitty
     waybar
     rofi
-    swaynotificationcenter
     file-roller
     grimblast
     hyprpicker
     imv
     mpv
-    poweralertd
-    wl-clip-persist
 
     wl-clipboard
     grim

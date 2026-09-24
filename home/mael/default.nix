@@ -119,8 +119,6 @@
     };
   };
 
-  xdg.configFile."swaync/config.json".source = ./swaync/config.json;
-  xdg.configFile."swaync/style.css".source = ./swaync/style.css;
   xdg.configFile."wlogout/layout".source = ./wlogout/layout;
   xdg.configFile."wlogout/style.css".source = ./wlogout/style.css;
 
@@ -205,6 +203,27 @@
 
   # Clipboard history (SUPER + SHIFT + V)
   services.cliphist.enable = true;
+
+  # Notification daemon. The module owns the unit, config.json and style.css.
+  services.swaync = {
+    enable = true;
+    settings = lib.importJSON ./swaync/config.json;
+    style = ./swaync/style.css;
+  };
+
+  # Keep the clipboard alive after the copying window closes.
+  services.wl-clip-persist = {
+    enable = true;
+    clipboardType = "regular";
+  };
+
+  # Battery and AC notifications.
+  services.poweralertd.enable = true;
+
+  # NetworkManager tray icon. preferStatusNotifierItems makes the module
+  # pass --indicator, which is what the Waybar tray expects.
+  services.network-manager-applet.enable = true;
+  xsession.preferStatusNotifierItems = true;
 
   # Authentication prompts for apps asking for root (polkit)
   services.hyprpolkitagent.enable = true;
@@ -800,12 +819,10 @@
       hl.animation({ leaf = "workspaces", enabled = true, speed = 3, bezier = "easeOutQuint", style = "slide" })
 
       -- Autostart (runs once at session start, not on every reload)
+      -- nm-applet, swaync, wl-clip-persist and poweralertd are Home Manager
+      -- user services bound to graphical-session.target, not autostarted here.
       hl.on("hyprland.start", function()
-        hl.exec_cmd("nm-applet --indicator")
         hl.exec_cmd("awww-daemon")
-        hl.exec_cmd("swaync")
-        hl.exec_cmd("wl-clip-persist --clipboard regular")
-        hl.exec_cmd("poweralertd")
         -- Always-visible dock with pinnable apps
         hl.exec_cmd("nwg-dock-hyprland -x -i 48 -mb 8 -c 'rofi -show drun'")
         -- Wallpaper (the image lives in this repo and ends up in the Nix store)
