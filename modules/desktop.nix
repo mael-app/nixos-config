@@ -44,7 +44,7 @@
     kitty
     waybar
     rofi
-    dunst
+    swaynotificationcenter
     thunar
     file-roller
     thunar-archive-plugin

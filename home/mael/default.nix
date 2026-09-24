@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   home.username = "mael";
@@ -71,8 +71,8 @@
   programs.rofi = {
     enable = true;
     theme = "Arc-Dark";
-    terminal = "${pkgs.kitty}/bin/kitty";
-    extraConfig = {
+    settings = {
+      terminal = "${pkgs.kitty}/bin/kitty";
       modi = "drun,run,window";
       show-icons = true;
       icon-theme = "Papirus-Dark";
@@ -86,43 +86,15 @@
     };
   };
 
-  services.dunst = {
-    enable = true;
-    settings = {
-      global = {
-        width = 300;
-        height = 300;
-        offset = "30x50";
-        origin = "top-right";
-        transparency = 10;
-        frame_color = "#89b4fa";
-        font = "JetBrainsMono Nerd Font 10";
-        corner_radius = 10;
-        icon_position = "left";
-        max_icon_size = 64;
-      };
-      urgency_low = {
-        background = "#1e1e2e";
-        foreground = "#cdd6f4";
-        timeout = 5;
-      };
-      urgency_normal = {
-        background = "#1e1e2e";
-        foreground = "#cdd6f4";
-        timeout = 10;
-      };
-      urgency_critical = {
-        background = "#1e1e2e";
-        foreground = "#cdd6f4";
-        frame_color = "#f38ba8";
-        timeout = 0;
-      };
-    };
-  };
+  xdg.configFile."swaync/config.json".source = ./swaync/config.json;
+  xdg.configFile."swaync/style.css".source = ./swaync/style.css;
+  xdg.configFile."wlogout/layout".source = ./wlogout/layout;
+  xdg.configFile."wlogout/style.css".source = ./wlogout/style.css;
 
   # Dark GTK theme, icons and cursor
   gtk = {
     enable = true;
+    gtk4.theme = config.gtk.theme;
     theme = {
       name = "adw-gtk3-dark";
       package = pkgs.adw-gtk3;
@@ -138,6 +110,7 @@
   };
 
   home.pointerCursor = {
+    enable = true;
     gtk.enable = true;
     package = pkgs.bibata-cursors;
     name = "Bibata-Modern-Classic";
@@ -145,6 +118,8 @@
   };
 
   dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";
+
+  xdg.portal.config.common.default = "*";
 
   qt = {
     enable = true;
@@ -178,6 +153,56 @@
 
   # Authentication prompts for apps asking for root (polkit)
   services.hyprpolkitagent.enable = true;
+
+  # Subtle sounds when the laptop is plugged in or unplugged.
+  systemd.user.services.power-connection-sound = {
+    Unit = {
+      Description = "Play a sound when AC power changes";
+      After = [ "pipewire.service" "pipewire-pulse.service" ];
+    };
+    Service = {
+      ExecStart = pkgs.writeShellScript "power-connection-sound" ''
+        ac_device="$(${pkgs.upower}/bin/upower -e | ${pkgs.gnugrep}/bin/grep '/line_power_' | ${pkgs.coreutils}/bin/head -n1)"
+        [ -n "$ac_device" ] || exit 0
+
+        get_state() {
+          ${pkgs.upower}/bin/upower -i "$ac_device" | ${pkgs.gawk}/bin/awk '/online:/ { print $2; exit }'
+        }
+
+        play_sound() {
+          ${pkgs.pipewire}/bin/pw-play "${pkgs.sound-theme-freedesktop}/share/sounds/freedesktop/stereo/$1.oga"
+        }
+
+        previous_state="$(get_state)"
+        [ -n "$previous_state" ] || exit 0
+
+        ${pkgs.upower}/bin/upower --monitor | while read -r _; do
+          current_state="$(get_state)"
+          if [ "$previous_state" = "no" ] && [ "$current_state" = "yes" ]; then
+            play_sound power-plug
+          elif [ "$previous_state" = "yes" ] && [ "$current_state" = "no" ]; then
+            play_sound power-unplug
+          fi
+          previous_state="$current_state"
+        done
+      '';
+      Restart = "always";
+      RestartSec = 2;
+    };
+    Install.WantedBy = [ "default.target" ];
+  };
+
+  systemd.user.services.session-login-sound = {
+    Unit = {
+      Description = "Play a sound when the graphical session starts";
+      After = [ "pipewire.service" "pipewire-pulse.service" ];
+    };
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.pipewire}/bin/pw-play ${pkgs.sound-theme-freedesktop}/share/sounds/freedesktop/stereo/service-login.oga";
+    };
+    Install.WantedBy = [ "default.target" ];
+  };
 
   # Volume / brightness on-screen popups
   services.swayosd.enable = true;
@@ -247,11 +272,13 @@
           "idle_inhibitor"
           "pulseaudio"
           "backlight"
+          "custom/kbd-backlight"
           "network"
           "bluetooth"
           "battery"
           "cpu"
           "memory"
+          "custom/notification"
           "custom/power"
         ];
 
@@ -259,6 +286,20 @@
           format = "󱄅";
           on-click = "rofi -show drun";
           tooltip = false;
+        };
+        "custom/notification" = {
+          tooltip-format = "Notifications";
+          format = "󰂚";
+          return-type = "json";
+          exec = "swaync-client -swb";
+          on-click = "swaync-client -t -sw";
+          on-click-right = "swaync-client -d -sw";
+          format-icons = {
+            notification = "󰂚";
+            none = "󰂜";
+            dnd-notification = "󰂛";
+            dnd-none = "󰪓";
+          };
         };
         "hyprland/workspaces" = {
           format = "{name}";
@@ -311,10 +352,18 @@
           on-scroll-up = "brightnessctl set 5%+";
           on-scroll-down = "brightnessctl set 5%-";
         };
+        "custom/kbd-backlight" = {
+          format = "󰌌  {}";
+          exec = "brightnessctl -m -d kbd_backlight | cut -d, -f4";
+          interval = 2;
+          on-scroll-up = "brightnessctl -d kbd_backlight set 5%+";
+          on-scroll-down = "brightnessctl -d kbd_backlight set 5%-";
+          tooltip = false;
+        };
         network = {
           format-wifi = "󰖩  {essid}";
           format-ethernet = "󰈀  {ipaddr}";
-          format-disconnected = "󰖪  Hors ligne";
+          format-disconnected = "󰖪  Offline";
           tooltip-format = "{ifname}: {ipaddr}/{cidr}";
           tooltip-format-wifi = "{essid} ({signalStrength}%)";
           on-click = "nm-connection-editor";
@@ -335,6 +384,30 @@
           format = "{icon}  {capacity}%";
           format-charging = "󰂄  {capacity}%";
           format-icons = [ "󰁺" "󰁼" "󰁾" "󰂀" "󰁹" ];
+          on-click = pkgs.writeShellScript "show-battery-time" ''
+            battery="$(${pkgs.upower}/bin/upower -e | ${pkgs.gnugrep}/bin/grep '/battery_' | ${pkgs.coreutils}/bin/head -n1)"
+            [ -n "$battery" ] || exit 0
+
+            info="$(${pkgs.upower}/bin/upower -i "$battery")"
+            state="$(printf '%s\n' "$info" | ${pkgs.gawk}/bin/awk '/state:/ { print $2; exit }')"
+            case "$state" in
+              charging)
+                label="Time until fully charged"
+                estimate="$(printf '%s\n' "$info" | ${pkgs.gawk}/bin/awk '/time to full:/ { $1=$2=""; sub(/^ +/, ""); print; exit }')"
+                ;;
+              discharging)
+                label="Time until battery empty"
+                estimate="$(printf '%s\n' "$info" | ${pkgs.gawk}/bin/awk '/time to empty:/ { $1=$2=""; sub(/^ +/, ""); print; exit }')"
+                ;;
+              *)
+                label="Battery"
+                estimate="non disponible"
+                ;;
+            esac
+
+            [ -n "$estimate" ] || estimate="non disponible"
+            ${pkgs.libnotify}/bin/notify-send -a "Battery" -t 4000 "$label" "$estimate"
+          '';
         };
         cpu = {
           format = "󰍛  {usage}%";
@@ -348,7 +421,7 @@
         };
         "custom/power" = {
           format = "⏻";
-          on-click = "wlogout";
+          on-click = "wlogout -b 3 -c 24 -r 24 -m 620";
           tooltip = false;
         };
       };
@@ -371,6 +444,7 @@
       }
 
       #custom-launcher,
+      #custom-notification,
       #workspaces,
       #window,
       #clock,
@@ -395,6 +469,10 @@
         font-size: 18px;
         margin-left: 4px;
         padding: 0 12px 0 10px;
+      }
+
+      #custom-notification {
+        color: #f9e2af;
       }
 
       #workspaces {
@@ -439,6 +517,10 @@
 
       #backlight {
         color: #f5c2e7;
+      }
+
+      #custom-kbd-backlight {
+        color: #cba6f7;
       }
 
       #network {
@@ -666,6 +748,7 @@
       hl.on("hyprland.start", function()
         hl.exec_cmd("nm-applet --indicator")
         hl.exec_cmd("awww-daemon")
+        hl.exec_cmd("swaync")
         -- Always-visible dock with pinnable apps
         hl.exec_cmd("nwg-dock-hyprland -x -i 48 -mb 8 -c 'rofi -show drun'")
         -- Wallpaper (the image lives in this repo and ends up in the Nix store)
@@ -700,6 +783,9 @@
 
       -- Clipboard history
       hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("cliphist list | rofi -dmenu -p Clipboard | cliphist decode | wl-copy"))
+
+      -- Notification center
+      hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("swaync-client -t -sw"))
 
       -- Exit Hyprland
       hl.bind(mainMod .. " + M", hl.dsp.exit())
@@ -791,6 +877,8 @@
       hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("swayosd-client --input-volume mute-toggle"), { locked = true })
       hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("swayosd-client --brightness raise"), { locked = true, repeating = true })
       hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("swayosd-client --brightness lower"), { locked = true, repeating = true })
+      hl.bind("XF86KbdBrightnessUp", hl.dsp.exec_cmd("brightnessctl -d kbd_backlight set 5%+"), { locked = true, repeating = true })
+      hl.bind("XF86KbdBrightnessDown", hl.dsp.exec_cmd("brightnessctl -d kbd_backlight set 5%-"), { locked = true, repeating = true })
       hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
       hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true })
       hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })

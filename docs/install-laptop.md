@@ -9,7 +9,7 @@ refuses any disk containing a BitLocker volume.
 
 ## Internal disk layout (`nvme0n1`, 954 GB)
 
-| Partition | Taille | Contenu |
+| Partition | Size | Contents |
 | --- | --- | --- |
 | `LAPBOOT` | 1 GiB | FAT32, boot (systemd-boot) |
 | `LAPCRYPT` | 199 GiB | LUKS2 -> btrfs `nixos-sys`: subvolumes `@` (root) and `@nix` |
@@ -22,7 +22,7 @@ caches it during boot: you only type it once.
 To change the system size:
 `SYS_SIZE=300GiB bash scripts/install-laptop.sh`
 
-## 0. Avant de commencer
+## 0. Before you start
 
 - [ ] **Back up Pop!_OS**: the disk is erased completely. Push your Git
       repositories, copy everything else to an external disk, and do not

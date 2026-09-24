@@ -49,12 +49,12 @@ sudo reboot
 ## Included
 
 - Hyprland Lua configuration
-- French AZERTY keyboard
+- French AZERTY keyboard layout
 - greetd
 - Kitty
 - Waybar
 - Rofi
-- Dunst
+- SwayNC notification center
 - Thunar
 - Firefox
 - Spotify

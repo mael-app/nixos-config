@@ -1,0 +1,111 @@
+* {
+  font-family: "JetBrainsMono Nerd Font";
+  font-size: 13px;
+}
+
+.control-center {
+  background: rgba(26, 27, 38, 0.96);
+  border: 2px solid rgba(137, 180, 250, 0.35);
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.control-center-list {
+  background: transparent;
+}
+
+.notification-row {
+  outline: none;
+  margin: 4px 0;
+}
+
+.notification {
+  background: rgba(205, 214, 244, 0.08);
+  border: 1px solid rgba(205, 214, 244, 0.12);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.notification-content {
+  padding: 2px;
+}
+
+.summary {
+  color: #cdd6f4;
+  font-weight: 700;
+}
+
+.body {
+  color: #bac2de;
+}
+
+.time {
+  color: #7f849c;
+}
+
+.widget-title,
+.widget-dnd,
+.widget-volume,
+.widget-backlight,
+.widget-mpris {
+  background: rgba(205, 214, 244, 0.06);
+  border-radius: 10px;
+  margin: 4px 0 8px;
+  padding: 10px;
+}
+
+.widget-title {
+  color: #89b4fa;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.widget-dnd {
+  color: #f9e2af;
+}
+
+.widget-mpris {
+  color: #cdd6f4;
+}
+
+.widget-mpris-player {
+  background: transparent;
+  padding: 4px;
+}
+
+.widget-mpris-album-art {
+  border-radius: 8px;
+}
+
+.widget-mpris-title {
+  color: #cba6f7;
+  font-weight: 700;
+}
+
+.widget-mpris-subtitle {
+  color: #a6adc8;
+}
+
+.widget-mpris button {
+  color: #cdd6f4;
+  background: rgba(137, 180, 250, 0.12);
+  border: none;
+  border-radius: 8px;
+  margin: 4px;
+  min-width: 32px;
+  min-height: 28px;
+}
+
+.widget-mpris button:hover {
+  background: rgba(137, 180, 250, 0.28);
+}
+
+scrollbar trough {
+  background: transparent;
+}
+
+scrollbar slider {
+  background: rgba(137, 180, 250, 0.45);
+  border-radius: 8px;
+  min-width: 6px;
+}

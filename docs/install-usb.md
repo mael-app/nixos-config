@@ -14,14 +14,14 @@ the PC's boot entries are not modified.
 
 Drive layout (already described in `hosts/usb/hardware-configuration.nix`):
 
-| Partition | Taille | Contenu |
+| Partition | Size | Contents |
 | --- | --- | --- |
 | `NIXBOOT` | 1 GiB | FAT32, boot partition (systemd-boot) |
 | `NIXCRYPT` | remainder | Encrypted LUKS2 containing a compressed (zstd) `nixos` btrfs with subvolumes `@`, `@home`, `@nix` |
 
 ---
 
-## 0. Avant de commencer
+## 0. Before you start
 
 - [ ] **Back up the drive's contents**: it will be erased completely.
 - [ ] **Record your BitLocker recovery key** (Windows): disabling Secure Boot
