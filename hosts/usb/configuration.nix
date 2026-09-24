@@ -4,8 +4,6 @@
 # firmware boot menu. Nothing is written to the internal disks or to the
 # laptop's UEFI boot entries.
 {
-  imports = [ ../../modules/laptop.nix ];
-
   boot.loader.systemd-boot = {
     enable = true;
     # Keep the ESP small and the boot menu readable.

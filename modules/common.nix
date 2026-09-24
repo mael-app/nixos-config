@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ lib, ... }:
 
 # Settings shared by every machine.
 {
@@ -7,13 +7,14 @@
   time.timeZone = "Asia/Shanghai";
 
   i18n.defaultLocale = "en_US.UTF-8";
-  console.keyMap = "fr";
 
-  # TTY / login keyboard.
+  # TTY / login keyboard. useXkbConfig derives the console keymap from the
+  # layout below instead of repeating it as console.keyMap.
   services.xserver.xkb = {
     layout = "fr";
     variant = "";
   };
+  console.useXkbConfig = true;
 
   users.users.mael = {
     isNormalUser = true;
@@ -42,7 +43,7 @@
 
   # Only the non-free packages we explicitly use.
   nixpkgs.config.allowUnfreePredicate = pkg:
-    builtins.elem (pkgs.lib.getName pkg) [
+    builtins.elem (lib.getName pkg) [
       "spotify"
       "terraform"
       "vscode"

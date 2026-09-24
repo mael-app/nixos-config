@@ -3,8 +3,6 @@
 # NixOS on the laptop's internal 1 TB NVMe (replaces Pop!_OS).
 # Windows stays untouched on the second NVMe.
 {
-  imports = [ ../../modules/laptop.nix ];
-
   boot.loader.systemd-boot = {
     enable = true;
     configurationLimit = 10;
