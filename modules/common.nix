@@ -22,6 +22,19 @@
     "flakes"
   ];
 
+  # Prebuilt output for packages that cache.nixos.org does not carry, chiefly
+  # the nix-community projects this flake pulls in. The public key is what
+  # makes it safe to trust a third-party store.
+  #
+  # The Hyprland and nix-gaming caches are deliberately absent: Hyprland comes
+  # from nixpkgs here, so its own cache would never be consulted.
+  nix.settings = {
+    substituters = [ "https://nix-community.cachix.org" ];
+    trusted-public-keys = [
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+    ];
+  };
+
   # Silence "Git tree is dirty". Evaluating this flake with uncommitted work is
   # the normal way to test a change before committing it, and the warning says
   # nothing beyond that. system.configurationRevision already falls back to

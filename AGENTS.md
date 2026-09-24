@@ -30,8 +30,12 @@
 - Prefer existing NixOS and Home Manager modules over custom shell glue.
 - Keep system-wide packages in NixOS modules and user applications in Home
 	Manager unless there is a clear reason to do otherwise. A package that only
-	`mael` runs belongs in `home/mael/`; the NixOS modules carry what the system,
-	a service, or another user needs.
+	the desktop account runs belongs in `home/`; the NixOS modules carry what the
+	system, a service, or another user needs.
+- Keep one subject per file in `modules/` and `home/`, and add it to the
+	relevant `imports` list rather than growing an existing file.
+- Take the account name from the `username` argument rather than writing it
+	out; `flake.nix` passes it, along with `host`, to every module.
 - Prefer explicit package references and narrowly scoped
 	`allowUnfreePredicate` entries over globally allowing unfree packages.
 - Keep host-specific settings in `hosts/<name>/` and shared settings in

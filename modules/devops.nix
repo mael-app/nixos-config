@@ -17,6 +17,11 @@
     wget
   ];
 
+  # A loader for prebuilt binaries that expect a normal FHS layout. VS Code
+  # extensions, language servers and toolchain installers routinely download
+  # such binaries, and they cannot run on NixOS without it.
+  programs.nix-ld.enable = true;
+
   # Installs the matching docker CLI; listing pkgs.docker as well would risk
   # a client/daemon version split.
   virtualisation.docker.enable = true;

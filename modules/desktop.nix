@@ -56,6 +56,12 @@
     plugins = [ pkgs.thunar-archive-plugin ];
   };
 
+  # Thunar talks to removable media, the trash and network shares through
+  # gvfs. udisks2 alone only exposes the block devices; without gvfs a plugged
+  # in USB stick never shows up in the sidebar and there is no trash.
+  services.gvfs.enable = true;
+  services.udisks2.enable = true;
+
   security.polkit.enable = true;
 
   # 1Password: CLI + desktop app. polkitPolicyOwners enables system

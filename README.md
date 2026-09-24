@@ -10,8 +10,16 @@ NixOS + Home Manager configuration.
 | `usb` | External USB SSD booted on the laptop, see [docs/install-usb.md](docs/install-usb.md) | `sudo nixos-rebuild switch --flake .#usb` |
 | `laptop` | Laptop internal NVMe, encrypted with a separate `/home`, see [docs/install-laptop.md](docs/install-laptop.md) | `sudo nixos-rebuild switch --flake .#laptop` |
 
-Shared settings live in `modules/` and `home/mael/`; each `hosts/<name>/`
-only holds boot, hardware and screen settings.
+## Layout
+
+    flake.nix         hosts, and the host/username passed to every module
+    modules/          the system: one file per concern
+    home/             the desktop account, one file per concern
+    hosts/<name>/     boot, hardware, screen and anything else per machine
+
+`modules/user.nix` declares the account and wires Home Manager to `home/`.
+The account name is written once, in `flake.nix`, and reaches every module
+through `specialArgs`.
 
 ## Hyprland
 
