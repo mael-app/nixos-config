@@ -33,6 +33,7 @@
     firefox
     spotify
     discord
+    notion-electron
     vlc
 
     adwaita-icon-theme
