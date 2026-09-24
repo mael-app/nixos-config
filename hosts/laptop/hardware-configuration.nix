@@ -43,25 +43,40 @@
   fileSystems."/" = {
     device = "/dev/mapper/laptop-cryptroot";
     fsType = "btrfs";
-    options = [ "subvol=@" "compress=zstd" "noatime" ];
+    options = [
+      "subvol=@"
+      "compress=zstd"
+      "noatime"
+    ];
   };
 
   fileSystems."/nix" = {
     device = "/dev/mapper/laptop-cryptroot";
     fsType = "btrfs";
-    options = [ "subvol=@nix" "compress=zstd" "noatime" ];
+    options = [
+      "subvol=@nix"
+      "compress=zstd"
+      "noatime"
+    ];
   };
 
   fileSystems."/home" = {
     device = "/dev/mapper/laptop-crypthome";
     fsType = "btrfs";
-    options = [ "subvol=@home" "compress=zstd" "noatime" ];
+    options = [
+      "subvol=@home"
+      "compress=zstd"
+      "noatime"
+    ];
   };
 
   fileSystems."/boot" = {
     device = "/dev/disk/by-label/LAPBOOT";
     fsType = "vfat";
-    options = [ "fmask=0077" "dmask=0077" ];
+    options = [
+      "fmask=0077"
+      "dmask=0077"
+    ];
   };
 
   swapDevices = [ ];
