@@ -37,6 +37,9 @@
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
+            # Without this, activation aborts as soon as a file it manages
+            # already exists in $HOME instead of moving the old one aside.
+            home-manager.backupFileExtension = "hm-bak";
             home-manager.users.mael = import ./home/mael;
           }
         ];
