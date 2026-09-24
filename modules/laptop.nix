@@ -34,6 +34,27 @@
   # NixOS generations roll the system back, but nothing covers /home. Snapper
   # keeps a timeline of read-only snapshots in /home/.snapshots; they live on
   # the same disk, so this protects against mistakes, not against disk loss.
+  # snapper expects SUBVOLUME to already contain a subvolume named .snapshots
+  # and the NixOS module only writes the configuration file, so the timeline
+  # would fail on every run until this exists. Creating it is idempotent and
+  # guarded, so it happens once per install.
+  systemd.services.snapper-home-setup = {
+    description = "Create the /home/.snapshots subvolume snapper writes into";
+    wantedBy = [ "multi-user.target" ];
+    before = [
+      "snapper-timeline.service"
+      "snapper-cleanup.service"
+    ];
+    unitConfig = {
+      RequiresMountsFor = "/home";
+      ConditionPathExists = "!/home/.snapshots";
+    };
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.btrfs-progs}/bin/btrfs subvolume create /home/.snapshots";
+    };
+  };
+
   services.snapper.configs.home = {
     SUBVOLUME = "/home";
     ALLOW_USERS = [ "mael" ];
