@@ -1,5 +1,17 @@
 { config, pkgs, lib, ... }:
 
+let
+  # One power-menu command for both entry points (the waybar button and
+  # SUPER + Escape), so they cannot drift apart.
+  #
+  # -b must divide the number of layout entries: wlogout builds a full
+  # buttons-per-row x ceil(n/buttons-per-row) grid and fills the leftover
+  # cells from uninitialised entries of its button array, which shows up as a
+  # blank tile that crashes on click. Five entries, five per row.
+  #
+  # Margins are plain pixels, sized for the 2560x1600 laptop panel.
+  powerMenu = "wlogout -b 5 -c 24 -r 24 -m 620";
+in
 {
   home.username = "mael";
   home.homeDirectory = "/home/mael";
@@ -119,8 +131,123 @@
     };
   };
 
-  xdg.configFile."wlogout/layout".source = ./wlogout/layout;
-  xdg.configFile."wlogout/style.css".source = ./wlogout/style.css;
+  # Power menu, opened from the waybar power button and SUPER + Escape.
+  # The blurred backdrop comes from the wlogout layer rule further down in the
+  # Hyprland configuration; layer surfaces are not blurred by default.
+  programs.wlogout =
+    let
+      # The bundled SVG assets carry no fill attribute, so GTK paints them
+      # black and they disappear on a dark button. Recolour them at build time
+      # rather than vendoring our own copies: one set for the resting button,
+      # one for the inverted hover state.
+      icons = pkgs.runCommand "wlogout-icons" { } ''
+        mkdir -p "$out"
+        for name in lock logout suspend reboot shutdown; do
+          svg="${pkgs.wlogout}/share/wlogout/assets/$name.svg"
+          sed 's|<svg |<svg fill="#cdd6f4" |' "$svg" > "$out/$name.svg"
+          sed 's|<svg |<svg fill="#1e1e2e" |' "$svg" > "$out/$name-active.svg"
+        done
+      '';
+
+      icon = label: ''
+        #${label} {
+          background-image: url("${icons}/${label}.svg");
+        }
+
+        #${label}:hover,
+        #${label}:focus {
+          background-image: url("${icons}/${label}-active.svg");
+        }
+      '';
+    in
+    {
+      enable = true;
+
+      # wlogout stays in environment.systemPackages with the rest of the
+      # desktop; this module only owns layout and style.css.
+      package = null;
+
+      layout = [
+        {
+          label = "lock";
+          action = "loginctl lock-session";
+          text = "Lock";
+          keybind = "l";
+        }
+        {
+          label = "logout";
+          action = "loginctl terminate-user $USER";
+          text = "Log out";
+          keybind = "e";
+        }
+        {
+          label = "suspend";
+          action = "systemctl suspend";
+          text = "Suspend";
+          keybind = "u";
+        }
+        {
+          label = "reboot";
+          action = "systemctl reboot";
+          text = "Reboot";
+          keybind = "r";
+        }
+        {
+          label = "shutdown";
+          action = "systemctl poweroff";
+          text = "Shut down";
+          keybind = "s";
+        }
+      ];
+
+      style = ''
+        * {
+          background-image: none;
+          box-shadow: none;
+        }
+
+        /* Hyprland blurs what is behind this surface, so the sheet needs a
+           tint to frost: a fully transparent window leaves the desktop sharp. */
+        window {
+          background-color: rgba(17, 17, 27, 0.55);
+        }
+
+        button {
+          font-family: "JetBrainsMono Nerd Font";
+          color: #cdd6f4;
+          background-color: rgba(30, 30, 46, 0.96);
+          border: 2px solid rgba(137, 180, 250, 0.28);
+          border-radius: 12px;
+          background-repeat: no-repeat;
+          /* An absolute size keeps the icon sane whatever aspect ratio the
+             tiles end up with; a percentage scales with the tile. */
+          background-position: center 38%;
+          background-size: 64px;
+          min-width: 120px;
+          min-height: 100px;
+          margin: 4px;
+          padding: 0;
+          font-size: 15px;
+          font-weight: 600;
+        }
+
+        button:hover,
+        button:focus {
+          color: #1e1e2e;
+          background-color: #89b4fa;
+          border-color: #89b4fa;
+          outline: none;
+        }
+
+        ${lib.concatMapStringsSep "\n" icon [
+          "lock"
+          "logout"
+          "suspend"
+          "reboot"
+          "shutdown"
+        ]}
+      '';
+    };
 
   # Dark GTK theme, icons and cursor
   gtk = {
@@ -493,7 +620,7 @@
         };
         "custom/power" = {
           format = "⏻";
-          on-click = "wlogout -b 3 -c 24 -r 24 -m 620";
+          on-click = powerMenu;
           tooltip = false;
         };
       };
@@ -763,6 +890,14 @@
         center = true,
       })
 
+      -- Power menu backdrop: layer surfaces are never blurred unless a rule
+      -- asks for it, so wlogout would otherwise sit on a flat tinted sheet.
+      hl.layer_rule({
+        name = "wlogout-blur",
+        match = { namespace = "^wlogout$" },
+        blur = true,
+      })
+
       -- Usable area of a monitor (global logical coordinates), minus bars/dock
       local gap = 10
       local function usable_area(mon)
@@ -855,7 +990,7 @@
       hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("loginctl lock-session"))
 
       -- Power menu
-      hl.bind(mainMod .. " + Escape", hl.dsp.exec_cmd("wlogout"))
+      hl.bind(mainMod .. " + Escape", hl.dsp.exec_cmd("${powerMenu}"))
 
       -- Clipboard history
       hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("cliphist list | rofi -dmenu -p Clipboard | cliphist decode | wl-copy"))
