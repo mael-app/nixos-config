@@ -26,6 +26,7 @@
 
     docker
     kubectl
+    minikube
     kubernetes-helm
     terraform
     ansible
