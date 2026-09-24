@@ -23,6 +23,7 @@
     fastfetch
     vscode
     opencode
+    claude-code
 
     docker
     kubectl
