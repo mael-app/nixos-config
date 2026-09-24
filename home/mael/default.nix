@@ -28,10 +28,12 @@
     syntaxHighlighting.enable = true;
     oh-my-zsh = {
       enable = true;
-      theme = "robbyrussell";
       plugins = [ "git" ];
     };
   };
+
+  # Starship renders the prompt; oh-my-zsh is kept only for its plugins.
+  programs.starship.enable = true;
 
   programs.direnv = {
     enable = true;
@@ -76,7 +78,6 @@
   };
 
   home.packages = with pkgs; [
-    starship
     btop
     noto-fonts
     qbittorrent
