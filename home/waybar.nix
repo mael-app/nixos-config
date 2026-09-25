@@ -30,8 +30,6 @@
           "pulseaudio"
           "backlight"
           "custom/kbd-backlight"
-          "network"
-          "bluetooth"
           "battery"
           "cpu"
           "memory"
@@ -125,22 +123,6 @@
           on-scroll-down = "brightnessctl -d kbd_backlight set 5%-";
           tooltip = false;
         };
-        network = {
-          format-wifi = "󰖩  {essid}";
-          format-ethernet = "󰈀  {ipaddr}";
-          format-disconnected = "󰖪  Offline";
-          tooltip-format = "{ifname}: {ipaddr}/{cidr}";
-          tooltip-format-wifi = "{essid} ({signalStrength}%)";
-          on-click = "nm-connection-editor";
-        };
-        bluetooth = {
-          format = "󰂯";
-          format-disabled = "󰂲";
-          format-off = "󰂲";
-          format-connected = "󰂱  {device_alias}";
-          tooltip-format = "{controller_alias}";
-          on-click = "blueman-manager";
-        };
         battery = {
           states = {
             warning = 30;
@@ -223,8 +205,6 @@
       #idle_inhibitor,
       #pulseaudio,
       #backlight,
-      #network,
-      #bluetooth,
       #battery,
       #cpu,
       #memory,
@@ -292,18 +272,6 @@
 
       #custom-kbd-backlight {
         color: #cba6f7;
-      }
-
-      #network {
-        color: #89dceb;
-      }
-
-      #network.disconnected {
-        color: #f38ba8;
-      }
-
-      #bluetooth {
-        color: #74c7ec;
       }
 
       #battery {
