@@ -16,10 +16,12 @@
   users.users.${username} = {
     isNormalUser = true;
     description = "Maël";
+    # No "docker" group: the daemon runs rootless, see ./devops.nix. Any group
+    # that can reach a root-owned container or VM socket is root on this
+    # machine, without a password, so none is granted here.
     extraGroups = [
       "wheel"
       "networkmanager"
-      "docker"
     ];
   };
 
