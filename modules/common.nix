@@ -2,7 +2,25 @@
 
 # Settings shared by every machine.
 {
-  networking.networkmanager.enable = true;
+  networking.networkmanager = {
+    enable = true;
+
+    # Present a different MAC address to every network instead of the
+    # permanent one, so a Wi-Fi access point cannot recognise this machine
+    # across visits. "stable" derives the address from the connection
+    # profile, which keeps DHCP reservations and MAC filtering working;
+    # "random" would draw a new one on every connection.
+    wifi.macAddress = "stable";
+  };
+
+  # Neither is used here: names are resolved by DNS, and nothing on the local
+  # network is looked up by hostname. Both make resolved parse unauthenticated
+  # multicast traffic from anyone on the same Wi-Fi, so they are pure attack
+  # surface on a public network.
+  services.resolved.settings.Resolve = {
+    LLMNR = "no";
+    MulticastDNS = "no";
+  };
 
   time.timeZone = "Asia/Shanghai";
 
@@ -65,4 +83,9 @@
     ];
 
   security.sudo.wheelNeedsPassword = true;
+
+  # /tmp is a subvolume of the root filesystem here, so whatever an
+  # application leaves there survives a reboot and keeps accumulating on the
+  # disk. Wiping it at boot bounds both the leftovers and the data they hold.
+  boot.tmp.cleanOnBoot = true;
 }
