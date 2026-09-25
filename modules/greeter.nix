@@ -93,10 +93,22 @@
     '')
   ];
 
-  # ReGreet lists the sessions it finds under XDG_DATA_DIRS, falling back to
-  # /usr/share/wayland-sessions, which does not exist here. greetd is a system
-  # service and does not get environment.sessionVariables, so without this the
-  # session list would be empty and there would be nothing to log in to.
-  systemd.services.greetd.environment.XDG_DATA_DIRS =
-    "${config.services.displayManager.sessionData.desktops}/share";
+  systemd.services.greetd.environment = {
+    # ReGreet lists the sessions it finds under XDG_DATA_DIRS, falling back to
+    # /usr/share/wayland-sessions, which does not exist here. greetd is a
+    # system service and does not get environment.sessionVariables, so without
+    # this the session list would be empty and there would be nothing to log
+    # in to.
+    XDG_DATA_DIRS = "${config.services.displayManager.sessionData.desktops}/share";
+
+    # cage takes its keyboard layout from libxkbcommon, which reads these
+    # variables and nothing else. services.xserver.xkb drives the X11 layout
+    # and, through console.useXkbConfig, the console keymap that tuigreet
+    # inherited from the tty; a Wayland compositor sees neither, so the
+    # greeter came up in the libxkbcommon default, us.
+    XKB_DEFAULT_LAYOUT = config.services.xserver.xkb.layout;
+    XKB_DEFAULT_VARIANT = config.services.xserver.xkb.variant;
+    XKB_DEFAULT_MODEL = config.services.xserver.xkb.model;
+    XKB_DEFAULT_OPTIONS = config.services.xserver.xkb.options;
+  };
 }
