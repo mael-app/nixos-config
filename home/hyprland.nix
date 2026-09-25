@@ -36,8 +36,19 @@
         input = {
           kb_layout = "fr",
           kb_variant = "",
-          follow_mouse = 1,
           sensitivity = 0,
+
+          -- Click to focus. Every window here floats and the window.active
+          -- hook below raises whatever gains focus, so focus following the
+          -- cursor meant merely crossing a window pulled it to the front.
+          -- Focus now changes on a click, on ALT + Tab and on the SUPER
+          -- movement binds, all of which are deliberate.
+          follow_mouse = 0,
+
+          -- follow_mouse = 0 still lets the cursor take focus when a
+          -- workspace changes or a window closes. Turning that off keeps the
+          -- rule to just the three deliberate ways above.
+          mouse_refocus = false,
         },
 
         general = {
