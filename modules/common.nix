@@ -84,6 +84,9 @@
       "1password"
       "1password-cli"
       "claude-code"
+      "steam"
+      "steam-unwrapped"
+      "lunarclient"
     ];
 
   security.sudo.wheelNeedsPassword = true;

@@ -85,10 +85,16 @@
       nixosConfigurations.nixos-test = mkHost "nixos-test" [ ];
 
       # External USB SSD, booted on the laptop
-      nixosConfigurations.nixos-usb = mkHost "nixos-usb" [ ./modules/laptop.nix ];
+      nixosConfigurations.nixos-usb = mkHost "nixos-usb" [
+        ./modules/laptop.nix
+        ./modules/gaming.nix
+      ];
 
       # Laptop internal NVMe
-      nixosConfigurations.nixos-laptop = mkHost "nixos-laptop" [ ./modules/laptop.nix ];
+      nixosConfigurations.nixos-laptop = mkHost "nixos-laptop" [
+        ./modules/laptop.nix
+        ./modules/gaming.nix
+      ];
 
       # nixfmt-tree wraps nixfmt in treefmt, so `nix fmt` formats the whole
       # repository and `nix fmt -- --ci` checks it without rewriting anything.
