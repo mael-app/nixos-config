@@ -6,6 +6,7 @@
 {
   imports = [
     ./dock.nix
+    ./gh.nix
     ./git.nix
     ./hyprland.nix
     ./hyprlock.nix
