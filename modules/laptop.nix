@@ -17,6 +17,15 @@
   services.power-profiles-daemon.enable = true;
   services.fwupd.enable = true;
 
+  # Closing the lid does nothing. The default suspends, which cuts a download
+  # or a build short and, through hypridle's before_sleep_cmd, locks the
+  # session; neither is wanted when the laptop is deliberately left working
+  # with the screen shut. This applies on battery too, so a closed machine
+  # keeps running and draining in a bag. hypridle still blanks the screen
+  # after its own timeout, and the Waybar idle inhibitor still suppresses
+  # that when it is on.
+  services.logind.settings.Login.HandleLidSwitch = "ignore";
+
   # Raptor Lake throttles hard without an active thermal policy.
   services.thermald.enable = true;
 
