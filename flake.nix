@@ -13,6 +13,12 @@
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Presence daemon, enabled in ./home/os-tracker.nix.
+    os-tracker = {
+      url = "github:mael-app/os-tracker";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

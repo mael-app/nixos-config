@@ -11,6 +11,7 @@
     ./hyprland.nix
     ./hyprlock.nix
     ./kitty.nix
+    ./os-tracker.nix
     ./packages.nix
     ./power-menu.nix
     ./rofi.nix

@@ -79,6 +79,7 @@ sudo reboot
 - direnv + nix-direnv
 - nh
 - nix-index database
+- os-tracker presence daemon
 - Neovim
 - tmux
 - Docker (rootless)
@@ -91,5 +92,20 @@ sudo reboot
 - Python
 - Node.js
 - Go
+
+## os-tracker
+
+The presence daemon comes from the `os-tracker` flake input and runs as a
+systemd user service, enabled in `home/os-tracker.nix`. Its token is read at
+service start from a file this repository never contains:
+
+```bash
+mkdir -p ~/.config/os-tracker
+printf 'OS_TRACKER_TOKEN=%s\n' "<token>" > ~/.config/os-tracker/token.env
+chmod 600 ~/.config/os-tracker/token.env
+```
+
+Upgrade it with `nix flake update os-tracker` and a rebuild, and check it with
+`systemctl --user status os-tracker`.
 
 Do not commit passwords, SSH private keys, API tokens or cloud credentials.
