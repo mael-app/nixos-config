@@ -16,6 +16,7 @@
     ./services.nix
     ./session.nix
     ./shell.nix
+    ./ssh.nix
     ./sounds.nix
     ./theme.nix
     ./waybar.nix
