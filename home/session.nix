@@ -94,4 +94,30 @@
     };
     Install.WantedBy = [ "graphical-session.target" ];
   };
+
+  # Mullvad's tray client. The daemon is a NixOS service and is already up at
+  # boot, tunnel included; only the GUI was missing. Mullvad's own "launch on
+  # start-up" toggle symlinked ~/.config/autostart/mullvad-vpn.desktop, but
+  # nothing in this session reads XDG autostart entries, so it never fired.
+  #
+  # Ordered after tray.target so the StatusNotifierItem has somewhere to
+  # register. The type is left at the default: a oneshot unit wanted by a
+  # target makes the target wait for it, which is what broke the wallpaper.
+  systemd.user.services.mullvad-gui = {
+    Unit = {
+      Description = "Mullvad VPN tray client";
+      PartOf = [ "graphical-session.target" ];
+      Requires = [ "tray.target" ];
+      After = [
+        "graphical-session.target"
+        "tray.target"
+      ];
+    };
+    Service = {
+      ExecStart = "${pkgs.mullvad-vpn}/bin/mullvad-vpn";
+      Restart = "on-failure";
+      RestartSec = 3;
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
+  };
 }
