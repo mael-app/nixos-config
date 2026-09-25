@@ -1,0 +1,51 @@
+name: update
+
+on:
+  # Monday 06:00 UTC, the middle of the working day in Asia/Shanghai.
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+# The pull request is pushed and opened as github-actions[bot], which needs
+# both scopes. The repository must also allow Actions to create pull
+# requests (Settings -> Actions -> General).
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  flake-lock:
+    name: update the flake inputs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      - name: nix flake update
+        run: nix flake update
+
+      # A pull request opened with GITHUB_TOKEN does not start another
+      # workflow, so check.yml would never run on it. The same evaluation runs
+      # here instead, before the pull request exists: an update that breaks a
+      # host fails this job and nothing is opened.
+      - name: nix flake check
+        run: nix flake check --no-build
+
+      - name: open the pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: update/flake-lock
+          # Reuses the same branch every week, so a pending update is amended
+          # rather than stacked behind a second pull request.
+          delete-branch: true
+          title: "chore: update the flake inputs"
+          commit-message: "chore: update the flake inputs"
+          body: |
+            Weekly `nix flake update`.
+
+            `nix flake check --no-build` passed on this lock file before the
+            pull request was opened, so every host still evaluates.
