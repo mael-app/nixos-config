@@ -48,12 +48,23 @@
   };
 
   # The image lives in this repository and ends up in the Nix store.
+  #
+  # Pulled in by awww.service, not by graphical-session.target. A oneshot unit
+  # wanted by a target makes the target wait for it to finish, which closed an
+  # ordering cycle: the target waited on this unit, this unit waits on
+  # awww.service, and awww.service waits on the target. systemd broke the
+  # cycle by dropping awww.service, so after a reboot neither the daemon nor
+  # the wallpaper came up.
   systemd.user.services.awww-wallpaper = {
     Unit = {
       Description = "Set the desktop wallpaper";
-      PartOf = [ "graphical-session.target" ];
+      PartOf = [ "awww.service" ];
       Requires = [ "awww.service" ];
       After = [ "awww.service" ];
+      # The retry below needs room: the default of five attempts in ten
+      # seconds can expire before the daemon has bound its socket.
+      StartLimitBurst = 10;
+      StartLimitIntervalSec = 60;
     };
     Service = {
       Type = "oneshot";
@@ -64,7 +75,7 @@
       Restart = "on-failure";
       RestartSec = 1;
     };
-    Install.WantedBy = [ "graphical-session.target" ];
+    Install.WantedBy = [ "awww.service" ];
   };
 
   # The daemon registers its own ALT + Tab binds with Hyprland and re-registers
