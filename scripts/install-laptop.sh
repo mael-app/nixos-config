@@ -135,7 +135,7 @@ trap cleanup EXIT
 
 step "5. Installing NixOS"
 cd "$REPO"
-sudo nixos-install --root /mnt --flake .#laptop --no-root-passwd
+sudo nixos-install --root /mnt --flake .#nixos-laptop --no-root-passwd
 
 step "6. Password for the mael user"
 until sudo nixos-enter --root /mnt -c '/nix/var/nix/profiles/system/sw/bin/passwd mael'; do

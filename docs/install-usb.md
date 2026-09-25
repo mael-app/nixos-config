@@ -12,7 +12,7 @@ the PC's boot entries are not modified.
 > automatically (with confirmations). The details below explain what it does,
 > or let you perform it manually.
 
-Drive layout (already described in `hosts/usb/hardware-configuration.nix`):
+Drive layout (already described in `hosts/nixos-usb/hardware-configuration.nix`):
 
 | Partition | Size | Contents |
 | --- | --- | --- |
@@ -106,10 +106,10 @@ cd ~/Developer/nixos-config
 git pull
 
 # NixOS installation tools, matching the configuration version
-nix shell .#nixosConfigurations.usb.pkgs.nixos-install-tools
+nix shell .#nixosConfigurations.nixos-usb.pkgs.nixos-install-tools
 
 # In this shell:
-sudo env "PATH=$PATH" nixos-install --root /mnt --flake .#usb --no-root-passwd
+sudo env "PATH=$PATH" nixos-install --root /mnt --flake .#nixos-usb --no-root-passwd
 ```
 
 This downloads the entire system (several GB): allow 10 to 40 minutes.
@@ -118,7 +118,7 @@ This downloads the entire system (several GB): allow 10 to 40 minutes.
 > (with the same signature as the official cache) to the command:
 >
 > ```sh
-> sudo env "PATH=$PATH" nixos-install --root /mnt --flake .#usb --no-root-passwd \
+> sudo env "PATH=$PATH" nixos-install --root /mnt --flake .#nixos-usb --no-root-passwd \
 >   --option substituters "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store?priority=10 https://mirrors.ustc.edu.cn/nix-channels/store?priority=20 https://cache.nixos.org"
 > ```
 >
@@ -160,10 +160,10 @@ Clone the repository to perform updates:
 ```sh
 git clone https://github.com/mael-app/nixos-config ~/nixos-config
 cd ~/nixos-config
-sudo nixos-rebuild switch --flake .#usb
+sudo nixos-rebuild switch --flake .#nixos-usb
 ```
 
-The display scale is set in `hosts/usb/configuration.nix` (`scale = 1.25`).
+The display scale is set in `hosts/nixos-usb/configuration.nix` (`scale = 1.25`).
 Valid values for 2560x1600: `1`, `1.0667`, `1.25`, `1.3333`, `1.6`, `2`.
 
 ## Troubleshooting

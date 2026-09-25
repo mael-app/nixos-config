@@ -71,14 +71,18 @@
         };
     in
     {
+      # Each name is the machine's hostname, which is what nixos-rebuild and
+      # nh select by default, so neither needs to be told which host to build.
+      # modules/common.nix sets networking.hostName from the same string.
+
       # QEMU/KVM test VM (virt-manager)
-      nixosConfigurations.test-vm = mkHost "test-vm" [ ];
+      nixosConfigurations.nixos-test = mkHost "nixos-test" [ ];
 
       # External USB SSD, booted on the laptop
-      nixosConfigurations.usb = mkHost "usb" [ ./modules/laptop.nix ];
+      nixosConfigurations.nixos-usb = mkHost "nixos-usb" [ ./modules/laptop.nix ];
 
       # Laptop internal NVMe
-      nixosConfigurations.laptop = mkHost "laptop" [ ./modules/laptop.nix ];
+      nixosConfigurations.nixos-laptop = mkHost "nixos-laptop" [ ./modules/laptop.nix ];
 
       # nixfmt-tree wraps nixfmt in treefmt, so `nix fmt` formats the whole
       # repository and `nix fmt -- --ci` checks it without rewriting anything.

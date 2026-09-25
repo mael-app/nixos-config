@@ -97,9 +97,9 @@ if [[ "$mirrors" =~ ^[oOyY]$ ]]; then
 fi
 
 cd "$REPO"
-nix shell .#nixosConfigurations.usb.pkgs.nixos-install-tools --command bash -c "
+nix shell .#nixosConfigurations.nixos-usb.pkgs.nixos-install-tools --command bash -c "
   set -e
-  sudo env \"PATH=\$PATH\" nixos-install --root /mnt --flake .#usb --no-root-passwd $extra
+  sudo env \"PATH=\$PATH\" nixos-install --root /mnt --flake .#nixos-usb --no-root-passwd $extra
 
   echo
   echo '==> 6. Password for the mael user (login, sudo, unlocking)'

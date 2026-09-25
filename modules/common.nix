@@ -1,7 +1,11 @@
-{ lib, ... }:
+{ lib, host, ... }:
 
 # Settings shared by every machine.
 {
+  # The flake names each configuration after the machine it builds, so the
+  # hostname is that name and is never written twice.
+  networking.hostName = host;
+
   networking.networkmanager = {
     enable = true;
 

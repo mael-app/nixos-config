@@ -83,7 +83,7 @@ Windows remains available from the BIOS boot menu.
 
 ```sh
 cd ~/nixos-config
-sudo nixos-rebuild switch --flake .#laptop
+sudo nixos-rebuild switch --flake .#nixos-laptop
 ```
 
 ## Troubleshooting

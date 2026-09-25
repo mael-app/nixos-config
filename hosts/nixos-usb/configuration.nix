@@ -14,8 +14,6 @@
   # so the drive boots from the firmware boot menu on any UEFI machine.
   boot.loader.efi.canTouchEfiVariables = false;
 
-  networking.hostName = "nixos-usb";
-
   # / , /nix and /home are all subvolumes of the one LUKS container on the
   # stick, so a single mount point covers the whole filesystem.
   services.btrfs.autoScrub.fileSystems = [ "/" ];

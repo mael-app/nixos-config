@@ -10,8 +10,6 @@
   # Internal install: register NixOS in the firmware so it boots by default.
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "nixos-laptop";
-
   # / and /nix are subvolumes of the same LUKS container, so scrubbing both
   # would read laptop-cryptroot twice. /home is a separate container.
   services.btrfs.autoScrub.fileSystems = [
