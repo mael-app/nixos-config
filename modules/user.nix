@@ -3,6 +3,7 @@
   inputs,
   host,
   username,
+  wallpaper,
   ...
 }:
 
@@ -34,7 +35,14 @@
     # exists in $HOME instead of moving the old one aside.
     backupFileExtension = "hm-bak";
 
-    extraSpecialArgs = { inherit inputs host username; };
+    extraSpecialArgs = {
+      inherit
+        inputs
+        host
+        username
+        wallpaper
+        ;
+    };
 
     users.${username} = import ../home;
   };

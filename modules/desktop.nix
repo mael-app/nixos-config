@@ -23,18 +23,6 @@
     ];
   };
 
-  # Use the recommended Hyprland launcher rather than invoking Hyprland
-  # directly. This avoids the "started without start-hyprland" warning.
-  services.greetd = {
-    enable = true;
-    settings = {
-      default_session = {
-        command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd ${pkgs.hyprland}/bin/start-hyprland";
-        user = "greeter";
-      };
-    };
-  };
-
   # Only what the system itself needs. Everything the desktop account runs is
   # installed by Home Manager, so `home-manager switch` can update it without
   # rebuilding the system; see ../home.

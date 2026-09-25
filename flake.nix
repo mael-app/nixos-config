@@ -26,6 +26,10 @@
       system = "x86_64-linux";
       username = "mael";
 
+      # Shared by the session and the login screen, so changing the image is
+      # a one line edit here.
+      wallpaper = ./home/wallpapers/Liquid.png;
+
       # Modules shared by every machine. Each host adds its own
       # configuration.nix and hardware-configuration.nix, plus whatever
       # hardware modules it needs.
@@ -44,6 +48,7 @@
               self
               host
               username
+              wallpaper
               ;
           };
 
@@ -56,6 +61,7 @@
             ./modules/desktop.nix
             ./modules/devops.nix
             ./modules/fonts.nix
+            ./modules/greeter.nix
             ./modules/user.nix
             ./modules/vpn.nix
 

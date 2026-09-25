@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  pkgs,
+  wallpaper,
+  ...
+}:
 
 # Session daemons that ship no Home Manager module, so the units are written
 # here rather than autostarted from the Hyprland configuration.
@@ -52,7 +57,7 @@
     };
     Service = {
       Type = "oneshot";
-      ExecStart = "${pkgs.awww}/bin/awww img ${./wallpapers/Liquid.png} --transition-type fade";
+      ExecStart = "${pkgs.awww}/bin/awww img ${wallpaper} --transition-type fade";
       # awww-daemon binds its socket just after systemd considers it started,
       # so the first attempt can still lose the race. Retrying is cheaper than
       # guessing at a sleep, and the unit settles on the first success.
