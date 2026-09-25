@@ -30,9 +30,9 @@
           "pulseaudio"
           "backlight"
           "custom/kbd-backlight"
-          "battery"
           "cpu"
           "memory"
+          "battery"
           "custom/notification"
           "custom/power"
         ];
