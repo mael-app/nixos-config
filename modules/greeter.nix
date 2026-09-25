@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   pkgs,
   wallpaper,
   ...
@@ -68,6 +69,29 @@
       }
     '';
   };
+
+  # The Hyprland package provides two session entries: hyprland.desktop, which
+  # runs start-hyprland the way tuigreet used to, and hyprland-uwsm.desktop,
+  # which hands the session to uwsm. uwsm needs systemd user units that only
+  # programs.uwsm installs, and it is off here, so that entry dies right after
+  # the password is accepted with
+  #
+  #   Failed to start wayland-session-bindpid@<pid>.service: Unit not found
+  #
+  # ReGreet lists entries in file order, and hyprland-uwsm.desktop sorts before
+  # hyprland.desktop, so it is the one preselected. tuigreet never hit this
+  # because it bypassed the session list with --cmd.
+  #
+  # Offer only the entry that works. Switching to uwsm instead would change how
+  # the whole session is started, which is a much larger change than the login
+  # screen warrants.
+  services.displayManager.sessionPackages = lib.mkForce [
+    (pkgs.runCommand "hyprland-session" { passthru.providedSessions = [ "hyprland" ]; } ''
+      mkdir -p "$out/share/wayland-sessions"
+      cp ${config.programs.hyprland.package}/share/wayland-sessions/hyprland.desktop \
+        "$out/share/wayland-sessions/"
+    '')
+  ];
 
   # ReGreet lists the sessions it finds under XDG_DATA_DIRS, falling back to
   # /usr/share/wayland-sessions, which does not exist here. greetd is a system
