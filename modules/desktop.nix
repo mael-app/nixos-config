@@ -50,6 +50,16 @@
   services.gvfs.enable = true;
   services.udisks2.enable = true;
 
+  # Thunar asks tumbler over D-Bus for image thumbnails. Tumbler decodes them
+  # through GdkPixbuf, which only reads JPEG, PNG and the like out of the box:
+  # the extra loaders add HEIC/AVIF (libheif ships its loader in the lib
+  # output) and WebP.
+  services.tumbler.enable = true;
+  programs.gdk-pixbuf.modulePackages = [
+    pkgs.libheif.lib
+    pkgs.webp-pixbuf-loader
+  ];
+
   security.polkit.enable = true;
 
   # 1Password: CLI + desktop app. polkitPolicyOwners enables system
