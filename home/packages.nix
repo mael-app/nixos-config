@@ -8,7 +8,6 @@
   # rofi, waybar, wlogout, hyprlock and the tray applets all come with theirs.
   home.packages = with pkgs; [
     # Desktop applications
-    firefox
     discord
     notion-electron
     spotify
