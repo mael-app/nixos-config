@@ -5,6 +5,7 @@
 # configured under ../../modules.
 {
   imports = [
+    ./airpods.nix
     ./dock.nix
     ./firefox.nix
     ./gh.nix
