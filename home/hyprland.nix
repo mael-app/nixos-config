@@ -113,6 +113,13 @@
         xwayland = {
           enabled = true,
         },
+
+        -- A fullscreen window with nothing drawn over it is handed straight
+        -- to the display instead of being copied into a composited frame.
+        -- On the Iris Xe that copy costs frame rate and latency in games.
+        render = {
+          direct_scanout = 1,
+        },
       })
 
       -- Touchpad: 3-finger horizontal swipe switches workspaces
