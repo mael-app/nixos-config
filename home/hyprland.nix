@@ -122,9 +122,9 @@
         },
       })
 
-      -- Touchpad: 3-finger horizontal swipe switches workspaces
+      -- Touchpad: 4-finger horizontal swipe switches workspaces (as on macOS)
       hl.gesture({
-        fingers = 3,
+        fingers = 4,
         direction = "horizontal",
         action = "workspace",
       })
