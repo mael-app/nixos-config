@@ -17,6 +17,8 @@
   xdg.mimeApps = {
     enable = true;
     defaultApplications = {
+      # VS Code also claims directories, so without this it can win over Thunar.
+      "inode/directory" = "thunar.desktop";
       "application/zip" = "org.gnome.FileRoller.desktop";
       "application/x-7z-compressed" = "org.gnome.FileRoller.desktop";
       "application/x-rar" = "org.gnome.FileRoller.desktop";
