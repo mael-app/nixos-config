@@ -130,7 +130,7 @@
       })
 
       -- Floating windows by default (Pop!_OS / macOS style).
-      -- SUPER + T toggles auto-tiling, SUPER + V tiles/floats a single window.
+      -- SUPER + T toggles auto-tiling, SUPER + V maximizes a single window.
       local floatRule = hl.window_rule({
         name = "float-by-default",
         match = { class = ".*" },
@@ -238,7 +238,32 @@
 
       -- Window management
       hl.bind(mainMod .. " + C", hl.dsp.window.close())
-      hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
+
+      -- Maximize the active window while keeping it floating, and put it back
+      -- where it was on the next press. Tiling it instead would trap it:
+      -- Hyprland always draws floating windows over tiled ones, so a click or
+      -- ALT + Tab could never bring it in front of the other windows again.
+      local restoreGeometry = {}
+      local function pair(v) return v.x or v[1], v.y or v[2] end
+      hl.bind(mainMod .. " + V", function()
+        local win = hl.get_active_window()
+        if not win then return end
+        local saved = restoreGeometry[win.stable_id]
+        if saved then
+          restoreGeometry[win.stable_id] = nil
+          if saved.tiled then
+            hl.dispatch(hl.dsp.window.float({ action = "unset" }))
+          else
+            hl.dispatch(hl.dsp.window.resize({ x = saved.w, y = saved.h, relative = false }))
+            hl.dispatch(hl.dsp.window.move({ x = saved.x, y = saved.y, relative = false }))
+          end
+          return
+        end
+        local x, y = pair(win.at)
+        local w, h = pair(win.size)
+        restoreGeometry[win.stable_id] = { tiled = not win.floating, x = x, y = y, w = w, h = h }
+        snap("maximize")
+      end)
       hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ action = "toggle" }))
       hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
       hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))
