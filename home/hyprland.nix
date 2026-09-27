@@ -131,14 +131,24 @@
 
       -- Floating windows by default (Pop!_OS / macOS style).
       -- SUPER + T toggles auto-tiling, SUPER + V maximizes a single window.
+      -- VLC's fullscreen controller is its own window titled "vlc", which
+      -- VLC places itself at the bottom of the screen. Sizing and centering
+      -- it here drew it as a blank square in the middle of the video.
       local floatRule = hl.window_rule({
         name = "float-by-default",
-        match = { class = ".*" },
+        match = { class = ".*", title = "negative:^vlc$" },
         float = true,
         size = { "(monitor_w*0.6)", "(monitor_h*0.65)" },
         center = true,
       })
       local autoTile = false
+
+      -- VLC fullscreen controller: floating, but left where VLC puts it
+      hl.window_rule({
+        name = "vlc-fullscreen-controller",
+        match = { class = "^vlc$", title = "^vlc$" },
+        float = true,
+      })
 
       -- System monitor opened from waybar: btop needs at least 80x24 cells
       hl.window_rule({
