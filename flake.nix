@@ -88,12 +88,16 @@
       nixosConfigurations.nixos-usb = mkHost "nixos-usb" [
         ./modules/laptop.nix
         ./modules/gaming.nix
+        ./modules/gpu-tools.nix
+        ./modules/mangohud.nix
       ];
 
       # Laptop internal NVMe
       nixosConfigurations.nixos-laptop = mkHost "nixos-laptop" [
         ./modules/laptop.nix
         ./modules/gaming.nix
+        ./modules/gpu-tools.nix
+        ./modules/mangohud.nix
       ];
 
       # nixfmt-tree wraps nixfmt in treefmt, so `nix fmt` formats the whole
