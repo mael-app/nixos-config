@@ -136,7 +136,7 @@
       -- System monitor opened from waybar: btop needs at least 80x24 cells
       hl.window_rule({
         name = "btop-size",
-        match = { class = "^btop$" },
+        match = { class = "^com\\.mitchellh\\.ghostty\\.btop$" },
         float = true,
         size = { "(monitor_w*0.8)", "(monitor_h*0.8)" },
         center = true,
@@ -221,7 +221,7 @@
       end)
 
       -- Terminal
-      hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd("kitty"))
+      hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd("ghostty"))
 
       -- Application launcher
       hl.bind(mainMod .. " + SPACE", hl.dsp.exec_cmd("rofi -show drun"))

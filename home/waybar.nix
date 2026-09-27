@@ -165,12 +165,12 @@
         cpu = {
           format = "󰍛  {usage}%";
           interval = 5;
-          on-click = "kitty --class btop -e btop";
+          on-click = "ghostty --class=com.mitchellh.ghostty.btop -e btop";
         };
         memory = {
           format = "󰘚  {percentage}%";
           interval = 5;
-          on-click = "kitty --class btop -e btop";
+          on-click = "ghostty --class=com.mitchellh.ghostty.btop -e btop";
         };
         "custom/power" = {
           format = "⏻";

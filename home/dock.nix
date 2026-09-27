@@ -33,7 +33,7 @@
   # The file is read-only, so right-click > Pin in the dock no longer persists.
   xdg.cacheFile."nwg-dock-pinned".text = lib.concatLines [
     "firefox"
-    "kitty"
+    "com.mitchellh.ghostty"
     "thunar"
     "spotify"
     "code"

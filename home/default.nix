@@ -10,7 +10,7 @@
     ./git.nix
     ./hyprland.nix
     ./hyprlock.nix
-    ./kitty.nix
+    ./ghostty.nix
     ./os-tracker.nix
     ./packages.nix
     ./power-menu.nix

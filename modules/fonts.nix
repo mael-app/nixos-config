@@ -2,7 +2,7 @@
 
 # System-wide so that fontconfig resolves them for every user, not just the
 # desktop account. Noto Sans is what the Home Manager GTK theme asks for, and
-# the Nerd Font is what waybar, kitty and the power menu are styled with.
+# the Nerd Font is what waybar, Ghostty and the power menu are styled with.
 {
   fonts.packages = with pkgs; [
     dejavu_fonts

@@ -5,7 +5,7 @@
     enable = true;
     theme = "Arc-Dark";
     settings = {
-      terminal = "${pkgs.kitty}/bin/kitty";
+      terminal = "${pkgs.ghostty}/bin/ghostty";
       modi = "drun,run,window";
       show-icons = true;
       icon-theme = "Papirus-Dark";

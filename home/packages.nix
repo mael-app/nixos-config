@@ -4,7 +4,7 @@
   # Everything mael runs. Fonts, icon fallbacks and anything another user or
   # a system service needs stay in the NixOS modules instead.
   #
-  # Applications owned by a Home Manager module are not repeated here: kitty,
+  # Applications owned by a Home Manager module are not repeated here: ghostty,
   # rofi, waybar, wlogout, hyprlock and the tray applets all come with theirs.
   home.packages = with pkgs; [
     # Desktop applications
