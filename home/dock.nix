@@ -38,6 +38,7 @@
     "spotify"
     "code"
     "discord"
+    "io.github.tobagin.karere"
     "1password"
     "mullvad-vpn"
   ];

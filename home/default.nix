@@ -24,6 +24,7 @@
     ./sounds.nix
     ./theme.nix
     ./waybar.nix
+    ./whatsapp.nix
     ./xdg.nix
   ];
 
