@@ -12,6 +12,7 @@
     ./git.nix
     ./hyprland.nix
     ./hyprlock.nix
+    ./iphone.nix
     ./ghostty.nix
     ./os-tracker.nix
     ./packages.nix

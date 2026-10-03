@@ -68,6 +68,7 @@
             ./modules/devops.nix
             ./modules/fonts.nix
             ./modules/greeter.nix
+            ./modules/iphone.nix
             ./modules/user.nix
             ./modules/vpn.nix
 
