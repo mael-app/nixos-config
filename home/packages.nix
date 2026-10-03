@@ -42,6 +42,7 @@
 
     # Editors and terminal tools
     vscode
+    jetbrains.rider
     neovim
     tmux
     btop

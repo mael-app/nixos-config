@@ -87,6 +87,7 @@
       "steam"
       "steam-unwrapped"
       "lunarclient"
+      "rider"
     ];
 
   security.sudo.wheelNeedsPassword = true;
