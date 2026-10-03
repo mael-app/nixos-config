@@ -137,29 +137,56 @@
             "󰂀"
             "󰁹"
           ];
-          on-click = pkgs.writeShellScript "show-battery-time" ''
-            battery="$(${pkgs.upower}/bin/upower -e | ${pkgs.gnugrep}/bin/grep '/battery_' | ${pkgs.coreutils}/bin/head -n1)"
-            [ -n "$battery" ] || exit 0
+          # Clicking the battery drops a menu below it to pick the
+          # power-profiles-daemon profile. Waybar's own GtkMenu is built once
+          # when the bar starts, so it cannot mark the active profile; this
+          # rofi menu reads it on every opening instead. The remaining
+          # battery time stays in the tooltip.
+          on-click = pkgs.writeShellScript "power-profile-menu" ''
+            # A second click on the icon closes the menu.
+            ${pkgs.procps}/bin/pkill -x rofi && exit 0
 
-            info="$(${pkgs.upower}/bin/upower -i "$battery")"
-            state="$(printf '%s\n' "$info" | ${pkgs.gawk}/bin/awk '/state:/ { print $2; exit }')"
-            case "$state" in
-              charging)
-                label="Time until fully charged"
-                estimate="$(printf '%s\n' "$info" | ${pkgs.gawk}/bin/awk '/time to full:/ { $1=$2=""; sub(/^ +/, ""); print; exit }')"
-                ;;
-              discharging)
-                label="Time until battery empty"
-                estimate="$(printf '%s\n' "$info" | ${pkgs.gawk}/bin/awk '/time to empty:/ { $1=$2=""; sub(/^ +/, ""); print; exit }')"
-                ;;
-              *)
-                label="Battery"
-                estimate="non disponible"
-                ;;
-            esac
+            ppctl=${pkgs.power-profiles-daemon}/bin/powerprofilesctl
+            profiles=(power-saver balanced performance)
+            labels=("󰌪  Power saver" "󰾅  Balanced" "󰓅  Performance")
+            current="$($ppctl get)"
 
-            [ -n "$estimate" ] || estimate="non disponible"
-            ${pkgs.libnotify}/bin/notify-send -a "Battery" -t 4000 "$label" "$estimate"
+            active=0
+            for i in "''${!profiles[@]}"; do
+              [ "''${profiles[$i]}" = "$current" ] && active=$i
+            done
+
+            # Open the menu under the pointer, which is on the battery icon,
+            # and keep it inside the monitor. Under Wayland rofi ignores
+            # -xoffset, so the position goes through the theme, and the
+            # y-offset counts from the bottom of the bar.
+            width=260
+            cursor="$(${pkgs.hyprland}/bin/hyprctl cursorpos)"
+            monitor="$(${pkgs.hyprland}/bin/hyprctl -j monitors | ${pkgs.jq}/bin/jq -r '.[] | select(.focused) | "\(.x) \(.width) \(.scale)"')"
+            read -r mon_x mon_w mon_scale <<< "$monitor"
+            mon_w="$(${pkgs.gawk}/bin/awk -v w="$mon_w" -v s="$mon_scale" 'BEGIN { printf "%d", w / s }')"
+            x=$(( ''${cursor%%,*} - mon_x - width / 2 ))
+            (( x > mon_w - width - 10 )) && x=$(( mon_w - width - 10 ))
+            (( x < 10 )) && x=10
+
+            choice="$(
+              for i in "''${!labels[@]}"; do
+                if [ "$i" = "$active" ]; then
+                  printf '%s  󰄬\n' "''${labels[$i]}"
+                else
+                  printf '%s\n' "''${labels[$i]}"
+                fi
+              done | rofi -dmenu -no-custom -hover-select -format i \
+                -a "$active" -selected-row "$active" \
+                -theme-str "window { location: northwest; anchor: northwest; x-offset: ''${x}px; y-offset: 6px; width: ''${width}px; } inputbar { enabled: false; } listview { lines: 3; scrollbar: false; }"
+            )" || exit 0
+
+            profile="''${profiles[$choice]}"
+            [ "$profile" = "$current" ] && exit 0
+
+            $ppctl set "$profile"
+            ${pkgs.libnotify}/bin/notify-send -a "Power" -t 3000 \
+              "Power mode" "''${labels[$choice]#*  } enabled"
           '';
         };
         cpu = {
