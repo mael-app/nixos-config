@@ -24,6 +24,7 @@
     ./ssh.nix
     ./sounds.nix
     ./theme.nix
+    ./wallpaper-video.nix
     ./waybar.nix
     ./whatsapp.nix
     ./xdg.nix

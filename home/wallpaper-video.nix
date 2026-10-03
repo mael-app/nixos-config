@@ -39,7 +39,7 @@ let
 
       start_video() {
         rm -f "$mpv_socket"
-        mpvpaper -o "loop no-audio hwdec=auto-safe panscan=1.0 input-ipc-server=$mpv_socket" \
+        mpvpaper -o "loop no-audio really-quiet hwdec=auto-safe panscan=1.0 input-ipc-server=$mpv_socket" \
           '*' ${video} &
         pid=$!
         paused=no
