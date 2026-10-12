@@ -29,6 +29,15 @@ in
     # Hand the key to the agent the first time ssh itself uses it, which
     # covers the case where the session service below was cancelled.
     settings."*".AddKeysToAgent = "yes";
+
+    # The Raspberry Pi running the Minecraft server. sshd there listens on a
+    # non-default port, and the alias spares typing the address, port and
+    # account on every connection.
+    settings."rpi.local" = {
+      HostName = "172.29.94.35";
+      Port = 22422;
+      User = "root";
+    };
   };
 
   services.ssh-agent.enable = true;
