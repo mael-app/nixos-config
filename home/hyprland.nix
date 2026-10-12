@@ -314,8 +314,8 @@
       hl.bind(mainMod .. " + up", hl.dsp.focus({ direction = "up" }))
       hl.bind(mainMod .. " + down", hl.dsp.focus({ direction = "down" }))
 
-      -- ALT + Tab is intentionally missing: the hyprshell service binds it to
-      -- the window switcher and rebinds it after every configuration reload.
+      -- ALT + Tab is registered by the hyprshell service, which provides the
+      -- window selector used for switching applications.
 
       -- Move windows
       hl.bind(mainMod .. " + SHIFT + left", hl.dsp.window.move({ direction = "left" }))

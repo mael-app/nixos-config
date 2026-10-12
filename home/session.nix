@@ -11,20 +11,13 @@
   # Windows-style window switcher: ALT + Tab opens a grid with one tile per
   # window and keeps it open while ALT is held, so Tab walks the list instead
   # of toggling between the last two windows.
-  #
-  # hyprshell only auto-discovers config.ron, so the service below points at
-  # this file explicitly. JSON is valid JSON5, which lets Nix build the config
-  # rather than us hand-writing RON.
   xdg.configFile."hyprshell/config.json5".text = builtins.toJSON {
     version = 4;
     windows = {
       switch = {
         modifier = "alt";
-        # A GDK key name, so capitalised: "tab" is rejected at runtime.
         key = "Tab";
-        # Walk through windows, not workspaces.
         switch_workspaces = false;
-        # No filter, so every window on every workspace gets a tile.
         filter_by = [ ];
       };
     };
@@ -78,9 +71,7 @@
     Install.WantedBy = [ "awww.service" ];
   };
 
-  # The daemon registers its own ALT + Tab binds with Hyprland and re-registers
-  # them on every Hyprland config reload, which is why the Lua configuration
-  # further down deliberately leaves ALT + Tab unbound.
+  # hyprshell owns ALT + Tab and re-registers the binds after each reload.
   systemd.user.services.hyprshell = {
     Unit = {
       Description = "Window switcher for Hyprland";

@@ -30,9 +30,6 @@
     # tray icon opens from its context menu.
     networkmanagerapplet
 
-    # ALT + Tab window switcher, started by the user service below
-    hyprshell
-
     # Bound to keys in the Hyprland configuration further down
     grim
     slurp
@@ -42,6 +39,9 @@
     brightnessctl
     playerctl
     libnotify
+
+    # ALT + Tab window selector, started by the user service below
+    hyprshell
 
     # Editors and terminal tools
     vscode
