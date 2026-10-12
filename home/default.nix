@@ -11,6 +11,7 @@
     ./dotnet.nix
     ./firefox.nix
     ./gh.nix
+    ./glab.nix
     ./git.nix
     ./hyprland.nix
     ./hyprlock.nix
