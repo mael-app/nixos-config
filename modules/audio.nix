@@ -10,5 +10,12 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
+
+    # Do not expose speaker monitor ports as microphone choices in apps.
+    wireplumber.extraConfig."10-disable-audio-monitor-ports" = {
+      "wireplumber.settings" = {
+        "node.features.audio.monitor-ports" = false;
+      };
+    };
   };
 }
