@@ -246,6 +246,9 @@
       -- File manager
       hl.bind(mainMod .. " + E", hl.dsp.exec_cmd("thunar"))
 
+      -- Bluetooth devices menu (same menu as the waybar icon)
+      hl.bind(mainMod .. " + B", hl.dsp.exec_cmd("${config.local.bluetoothMenu.command}"))
+
       -- Window management
       hl.bind(mainMod .. " + C", hl.dsp.window.close())
 

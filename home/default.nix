@@ -6,6 +6,7 @@
 {
   imports = [
     ./airpods.nix
+    ./bluetooth-menu.nix
     ./dock.nix
     ./firefox.nix
     ./gh.nix

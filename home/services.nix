@@ -53,7 +53,4 @@
 
   # Volume / brightness on-screen popups
   services.swayosd.enable = true;
-
-  # Tray applets
-  services.blueman-applet.enable = true;
 }

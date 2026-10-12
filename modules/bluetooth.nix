@@ -4,10 +4,11 @@
 {
   hardware.bluetooth = {
     enable = true;
-    # The controller stays off until something asks for it, which keeps
-    # bluetoothd from listening on the radio during the boots where no
-    # Bluetooth device is used at all. blueman powers it on on demand.
+    # Keep the controller off until the user explicitly enables Bluetooth.
+    # The waybar Bluetooth icon starts it on demand and no applet scans in the
+    # background; see home/bluetooth-menu.nix.
     powerOnBoot = false;
+    settings.Policy.AutoEnable = false;
   };
 
   services.blueman.enable = true;

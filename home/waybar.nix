@@ -25,6 +25,7 @@
         ];
         modules-center = [ "clock" ];
         modules-right = [
+          "custom/bluetooth"
           "tray"
           "idle_inhibitor"
           "pulseaudio"
@@ -55,6 +56,17 @@
             dnd-notification = "󰂛";
             dnd-none = "󰪓";
           };
+        };
+        # Status comes from the script behind the menu (see home/bluetooth-menu.nix):
+        # it reads the adapter state and the connected devices without ever
+        # scanning. Left click opens the menu, right click toggles the adapter.
+        "custom/bluetooth" = {
+          format = "{}";
+          return-type = "json";
+          interval = 5;
+          exec = "${config.local.bluetoothMenu.command} status";
+          on-click = config.local.bluetoothMenu.command;
+          on-click-right = "${config.local.bluetoothMenu.command} toggle";
         };
         "hyprland/workspaces" = {
           format = "{name}";
@@ -225,6 +237,7 @@
 
       #custom-launcher,
       #custom-notification,
+      #custom-bluetooth,
       #workspaces,
       #window,
       #clock,
@@ -251,6 +264,15 @@
 
       #custom-notification {
         color: #f9e2af;
+      }
+
+      #custom-bluetooth {
+        color: #89b4fa;
+      }
+
+      #custom-bluetooth.off,
+      #custom-bluetooth.disabled {
+        color: #7f849c;
       }
 
       #workspaces {
