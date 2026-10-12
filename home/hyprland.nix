@@ -51,6 +51,12 @@
           mouse_refocus = false,
         },
 
+        cursor = {
+          -- Avoid invisible cursors when fullscreen applications switch to or
+          -- from direct display scanout.
+          no_hardware_cursors = true,
+        },
+
         general = {
           gaps_in = 5,
           gaps_out = 10,
@@ -78,7 +84,9 @@
           -- fighting over the rule, which hyprshell reapplies on every reload.
           -- Nothing else in this configuration asks for dim_around.
           dim_around = 0,
-          inactive_opacity = 0.95,
+          -- Opaque inactive windows: a translucent one is re-blurred on every
+          -- frame, which kept Hyprland busy on the CPU and drained the battery.
+          inactive_opacity = 1.0,
           fullscreen_opacity = 1.0,
 
           shadow = {
@@ -114,11 +122,10 @@
           enabled = true,
         },
 
-        -- A fullscreen window with nothing drawn over it is handed straight
-        -- to the display instead of being copied into a composited frame.
-        -- On the Iris Xe that copy costs frame rate and latency in games.
+        -- Keep fullscreen applications in the compositor so focus changes and
+        -- cursor rendering remain reliable when switching with ALT + Tab.
         render = {
-          direct_scanout = 1,
+          direct_scanout = 0,
         },
       })
 
