@@ -20,6 +20,7 @@
     ./packages.nix
     ./power-menu.nix
     ./rofi.nix
+    ./rust.nix
     ./services.nix
     ./session.nix
     ./shell.nix
