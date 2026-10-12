@@ -87,6 +87,7 @@
 
       # External USB SSD, booted on the laptop
       nixosConfigurations.nixos-usb = mkHost "nixos-usb" [
+        ./modules/howdy.nix
         ./modules/laptop.nix
         ./modules/gaming.nix
         ./modules/gpu-tools.nix
@@ -95,6 +96,7 @@
 
       # Laptop internal NVMe
       nixosConfigurations.nixos-laptop = mkHost "nixos-laptop" [
+        ./modules/howdy.nix
         ./modules/laptop.nix
         ./modules/gaming.nix
         ./modules/gpu-tools.nix
