@@ -81,6 +81,7 @@
       "vscode"
       "discord"
       "discord-unwrapped"
+      "termius"
       "1password"
       "1password-cli"
       "claude-code"

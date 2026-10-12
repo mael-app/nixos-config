@@ -9,8 +9,11 @@
   home.packages = with pkgs; [
     # Desktop applications
     discord
+    signal-desktop
     notion-electron
+    termius
     spotify
+    tor-browser
     qbittorrent
     vlc
     mpv
