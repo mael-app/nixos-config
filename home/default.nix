@@ -8,6 +8,7 @@
     ./airpods.nix
     ./bluetooth-menu.nix
     ./dock.nix
+    ./dotnet.nix
     ./firefox.nix
     ./gh.nix
     ./git.nix
