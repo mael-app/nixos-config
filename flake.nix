@@ -2,7 +2,12 @@
   description = "Mael's NixOS configuration";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    # Fetched from a Chinese git mirror because github.com is slow here. The
+    # mirror serves the same commits as github:NixOS/nixpkgs, so the hashes
+    # and the official binary cache stay valid; shallow=1 keeps nixpkgs' full
+    # history out of the download. Mirrors can be swapped for
+    # mirrors.nju.edu.cn/git/nixpkgs.git or mirrors.ustc.edu.cn.
+    nixpkgs.url = "git+https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git?ref=nixos-unstable&shallow=1";
 
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -69,6 +74,7 @@
             ./modules/fonts.nix
             ./modules/greeter.nix
             ./modules/iphone.nix
+            ./modules/mirrors.nix
             ./modules/user.nix
             ./modules/vpn.nix
 
