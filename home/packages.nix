@@ -35,6 +35,7 @@
     slurp
     grimblast
     hyprpicker
+    wtype
     wl-clipboard
     brightnessctl
     playerctl

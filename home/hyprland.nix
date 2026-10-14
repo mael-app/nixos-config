@@ -314,6 +314,17 @@
       hl.bind(mainMod .. " + up", hl.dsp.focus({ direction = "up" }))
       hl.bind(mainMod .. " + down", hl.dsp.focus({ direction = "down" }))
 
+      -- The fr layout puts &é"'(-è_çà on the number row, so applications never
+      -- see CTRL + 1..9; Firefox, for one, picks a tab with them. Hyprland's
+      -- send_shortcut cannot help: it resolves the target key against the
+      -- active fr keymap, where the digits live on the Shift level, and would
+      -- still send the keycode the client maps back to &é"'. Replay the digits
+      -- through wtype instead, which uploads its own keymap and delivers the
+      -- real CTRL + 1..9 to the focused window.
+      for i = 1, 9 do
+        hl.bind("CTRL + code:" .. (9 + i), hl.dsp.exec_cmd("wtype -M ctrl " .. i .. " -m ctrl"))
+      end
+
       -- ALT + Tab is registered by the hyprshell service, which provides the
       -- window selector used for switching applications.
 
