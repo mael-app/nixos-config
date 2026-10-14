@@ -62,6 +62,8 @@
     # AI coding assistants
     claude-code
     opencode
+    # Compresses command output before the agents read it, cutting tokens.
+    rtk
 
     # Infrastructure. minikube ships its own bin/kubectl, which collides with
     # the standalone one; lowPrio lets the explicit kubectl win. NixOS builds
@@ -79,5 +81,7 @@
     go
     gcc
     gnumake
+    # Nix language server, used by the editors and by opencode's LSP.
+    nixd
   ];
 }
