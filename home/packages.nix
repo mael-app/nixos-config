@@ -13,7 +13,6 @@
     notion-electron
     termius
     spotify
-    tor-browser
     qbittorrent
     vlc
     mpv
@@ -56,8 +55,10 @@
     tree
     jq
     yq
+    unzip
     ripgrep
     fd
+    bind
 
     # AI coding assistants
     claude-code
