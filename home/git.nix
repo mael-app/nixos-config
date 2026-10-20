@@ -32,10 +32,11 @@ in
       email = "mael.app@proton.me";
     };
     # Push over SSH even when a remote was cloned with an https:// URL, so
-    # github.com traffic authenticates with the SSH key rather than with the
-    # token gh registers as a credential helper (see ./gh.nix). Gists are not
-    # covered by the rewrite and keep using that helper.
+    # GitHub and GitLab.com authenticate with the SSH key rather than with a
+    # token registered as a credential helper. Gists are not covered by the
+    # GitHub rewrite and keep using that helper.
     settings.url."git@github.com:".insteadOf = "https://github.com/";
+    settings.url."git@gitlab.com:".insteadOf = "https://gitlab.com/";
     # SSH to this GitLab does not work, so its remotes stay on HTTPS and
     # authenticate with a personal access token. The token lives in the
     # "GitLab LogIT PAT" 1Password item and is read by the helper above, so

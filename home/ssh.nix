@@ -38,6 +38,9 @@ in
       Port = 22422;
       User = "root";
     };
+
+    # IPv6 is unreachable on the current network, so avoid its connection timeout.
+    settings."gitlab.com".AddressFamily = "inet";
   };
 
   services.ssh-agent.enable = true;
