@@ -18,6 +18,7 @@
     ./iphone.nix
     ./ghostty.nix
     ./os-tracker.nix
+    ./npm.nix
     ./packages.nix
     ./power-menu.nix
     ./rofi.nix
