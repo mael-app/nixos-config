@@ -96,6 +96,7 @@
         ./modules/howdy.nix
         ./modules/laptop.nix
         ./modules/gaming.nix
+        ./modules/roblox.nix
         ./modules/gpu-tools.nix
         ./modules/mangohud.nix
       ];
@@ -105,6 +106,7 @@
         ./modules/howdy.nix
         ./modules/laptop.nix
         ./modules/gaming.nix
+        ./modules/roblox.nix
         ./modules/gpu-tools.nix
         ./modules/mangohud.nix
       ];
