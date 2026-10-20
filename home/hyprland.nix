@@ -37,6 +37,9 @@
           kb_layout = "fr",
           kb_variant = "",
           sensitivity = 0,
+          touchpad = {
+            disable_while_typing = false,
+          },
 
           -- Click to focus. Every window here floats and the window.active
           -- hook below raises whatever gains focus, so focus following the
