@@ -1,0 +1,5 @@
+# Keep the audit focused on actionable style issues. These two rules are
+# intentionally disabled because this repository uses repeated Nix option
+# paths and module argument patterns throughout its existing configuration.
+disabled = ["empty_pattern", "repeated_keys"]
+ignore = [".direnv"]
