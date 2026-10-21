@@ -1,4 +1,4 @@
-{ ... }:
+_:
 
 # PipeWire replacing PulseAudio and JACK.
 {

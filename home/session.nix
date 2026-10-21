@@ -26,89 +26,95 @@
   # Wallpaper daemon. It was started from hyprland.start with a `sleep 1`
   # before the first image so the socket had time to appear; systemd expresses
   # that ordering properly.
-  systemd.user.services.awww = {
-    Unit = {
-      Description = "Wallpaper daemon";
-      PartOf = [ "graphical-session.target" ];
-      After = [ "graphical-session.target" ];
-    };
-    Service = {
-      ExecStart = "${pkgs.awww}/bin/awww-daemon";
-      Restart = "on-failure";
-      RestartSec = 2;
-    };
-    Install.WantedBy = [ "graphical-session.target" ];
-  };
+  systemd = {
+    user = {
+      services = {
+        awww = {
+          Unit = {
+            Description = "Wallpaper daemon";
+            PartOf = [ "graphical-session.target" ];
+            After = [ "graphical-session.target" ];
+          };
+          Service = {
+            ExecStart = "${pkgs.awww}/bin/awww-daemon";
+            Restart = "on-failure";
+            RestartSec = 2;
+          };
+          Install.WantedBy = [ "graphical-session.target" ];
+        };
 
-  # The image lives in this repository and ends up in the Nix store.
-  #
-  # Pulled in by awww.service, not by graphical-session.target. A oneshot unit
-  # wanted by a target makes the target wait for it to finish, which closed an
-  # ordering cycle: the target waited on this unit, this unit waits on
-  # awww.service, and awww.service waits on the target. systemd broke the
-  # cycle by dropping awww.service, so after a reboot neither the daemon nor
-  # the wallpaper came up.
-  systemd.user.services.awww-wallpaper = {
-    Unit = {
-      Description = "Set the desktop wallpaper";
-      PartOf = [ "awww.service" ];
-      Requires = [ "awww.service" ];
-      After = [ "awww.service" ];
-      # The retry below needs room: the default of five attempts in ten
-      # seconds can expire before the daemon has bound its socket.
-      StartLimitBurst = 10;
-      StartLimitIntervalSec = 60;
-    };
-    Service = {
-      Type = "oneshot";
-      ExecStart = "${pkgs.awww}/bin/awww img ${wallpaper} --transition-type fade";
-      # awww-daemon binds its socket just after systemd considers it started,
-      # so the first attempt can still lose the race. Retrying is cheaper than
-      # guessing at a sleep, and the unit settles on the first success.
-      Restart = "on-failure";
-      RestartSec = 1;
-    };
-    Install.WantedBy = [ "awww.service" ];
-  };
+        # The image lives in this repository and ends up in the Nix store.
+        #
+        # Pulled in by awww.service, not by graphical-session.target. A oneshot unit
+        # wanted by a target makes the target wait for it to finish, which closed an
+        # ordering cycle: the target waited on this unit, this unit waits on
+        # awww.service, and awww.service waits on the target. systemd broke the
+        # cycle by dropping awww.service, so after a reboot neither the daemon nor
+        # the wallpaper came up.
+        awww-wallpaper = {
+          Unit = {
+            Description = "Set the desktop wallpaper";
+            PartOf = [ "awww.service" ];
+            Requires = [ "awww.service" ];
+            After = [ "awww.service" ];
+            # The retry below needs room: the default of five attempts in ten
+            # seconds can expire before the daemon has bound its socket.
+            StartLimitBurst = 10;
+            StartLimitIntervalSec = 60;
+          };
+          Service = {
+            Type = "oneshot";
+            ExecStart = "${pkgs.awww}/bin/awww img ${wallpaper} --transition-type fade";
+            # awww-daemon binds its socket just after systemd considers it started,
+            # so the first attempt can still lose the race. Retrying is cheaper than
+            # guessing at a sleep, and the unit settles on the first success.
+            Restart = "on-failure";
+            RestartSec = 1;
+          };
+          Install.WantedBy = [ "awww.service" ];
+        };
 
-  # hyprshell owns ALT + Tab and re-registers the binds after each reload.
-  systemd.user.services.hyprshell = {
-    Unit = {
-      Description = "Window switcher for Hyprland";
-      PartOf = [ "graphical-session.target" ];
-      After = [ "graphical-session.target" ];
-    };
-    Service = {
-      ExecStart = "${pkgs.hyprshell}/bin/hyprshell run --config-file ${config.xdg.configHome}/hyprshell/config.json5";
-      Restart = "on-failure";
-      RestartSec = 2;
-    };
-    Install.WantedBy = [ "graphical-session.target" ];
-  };
+        # hyprshell owns ALT + Tab and re-registers the binds after each reload.
+        hyprshell = {
+          Unit = {
+            Description = "Window switcher for Hyprland";
+            PartOf = [ "graphical-session.target" ];
+            After = [ "graphical-session.target" ];
+          };
+          Service = {
+            ExecStart = "${pkgs.hyprshell}/bin/hyprshell run --config-file ${config.xdg.configHome}/hyprshell/config.json5";
+            Restart = "on-failure";
+            RestartSec = 2;
+          };
+          Install.WantedBy = [ "graphical-session.target" ];
+        };
 
-  # Mullvad's tray client. The daemon is a NixOS service and is already up at
-  # boot, tunnel included; only the GUI was missing. Mullvad's own "launch on
-  # start-up" toggle symlinked ~/.config/autostart/mullvad-vpn.desktop, but
-  # nothing in this session reads XDG autostart entries, so it never fired.
-  #
-  # Ordered after tray.target so the StatusNotifierItem has somewhere to
-  # register. The type is left at the default: a oneshot unit wanted by a
-  # target makes the target wait for it, which is what broke the wallpaper.
-  systemd.user.services.mullvad-gui = {
-    Unit = {
-      Description = "Mullvad VPN tray client";
-      PartOf = [ "graphical-session.target" ];
-      Requires = [ "tray.target" ];
-      After = [
-        "graphical-session.target"
-        "tray.target"
-      ];
+        # Mullvad's tray client. The daemon is a NixOS service and is already up at
+        # boot, tunnel included; only the GUI was missing. Mullvad's own "launch on
+        # start-up" toggle symlinked ~/.config/autostart/mullvad-vpn.desktop, but
+        # nothing in this session reads XDG autostart entries, so it never fired.
+        #
+        # Ordered after tray.target so the StatusNotifierItem has somewhere to
+        # register. The type is left at the default: a oneshot unit wanted by a
+        # target makes the target wait for it, which is what broke the wallpaper.
+        mullvad-gui = {
+          Unit = {
+            Description = "Mullvad VPN tray client";
+            PartOf = [ "graphical-session.target" ];
+            Requires = [ "tray.target" ];
+            After = [
+              "graphical-session.target"
+              "tray.target"
+            ];
+          };
+          Service = {
+            ExecStart = "${pkgs.mullvad-vpn}/bin/mullvad-vpn";
+            Restart = "on-failure";
+            RestartSec = 3;
+          };
+          Install.WantedBy = [ "graphical-session.target" ];
+        };
+      };
     };
-    Service = {
-      ExecStart = "${pkgs.mullvad-vpn}/bin/mullvad-vpn";
-      Restart = "on-failure";
-      RestartSec = 3;
-    };
-    Install.WantedBy = [ "graphical-session.target" ];
   };
 }

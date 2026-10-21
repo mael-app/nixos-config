@@ -1,4 +1,4 @@
-{ ... }:
+_:
 
 # GitHub CLI. `gh auth login` stores its token under ~/.config/gh, which this
 # repository deliberately does not manage.

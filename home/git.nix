@@ -27,23 +27,25 @@ in
 {
   programs.git = {
     enable = true;
-    settings.user = {
-      name = "Maël";
-      email = "mael.app@proton.me";
+    settings = {
+      user = {
+        name = "Maël";
+        email = "mael.app@proton.me";
+      };
+      # Push over SSH even when a remote was cloned with an https:// URL, so
+      # GitHub and GitLab.com authenticate with the SSH key rather than with a
+      # token registered as a credential helper. Gists are not covered by the
+      # GitHub rewrite and keep using that helper.
+      url."git@github.com:".insteadOf = "https://github.com/";
+      url."git@gitlab.com:".insteadOf = "https://gitlab.com/";
+      # SSH to this GitLab does not work, so its remotes stay on HTTPS and
+      # authenticate with a personal access token. The token lives in the
+      # "GitLab LogIT PAT" 1Password item and is read by the helper above, so
+      # nothing is written to ~/.git-credentials. Commits are still signed with
+      # the SSH key.
+      credential."https://gitlab.logi-it.com".helper =
+        lib.getExe' gitlabCredentialHelper "git-credential-1password";
     };
-    # Push over SSH even when a remote was cloned with an https:// URL, so
-    # GitHub and GitLab.com authenticate with the SSH key rather than with a
-    # token registered as a credential helper. Gists are not covered by the
-    # GitHub rewrite and keep using that helper.
-    settings.url."git@github.com:".insteadOf = "https://github.com/";
-    settings.url."git@gitlab.com:".insteadOf = "https://gitlab.com/";
-    # SSH to this GitLab does not work, so its remotes stay on HTTPS and
-    # authenticate with a personal access token. The token lives in the
-    # "GitLab LogIT PAT" 1Password item and is read by the helper above, so
-    # nothing is written to ~/.git-credentials. Commits are still signed with
-    # the SSH key.
-    settings.credential."https://gitlab.logi-it.com".helper =
-      lib.getExe' gitlabCredentialHelper "git-credential-1password";
     signing = {
       key = "~/.ssh/id_ed25519.pub";
       signByDefault = true;

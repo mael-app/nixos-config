@@ -1,4 +1,4 @@
-{ ... }:
+_:
 
 {
   # Mullvad VPN daemon + desktop app.

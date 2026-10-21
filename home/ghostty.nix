@@ -1,4 +1,4 @@
-{ ... }:
+_:
 
 {
   # The module also installs Ghostty's D-Bus activated systemd user service,

@@ -16,8 +16,10 @@
   # services.howdy enables the PAM module on every service by default, which
   # put it on sudo as well. Turn it off everywhere and enable it only on the
   # lock screen, so face unlock never grants root.
-  security.pam.howdy.enable = false;
-  security.pam.services.hyprlock.howdy.enable = true;
+  security.pam = {
+    howdy.enable = false;
+    services.hyprlock.howdy.enable = true;
+  };
 
   # Ask for the password first and only start the camera when it is wrong. The
   # default stack puts howdy before pam_unix; move it just after, so a correct

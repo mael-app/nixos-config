@@ -89,27 +89,29 @@
       # modules/common.nix sets networking.hostName from the same string.
 
       # QEMU/KVM test VM (virt-manager)
-      nixosConfigurations.nixos-test = mkHost "nixos-test" [ ];
+      nixosConfigurations = {
+        nixos-test = mkHost "nixos-test" [ ];
 
-      # External USB SSD, booted on the laptop
-      nixosConfigurations.nixos-usb = mkHost "nixos-usb" [
-        ./modules/howdy.nix
-        ./modules/laptop.nix
-        ./modules/gaming.nix
-        ./modules/roblox.nix
-        ./modules/gpu-tools.nix
-        ./modules/mangohud.nix
-      ];
+        # External USB SSD, booted on the laptop
+        nixos-usb = mkHost "nixos-usb" [
+          ./modules/howdy.nix
+          ./modules/laptop.nix
+          ./modules/gaming.nix
+          ./modules/roblox.nix
+          ./modules/gpu-tools.nix
+          ./modules/mangohud.nix
+        ];
 
-      # Laptop internal NVMe
-      nixosConfigurations.nixos-laptop = mkHost "nixos-laptop" [
-        ./modules/howdy.nix
-        ./modules/laptop.nix
-        ./modules/gaming.nix
-        ./modules/roblox.nix
-        ./modules/gpu-tools.nix
-        ./modules/mangohud.nix
-      ];
+        # Laptop internal NVMe
+        nixos-laptop = mkHost "nixos-laptop" [
+          ./modules/howdy.nix
+          ./modules/laptop.nix
+          ./modules/gaming.nix
+          ./modules/roblox.nix
+          ./modules/gpu-tools.nix
+          ./modules/mangohud.nix
+        ];
+      };
 
       # nixfmt-tree wraps nixfmt in treefmt, so `nix fmt` formats the whole
       # repository and `nix fmt -- --ci` checks it without rewriting anything.

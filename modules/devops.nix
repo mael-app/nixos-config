@@ -1,12 +1,15 @@
 { pkgs, ... }:
 
 {
-  programs.nh = {
-    enable = true;
-    flake = "/home/mael/nixos-config";
-  };
+  programs = {
+    nh = {
+      enable = true;
+      flake = "/home/mael/nixos-config";
+    };
 
-  programs.nix-index-database.comma.enable = true;
+    nix-index-database.comma.enable = true;
+    nix-ld.enable = true;
+  };
 
   # The toolchains and editors are mael's, so they live in Home Manager.
   # Only the two fetchers stay system-wide: NixOS puts neither on the path by
@@ -20,8 +23,6 @@
   # A loader for prebuilt binaries that expect a normal FHS layout. VS Code
   # extensions, language servers and toolchain installers routinely download
   # such binaries, and they cannot run on NixOS without it.
-  programs.nix-ld.enable = true;
-
   # Rootless: the daemon runs as the desktop user inside a user namespace, so
   # nobody needs the "docker" group. That group is root on the host - the
   # socket happily starts a container that bind mounts / - which would undo

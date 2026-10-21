@@ -28,19 +28,21 @@ in
 
     # Hand the key to the agent the first time ssh itself uses it, which
     # covers the case where the session service below was cancelled.
-    settings."*".AddKeysToAgent = "yes";
+    settings = {
+      "*".AddKeysToAgent = "yes";
 
-    # The Raspberry Pi running the Minecraft server. sshd there listens on a
-    # non-default port, and the alias spares typing the address, port and
-    # account on every connection.
-    settings."rpi.local" = {
-      HostName = "172.29.94.35";
-      Port = 22422;
-      User = "root";
+      # The Raspberry Pi running the Minecraft server. sshd there listens on a
+      # non-default port, and the alias spares typing the address, port and
+      # account on every connection.
+      "rpi.local" = {
+        HostName = "172.29.94.35";
+        Port = 22422;
+        User = "root";
+      };
+
+      # IPv6 is unreachable on the current network, so avoid its connection timeout.
+      "gitlab.com".AddressFamily = "inet";
     };
-
-    # IPv6 is unreachable on the current network, so avoid its connection timeout.
-    settings."gitlab.com".AddressFamily = "inet";
   };
 
   services.ssh-agent.enable = true;

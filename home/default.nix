@@ -35,16 +35,17 @@
     ./xdg.nix
   ];
 
-  home.username = "mael";
-  home.homeDirectory = "/home/mael";
+  home = {
+    username = "mael";
+    homeDirectory = "/home/mael";
+    stateVersion = "25.11";
 
-  home.stateVersion = "25.11";
+    sessionVariables = {
+      GDK_SCALE = "1";
+      QT_AUTO_SCREEN_SCALE_FACTOR = "0";
+      QT_SCALE_FACTOR = "1";
+    };
+  };
 
   programs.home-manager.enable = true;
-
-  home.sessionVariables = {
-    GDK_SCALE = "1";
-    QT_AUTO_SCREEN_SCALE_FACTOR = "0";
-    QT_SCALE_FACTOR = "1";
-  };
 }

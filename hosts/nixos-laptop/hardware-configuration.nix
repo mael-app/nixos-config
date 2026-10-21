@@ -14,69 +14,70 @@
 {
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
-  boot.initrd.availableKernelModules = [
-    "xhci_pci"
-    "thunderbolt"
-    "nvme"
-    "usb_storage"
-    "sd_mod"
-  ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-intel" ];
-  boot.extraModulePackages = [ ];
-
-  # systemd in the initrd: passphrase caching between the two containers,
-  # and required for TPM auto-unlock (systemd-cryptenroll).
-  boot.initrd.systemd.enable = true;
-
-  boot.initrd.luks.devices = {
-    laptop-cryptroot = {
-      device = "/dev/disk/by-label/LAPCRYPT";
-      allowDiscards = true;
+  boot = {
+    initrd = {
+      availableKernelModules = [
+        "xhci_pci"
+        "thunderbolt"
+        "nvme"
+        "usb_storage"
+        "sd_mod"
+      ];
+      kernelModules = [ ];
+      # systemd in the initrd: passphrase caching between the two containers,
+      # and required for TPM auto-unlock (systemd-cryptenroll).
+      systemd.enable = true;
+      luks.devices = {
+        laptop-cryptroot = {
+          device = "/dev/disk/by-label/LAPCRYPT";
+          allowDiscards = true;
+        };
+        laptop-crypthome = {
+          device = "/dev/disk/by-label/LAPHOME";
+          allowDiscards = true;
+        };
+      };
     };
-    laptop-crypthome = {
-      device = "/dev/disk/by-label/LAPHOME";
-      allowDiscards = true;
+    kernelModules = [ "kvm-intel" ];
+    extraModulePackages = [ ];
+  };
+
+  fileSystems = {
+    "/" = {
+      device = "/dev/mapper/laptop-cryptroot";
+      fsType = "btrfs";
+      options = [
+        "subvol=@"
+        "compress=zstd"
+        "noatime"
+      ];
     };
-  };
-
-  fileSystems."/" = {
-    device = "/dev/mapper/laptop-cryptroot";
-    fsType = "btrfs";
-    options = [
-      "subvol=@"
-      "compress=zstd"
-      "noatime"
-    ];
-  };
-
-  fileSystems."/nix" = {
-    device = "/dev/mapper/laptop-cryptroot";
-    fsType = "btrfs";
-    options = [
-      "subvol=@nix"
-      "compress=zstd"
-      "noatime"
-    ];
-  };
-
-  fileSystems."/home" = {
-    device = "/dev/mapper/laptop-crypthome";
-    fsType = "btrfs";
-    options = [
-      "subvol=@home"
-      "compress=zstd"
-      "noatime"
-    ];
-  };
-
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-label/LAPBOOT";
-    fsType = "vfat";
-    options = [
-      "fmask=0077"
-      "dmask=0077"
-    ];
+    "/nix" = {
+      device = "/dev/mapper/laptop-cryptroot";
+      fsType = "btrfs";
+      options = [
+        "subvol=@nix"
+        "compress=zstd"
+        "noatime"
+      ];
+    };
+    "/home" = {
+      device = "/dev/mapper/laptop-crypthome";
+      fsType = "btrfs";
+      options = [
+        "subvol=@home"
+        "compress=zstd"
+        "noatime"
+      ];
+    };
+    "/boot" = {
+      device = "/dev/disk/by-label/LAPBOOT";
+      fsType = "vfat";
+      options = [
+        "fmask=0077"
+        "dmask=0077"
+      ];
+    };
   };
 
   swapDevices = [ ];

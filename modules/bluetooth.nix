@@ -1,4 +1,4 @@
-{ ... }:
+_:
 
 # Bluetooth stack plus the applet the waybar tray talks to.
 {

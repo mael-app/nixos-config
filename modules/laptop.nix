@@ -4,18 +4,22 @@
 # shared by the USB drive and the internal disk installs.
 {
   # Wi-Fi, Bluetooth and GPU firmware.
-  hardware.enableRedistributableFirmware = true;
-  hardware.cpu.intel.updateMicrocode = true;
+  hardware = {
+    enableRedistributableFirmware = true;
+    cpu.intel.updateMicrocode = true;
 
-  hardware.graphics = {
-    enable = true;
-    # Hardware video decoding (VA-API) on Intel Iris Xe.
-    extraPackages = [ pkgs.intel-media-driver ];
+    graphics = {
+      enable = true;
+      # Hardware video decoding (VA-API) on Intel Iris Xe.
+      extraPackages = [ pkgs.intel-media-driver ];
+    };
   };
 
   # Power management and firmware updates.
-  services.power-profiles-daemon.enable = true;
-  services.fwupd.enable = true;
+  services = {
+    power-profiles-daemon.enable = true;
+    fwupd.enable = true;
+  };
 
   # On mains power, closing the lid does nothing. The default suspends, which
   # cuts a download or a build short and, through hypridle's before_sleep_cmd,
