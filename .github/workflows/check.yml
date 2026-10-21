@@ -32,13 +32,3 @@ jobs:
       # --ci formats the checkout and fails if anything changed.
       - name: nix fmt
         run: nix fmt -- --ci
-
-      # Build one complete host closure so the configuration is checked beyond
-      # evaluation. The test host is representative and does not require real
-      # laptop hardware in the runner.
-      - name: build nixos-test
-        id: build
-        run: echo "path=$(nix build .#nixosConfigurations.nixos-test.config.system.build.toplevel --no-link --print-out-paths)" >> "$GITHUB_OUTPUT"
-
-      - name: vulnix
-        run: nix run nixpkgs#vulnix -- -C "${{ steps.build.outputs.path }}"

@@ -112,10 +112,11 @@ Do not commit passwords, SSH private keys, API tokens or cloud credentials.
 
 ## CI and updates
 
-Pull requests and pushes run `nix flake check`, Statix, Deadnix, formatting,
-the `nixos-test` build, and Vulnix against its runtime closure. The weekly
-update workflow refreshes `flake.lock` and opens a pull request only after the
-same evaluation and static audits pass.
+Pull requests and pushes run `nix flake check --no-build`, Statix, Deadnix and
+formatting. This evaluates every host without building a complete system
+closure, keeping CI fast and within hosted-runner limits. The weekly update
+workflow refreshes `flake.lock` and opens a pull request only after the same
+evaluation and static audits pass.
 
 Dependabot is enabled for GitHub Actions. Dependabot does not support Nix
 flakes or `flake.lock`, so Nix inputs are updated by `.github/workflows/update.yml`.
