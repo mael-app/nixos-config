@@ -35,6 +35,12 @@ jobs:
       - name: nix flake check
         run: nix flake check --no-build
 
+      - name: statix
+        run: nix run nixpkgs#statix -- check .
+
+      - name: deadnix
+        run: nix run nixpkgs#deadnix -- --fail .
+
       - name: open the pull request
         uses: peter-evans/create-pull-request@v7
         with:

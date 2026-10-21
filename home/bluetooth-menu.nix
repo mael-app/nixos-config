@@ -1,5 +1,4 @@
 {
-  config,
   lib,
   pkgs,
   ...
@@ -16,8 +15,6 @@
 # truth. It never scans: `bluetoothctl devices Paired` reads the adapter's
 # cache, which is instant whatever else is in the room.
 let
-  cfg = config.local.bluetoothMenu;
-
   menu = pkgs.writeShellApplication {
     name = "bluetooth-menu";
     runtimeInputs = [
