@@ -24,9 +24,6 @@
         "sd_mod"
       ];
       kernelModules = [ ];
-      # systemd in the initrd: passphrase caching between the two containers,
-      # and required for TPM auto-unlock (systemd-cryptenroll).
-      systemd.enable = true;
       luks.devices = {
         laptop-cryptroot = {
           device = "/dev/disk/by-label/LAPCRYPT";
