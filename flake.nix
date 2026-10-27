@@ -27,6 +27,11 @@
       url = "github:mael-app/os-tracker";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    i-have-adhd = {
+      url = "github:ayghri/i-have-adhd";
+      flake = false;
+    };
   };
 
   outputs =

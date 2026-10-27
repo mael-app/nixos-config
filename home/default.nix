@@ -16,6 +16,7 @@
     ./hyprland.nix
     ./hyprlock.nix
     ./iphone.nix
+    ./opencode.nix
     ./ghostty.nix
     ./os-tracker.nix
     ./npm.nix

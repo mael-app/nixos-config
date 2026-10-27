@@ -20,6 +20,22 @@
         "type": "github"
       }
     },
+    "i-have-adhd": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1791734634,
+        "narHash": "sha256-GTqrnZxQvzo/ogAuUrffkOaMK1BYm/4rAZsnfmDt7DU=",
+        "owner": "ayghri",
+        "repo": "i-have-adhd",
+        "rev": "1ecea1993b7fce257ffbd686c070948b5e07eda6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ayghri",
+        "repo": "i-have-adhd",
+        "type": "github"
+      }
+    },
     "nix-index-database": {
       "inputs": {
         "nixpkgs": [
@@ -80,6 +96,7 @@
     "root": {
       "inputs": {
         "home-manager": "home-manager",
+        "i-have-adhd": "i-have-adhd",
         "nix-index-database": "nix-index-database",
         "nixpkgs": "nixpkgs",
         "os-tracker": "os-tracker"
