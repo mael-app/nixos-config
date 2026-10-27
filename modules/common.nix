@@ -83,6 +83,7 @@
       "vscode"
       "discord"
       "discord-unwrapped"
+      "wechat"
       "termius"
       "1password"
       "1password-cli"

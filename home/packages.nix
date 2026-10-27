@@ -10,6 +10,7 @@
     # Desktop applications
     discord
     signal-desktop
+    wechat
     notion-electron
     termius
     spotify
