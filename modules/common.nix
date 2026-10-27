@@ -87,6 +87,7 @@
       "1password"
       "1password-cli"
       "claude-code"
+      "rtk"
       "steam"
       "steam-unwrapped"
       "lunarclient"
