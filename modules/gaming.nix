@@ -3,6 +3,8 @@
 # Gaming, on the machines that have the laptop's GPU. Not imported by the
 # test VM, which has no use for a Proton sized closure.
 {
+  programs.gamescope.enable = true;
+
   # The module is what makes Steam work: it wraps the client with the FHS
   # environment it expects and turns on hardware.graphics.enable32Bit, which
   # the 32-bit half of Proton and older titles need. Installing the package
