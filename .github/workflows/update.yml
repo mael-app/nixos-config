@@ -42,7 +42,7 @@ jobs:
         run: nix run nixpkgs#deadnix -- --fail .
 
       - name: open the pull request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           branch: update/flake-lock
           # Reuses the same branch every week, so a pending update is amended
