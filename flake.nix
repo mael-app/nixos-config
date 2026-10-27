@@ -2,8 +2,11 @@
   description = "Mael's NixOS configuration";
 
   inputs = {
-    # Fetched from a Chinese git mirror because github.com is slow here. The
-    # mirror serves the same commits as github:NixOS/nixpkgs, so the hashes
+    # Fetched from a Chinese git mirror by default because github.com is slow
+    # here. With a VPN, pass both `--override-input nixpkgs
+    # github:NixOS/nixpkgs/nixos-unstable` and `--option substituters
+    # https://cache.nixos.org` to use upstream sources and its binary cache.
+    # The mirror serves the same commits as github:NixOS/nixpkgs, so the hashes
     # and the official binary cache stay valid; shallow=1 keeps nixpkgs' full
     # history out of the download. Mirrors can be swapped for
     # mirrors.nju.edu.cn/git/nixpkgs.git or mirrors.ustc.edu.cn.

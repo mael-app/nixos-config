@@ -21,6 +21,20 @@ NixOS + Home Manager configuration.
 The account name is written once, in `flake.nix`, and reaches every module
 through `specialArgs`.
 
+## Network mirrors
+
+The default `nixpkgs` input and binary substituter use the TUNA mirrors for
+connections from China. When a VPN is active, use the upstream GitHub input and
+cache instead:
+
+```bash
+sudo nixos-rebuild switch --flake .#nixos-laptop \
+  --override-input nixpkgs github:NixOS/nixpkgs/nixos-unstable \
+  --option substituters https://cache.nixos.org
+```
+
+Without these extra options, the Chinese mirrors are used.
+
 ## Hyprland
 
 This configuration targets current Hyprland (0.55+) and uses its Lua
@@ -88,8 +102,10 @@ sudo reboot
 - kubectl
 - Helm
 - Terraform
+- OpenTofu
 - Ansible
 - Python
+- Ruby
 - Node.js
 - Go
 

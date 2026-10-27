@@ -74,10 +74,12 @@
     (lib.lowPrio minikube)
     kubernetes-helm
     terraform
+    opentofu
     ansible
 
     # Language toolchains
     python3
+    ruby
     nodejs
     go
     gcc
