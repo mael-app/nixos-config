@@ -34,7 +34,6 @@
     ./theme.nix
     ./wallpaper-video.nix
     ./waybar.nix
-    ./whatsapp.nix
     ./xdg.nix
   ];
 
