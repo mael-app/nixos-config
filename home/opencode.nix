@@ -23,10 +23,6 @@ in
         name = "catppuccin-mael";
         mode = "dark";
       };
-      # OpenCode 2 keeps TUI plugins in the CLI configuration. This must be
-      # included here because OPENCODE_CLI_CONFIG_CONTENT replaces, rather
-      # than merges, the app-owned cli.json layer.
-      plugins = [ "opencode-token-usage" ];
     };
     themes.catppuccin-mael = {
       defs = palette.colors;
