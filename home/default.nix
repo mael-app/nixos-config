@@ -24,6 +24,8 @@
     ./power-menu.nix
     ./rofi.nix
     ./rust.nix
+    ./scratchpad.nix
+    ./screen-record.nix
     ./services.nix
     ./session.nix
     ./shell.nix

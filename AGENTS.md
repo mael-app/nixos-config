@@ -36,6 +36,9 @@
 	relevant `imports` list rather than growing an existing file.
 - Take the account name from the `username` argument rather than writing it
 	out; `flake.nix` passes it, along with `host`, to every module.
+- Take colors from the `palette` argument (root `palette.nix`, Catppuccin
+	Mocha) instead of writing hex codes; it reaches every module the same way,
+	with `hex`, `rgb`, `rgba` and `hypr` helpers for each syntax.
 - Prefer explicit package references and narrowly scoped
 	`allowUnfreePredicate` entries over globally allowing unfree packages.
 - Keep host-specific settings in `hosts/<name>/` and shared settings in

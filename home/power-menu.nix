@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  palette,
   ...
 }:
 
@@ -77,8 +78,8 @@ in
           mkdir -p "$out"
           for name in lock logout suspend reboot shutdown; do
             svg="${pkgs.wlogout}/share/wlogout/assets/$name.svg"
-            sed 's|<svg |<svg fill="#cdd6f4" |' "$svg" > resting.svg
-            sed 's|<svg |<svg fill="#1e1e2e" |' "$svg" > active.svg
+            sed 's|<svg |<svg fill="${palette.hex "text"}" |' "$svg" > resting.svg
+            sed 's|<svg |<svg fill="${palette.hex "base"}" |' "$svg" > active.svg
             # Rendered well above the 64px the stylesheet draws them at, so the
             # tiles stay sharp on a scaled monitor.
             rsvg-convert -w 192 -h 192 -o "$out/$name.png" resting.svg
@@ -142,14 +143,14 @@ in
           /* Hyprland blurs what is behind this surface, so the sheet needs a
              tint to frost: a fully transparent window leaves the desktop sharp. */
           window {
-            background-color: rgba(17, 17, 27, 0.55);
+            background-color: ${palette.rgba "crust" "0.55"};
           }
 
           button {
             font-family: "JetBrainsMono Nerd Font";
-            color: #cdd6f4;
-            background-color: rgba(30, 30, 46, 0.96);
-            border: 2px solid rgba(137, 180, 250, 0.28);
+            color: ${palette.hex "text"};
+            background-color: ${palette.rgba "base" "0.96"};
+            border: 2px solid ${palette.rgba "blue" "0.28"};
             border-radius: 12px;
             background-repeat: no-repeat;
             /* An absolute size keeps the icon sane whatever aspect ratio the
@@ -166,9 +167,9 @@ in
 
           button:hover,
           button:focus {
-            color: #1e1e2e;
-            background-color: #89b4fa;
-            border-color: #89b4fa;
+            color: ${palette.hex "base"};
+            background-color: ${palette.hex "blue"};
+            border-color: ${palette.hex "blue"};
             outline: none;
           }
 

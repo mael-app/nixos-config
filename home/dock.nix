@@ -2,6 +2,7 @@
   config,
   pkgs,
   lib,
+  palette,
   ...
 }:
 
@@ -45,9 +46,9 @@
 
   xdg.configFile."nwg-dock-hyprland/style.css".text = ''
     window {
-      background: rgba(26, 27, 38, 0.85);
+      background: ${palette.rgba "base" "0.85"};
       border-radius: 14px;
-      border: 2px solid rgba(137, 180, 250, 0.3);
+      border: 2px solid ${palette.rgba "blue" "0.3"};
     }
 
     #box {
@@ -60,15 +61,15 @@
       border-radius: 10px;
       padding: 4px;
       margin: 0 2px;
-      color: #cdd6f4;
+      color: ${palette.hex "text"};
     }
 
     button:hover {
-      background: rgba(205, 214, 244, 0.1);
+      background: ${palette.rgba "text" "0.1"};
     }
 
     button:focus {
-      background: rgba(137, 180, 250, 0.2);
+      background: ${palette.rgba "blue" "0.2"};
     }
   '';
 }

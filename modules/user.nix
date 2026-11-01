@@ -4,6 +4,7 @@
   host,
   username,
   wallpaper,
+  palette,
   ...
 }:
 
@@ -43,6 +44,7 @@
         host
         username
         wallpaper
+        palette
         ;
     };
 

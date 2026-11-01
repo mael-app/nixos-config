@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, palette, ... }:
 
 let
   # The 1Password desktop app writes this manifest into
@@ -108,6 +108,124 @@ in
 
       isDefault = true;
 
+      userChrome = ''
+        :root {
+          --premium-base: ${palette.hex "base"};
+          --premium-mantle: ${palette.hex "mantle"};
+          --premium-surface: ${palette.hex "surface0"};
+          --premium-text: ${palette.hex "text"};
+          --premium-subtext: ${palette.hex "subtext0"};
+          --premium-blue: ${palette.hex "blue"};
+        }
+
+        #navigator-toolbox,
+        #nav-bar {
+          background: var(--premium-base) !important;
+          box-shadow: none !important;
+        }
+
+        #navigator-toolbox {
+          border-bottom: 1px solid color-mix(in srgb, var(--premium-blue) 25%, transparent) !important;
+        }
+
+        #nav-bar {
+          min-height: 42px !important;
+        }
+
+        #urlbar-background,
+        #searchbar {
+          background: var(--premium-surface) !important;
+          border: 1px solid color-mix(in srgb, var(--premium-blue) 25%, transparent) !important;
+          border-radius: 10px !important;
+          box-shadow: none !important;
+        }
+
+        #urlbar[focused="true"] > #urlbar-background {
+          border-color: var(--premium-blue) !important;
+          box-shadow: 0 0 0 2px color-mix(in srgb, var(--premium-blue) 18%, transparent) !important;
+        }
+
+        #urlbar-input,
+        .urlbar-input-box,
+        .searchbar-textbox {
+          color: var(--premium-text) !important;
+        }
+
+        #TabsToolbar {
+          background: var(--premium-mantle) !important;
+          padding: 5px 8px 0 !important;
+        }
+
+        .tabbrowser-tab {
+          min-height: 32px !important;
+          margin: 0 2px !important;
+          padding: 0 8px !important;
+          border-radius: 9px 9px 0 0 !important;
+          color: var(--premium-subtext) !important;
+        }
+
+        .tabbrowser-tab[selected="true"] {
+          background: var(--premium-surface) !important;
+          color: var(--premium-text) !important;
+          box-shadow: inset 0 2px var(--premium-blue) !important;
+        }
+
+        .tabbrowser-tab:hover:not([selected="true"]) {
+          background: color-mix(in srgb, var(--premium-surface) 70%, transparent) !important;
+        }
+
+        .tab-close-button {
+          display: none !important;
+        }
+
+        .tabbrowser-tab:hover .tab-close-button,
+        .tabbrowser-tab[selected="true"] .tab-close-button {
+          display: block !important;
+        }
+
+        .titlebar-spacer,
+        .titlebar-placeholder,
+        #PersonalToolbar[collapsed="true"] {
+          display: none !important;
+        }
+
+        /* The bookmarks toolbar is a separate surface from the navigation
+           bar, so style it explicitly instead of leaving Firefox's default
+           grey GTK-like strip behind. */
+        #PersonalToolbar {
+          background: var(--premium-mantle) !important;
+          border-top: 1px solid color-mix(in srgb, var(--premium-blue) 12%, transparent) !important;
+          border-bottom: 1px solid color-mix(in srgb, var(--premium-blue) 18%, transparent) !important;
+          padding: 4px 10px !important;
+        }
+
+        #PersonalToolbar #PlacesToolbarItems {
+          background: transparent !important;
+        }
+
+        #PersonalToolbar .bookmark-item {
+          color: var(--premium-subtext) !important;
+          border-radius: 7px !important;
+          margin: 0 2px !important;
+          padding: 4px 8px !important;
+        }
+
+        #PersonalToolbar .bookmark-item:hover {
+          color: var(--premium-text) !important;
+          background: color-mix(in srgb, var(--premium-blue) 20%, transparent) !important;
+        }
+
+        #PersonalToolbar .bookmark-item[open="true"] {
+          color: var(--premium-base) !important;
+          background: var(--premium-blue) !important;
+        }
+
+        #sidebar-box {
+          background: var(--premium-base) !important;
+          border-inline-end: 1px solid color-mix(in srgb, var(--premium-blue) 20%, transparent) !important;
+        }
+      '';
+
       settings = {
         # --- Carried over from the profile ---
 
@@ -124,6 +242,11 @@ in
 
         # The sidebar closes with the panel instead of keeping its strip.
         "sidebar.visibility" = "hide-on-close";
+        "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
+        "browser.uidensity" = 1;
+        "browser.compactmode.show" = true;
+        "browser.tabs.tabMinWidth" = 90;
+        "browser.tabs.inTitlebar" = true;
 
         # The toolbar as it is arranged today: uBlock and 1Password next to the
         # address bar, SponsorBlock folded into the extensions panel. Written

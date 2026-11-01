@@ -2,7 +2,7 @@
   "positionX": "right",
   "positionY": "top",
   "control-center-width": 400,
-  "control-center-height": 720,
+  "control-center-height": 820,
   "notification-window-width": 400,
   "notification-window-height": 160,
   "notification-icon-size": 48,
@@ -17,6 +17,8 @@
   "image-visibility": "when-available",
   "text-empty": "No notifications",
   "widgets": [
+    "title",
+    "buttons-grid",
     "mpris",
     "volume",
     "backlight",
@@ -24,6 +26,23 @@
     "notifications"
   ],
   "widget-config": {
+    "title": {
+      "text": "Control Center",
+      "clear-all-button": true,
+      "button-text": "Clear"
+    },
+    "buttons-grid": {
+      "actions": [
+        { "label": "󰂯  Bluetooth", "type": "command", "command": "bluetooth-menu" },
+        { "label": "󰌪  Power saver", "type": "command", "command": "powerprofilesctl set power-saver" },
+        { "label": "󰾅  Balanced", "type": "command", "command": "powerprofilesctl set balanced" },
+        { "label": "󰓅  Performance", "type": "command", "command": "powerprofilesctl set performance" },
+        { "label": "󰀻  Mullvad on", "type": "command", "command": "mullvad connect" },
+        { "label": "󰀼  Mullvad off", "type": "command", "command": "mullvad disconnect" },
+        { "label": "󰝟  Mute", "type": "command", "command": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle" },
+        { "label": "󰂜  Do not disturb", "type": "command", "command": "swaync-client -d -sw" }
+      ]
+    },
     "mpris": {
       "align": "center",
       "autohide": false,

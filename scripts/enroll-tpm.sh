@@ -18,9 +18,9 @@ for label in LAPCRYPT LAPHOME; do
 
   step "Enrolling the TPM for $label"
   echo "Enter your LUKS passphrase when prompted."
-  # PCR 7 = Secure Boot state, PCR 0 = firmware. Changing either falls
-  # back to the passphrase, which stays enrolled.
-  sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+7 "$dev"
+  # PCR 7 = Secure Boot state and PCR 11 = the signed UKI boot chain.
+  # Changing either falls back to the passphrase, which stays enrolled.
+  sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=7+11 "$dev"
 done
 
 step "Done"

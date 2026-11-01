@@ -1,6 +1,7 @@
 {
   config,
   pkgs,
+  palette,
   ...
 }:
 
@@ -24,6 +25,7 @@
         ];
         modules-center = [ "clock" ];
         modules-right = [
+          "custom/recording"
           "custom/bluetooth"
           "tray"
           "idle_inhibitor"
@@ -42,8 +44,17 @@
           on-click = "rofi -show drun";
           tooltip = false;
         };
+        # Red recording indicator, hidden while nothing is recording. The
+        # toggle script signals the bar so the icon appears immediately.
+        "custom/recording" = {
+          return-type = "json";
+          interval = 5;
+          signal = 8;
+          exec = "${config.local.screenRecord.command} status";
+          on-click = config.local.screenRecord.command;
+        };
         "custom/notification" = {
-          tooltip-format = "Notifications";
+          tooltip-format = "Control Center / Notifications";
           format = "󰂚";
           return-type = "json";
           exec = "swaync-client -swb";
@@ -84,7 +95,7 @@
             mode = "month";
             weeks-pos = "right";
             format = {
-              today = "<span color='#fab387'><b><u>{}</u></b></span>";
+              today = "<span color='${palette.hex "peach"}'><b><u>{}</u></b></span>";
             };
           };
         };
@@ -228,14 +239,15 @@
       }
 
       window#waybar {
-        background: rgba(26, 27, 38, 0.80);
-        color: #cdd6f4;
-        border: 2px solid rgba(137, 180, 250, 0.3);
+        background: ${palette.rgba "base" "0.80"};
+        color: ${palette.hex "text"};
+        border: 2px solid ${palette.rgba "blue" "0.3"};
         border-radius: 12px;
       }
 
       #custom-launcher,
       #custom-notification,
+      #custom-recording,
       #custom-bluetooth,
       #workspaces,
       #window,
@@ -251,27 +263,27 @@
         padding: 0 10px;
         margin: 4px 0;
         border-radius: 8px;
-        background: rgba(205, 214, 244, 0.06);
+        background: ${palette.rgba "text" "0.06"};
       }
 
       #custom-launcher {
-        color: #89b4fa;
+        color: ${palette.hex "blue"};
         font-size: 18px;
         margin-left: 4px;
         padding: 0 12px 0 10px;
       }
 
       #custom-notification {
-        color: #f9e2af;
+        color: ${palette.hex "yellow"};
       }
 
       #custom-bluetooth {
-        color: #89b4fa;
+        color: ${palette.hex "blue"};
       }
 
       #custom-bluetooth.off,
       #custom-bluetooth.disabled {
-        color: #7f849c;
+        color: ${palette.hex "overlay1"};
       }
 
       #workspaces {
@@ -279,23 +291,23 @@
       }
 
       #workspaces button {
-        color: #7f849c;
+        color: ${palette.hex "overlay1"};
         padding: 0 6px;
         border-radius: 6px;
       }
 
       #workspaces button.active {
-        color: #1e1e2e;
-        background: #89b4fa;
+        color: ${palette.hex "base"};
+        background: ${palette.hex "blue"};
       }
 
       #workspaces button:hover {
-        background: rgba(137, 180, 250, 0.2);
-        color: #89b4fa;
+        background: ${palette.rgba "blue" "0.2"};
+        color: ${palette.hex "blue"};
       }
 
       #window {
-        color: #cba6f7;
+        color: ${palette.hex "mauve"};
       }
 
       window#waybar.empty #window {
@@ -303,59 +315,63 @@
       }
 
       #clock {
-        color: #fab387;
+        color: ${palette.hex "peach"};
       }
 
       #pulseaudio {
-        color: #f9e2af;
+        color: ${palette.hex "yellow"};
       }
 
       #pulseaudio.muted {
-        color: #7f849c;
+        color: ${palette.hex "overlay1"};
       }
 
       #backlight {
-        color: #f5c2e7;
+        color: ${palette.hex "pink"};
       }
 
       #custom-kbd-backlight {
-        color: #cba6f7;
+        color: ${palette.hex "mauve"};
       }
 
       #battery {
-        color: #a6e3a1;
+        color: ${palette.hex "green"};
       }
 
       #battery.warning {
-        color: #f9e2af;
+        color: ${palette.hex "yellow"};
       }
 
       #battery.critical {
-        color: #f38ba8;
+        color: ${palette.hex "red"};
       }
 
       #cpu {
-        color: #94e2d5;
+        color: ${palette.hex "teal"};
       }
 
       #memory {
-        color: #b4befe;
+        color: ${palette.hex "lavender"};
       }
 
       #idle_inhibitor.activated {
-        color: #fab387;
+        color: ${palette.hex "peach"};
       }
 
       #custom-power {
-        color: #f38ba8;
+        color: ${palette.hex "red"};
         margin-right: 4px;
       }
 
+      #custom-recording {
+        color: ${palette.hex "red"};
+      }
+
       tooltip {
-        background: rgba(26, 27, 38, 0.95);
-        border: 2px solid rgba(137, 180, 250, 0.3);
+        background: ${palette.rgba "base" "0.95"};
+        border: 2px solid ${palette.rgba "blue" "0.3"};
         border-radius: 8px;
-        color: #cdd6f4;
+        color: ${palette.hex "text"};
       }
     '';
   };

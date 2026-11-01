@@ -1,12 +1,23 @@
-{ lib, username, ... }:
+{
+  lib,
+  pkgs,
+  username,
+  ...
+}:
 
 # NixOS on the laptop's internal 1 TB NVMe (replaces Pop!_OS).
 # Windows stays untouched on the second NVMe.
 {
-  boot.loader.systemd-boot = {
+  # Build and sign Unified Kernel Images so Secure Boot and the TPM can
+  # authenticate the complete kernel/initrd boot chain.
+  boot.loader.systemd-boot.enable = false;
+  boot.lanzaboote = {
     enable = true;
-    configurationLimit = 10;
+    pkiBundle = "/var/lib/sbctl";
   };
+
+  environment.systemPackages = [ pkgs.sbctl ];
+
   # Internal install: register NixOS in the firmware so it boots by default.
   boot.loader.efi.canTouchEfiVariables = true;
 

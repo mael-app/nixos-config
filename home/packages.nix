@@ -21,6 +21,11 @@
     file-roller
     pavucontrol
 
+    # Logitech Brio/MX Brio controls through V4L2; guvcview provides a GUI
+    # for previewing the camera and adjusting the controls exposed by it.
+    v4l-utils
+    guvcview
+
     # Wallpaper daemon and dock, started by the user services below
     awww
     nwg-dock-hyprland
@@ -34,6 +39,11 @@
     grim
     slurp
     grimblast
+    # Screenshot annotation editor (Print) and area recorder (SUPER + SHIFT + R)
+    satty
+    wf-recorder
+    # Emoji picker on SUPER + .
+    rofimoji
     hyprpicker
     wtype
     wl-clipboard

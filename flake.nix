@@ -17,6 +17,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -37,6 +42,7 @@
   outputs =
     {
       self,
+      lanzaboote,
       nixpkgs,
       nix-index-database,
       ...
@@ -48,6 +54,10 @@
       # Shared by the session and the login screen, so changing the image is
       # a one line edit here.
       wallpaper = ./home/wallpapers/Liquid.png;
+
+      # Catppuccin Mocha, shared by every surface of the desktop. See
+      # palette.nix for the helpers (hex, rgba, hypr) built on it.
+      palette = import ./palette.nix { inherit (nixpkgs) lib; };
 
       # Modules shared by every machine. Each host adds its own
       # configuration.nix and hardware-configuration.nix, plus whatever
@@ -68,10 +78,12 @@
               host
               username
               wallpaper
+              palette
               ;
           };
 
           modules = [
+            lanzaboote.nixosModules.lanzaboote
             ./hosts/${host}/configuration.nix
             ./hosts/${host}/hardware-configuration.nix
             ./modules/audio.nix

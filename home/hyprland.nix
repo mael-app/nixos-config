@@ -1,8 +1,41 @@
 {
   config,
+  pkgs,
+  palette,
   ...
 }:
 
+let
+  # Print freezes the frame, picks an area and opens it in satty for
+  # annotation; the editor copies or saves on exit. SUPER + Print skips the
+  # editor and copies the area straight away.
+  screenshotAnnotate = pkgs.writeShellScript "screenshot-annotate" ''
+    dir="$HOME/Pictures/Screenshots"
+    mkdir -p "$dir"
+    ${pkgs.grimblast}/bin/grimblast --freeze save area - | ${pkgs.satty}/bin/satty \
+      --filename - \
+      --early-exit \
+      --output-filename "$dir/screenshot-$(${pkgs.coreutils}/bin/date +'%Y-%m-%d_%H-%M-%S').png"
+  '';
+
+  vpnToggle = pkgs.writeShellApplication {
+    name = "mullvad-toggle";
+    runtimeInputs = with pkgs; [
+      mullvad-vpn
+      gnugrep
+      libnotify
+    ];
+    text = ''
+      if mullvad status | grep -q "Connected"; then
+        mullvad disconnect
+        notify-send -a Mullvad "VPN disconnected"
+      else
+        mullvad connect
+        notify-send -a Mullvad "VPN connected"
+      fi
+    '';
+  };
+in
 {
   # Hyprland 0.55+ uses Lua configuration.
   #
@@ -69,8 +102,8 @@
             respect_gaps = true,
           },
           col = {
-            active_border = { colors = { "rgba(89b4faee)", "rgba(a6e3a1ee)" }, angle = 45 },
-            inactive_border = "rgba(595959aa)",
+            active_border = { colors = { "${palette.hypr "blue" "ee"}", "${palette.hypr "green" "ee"}" }, angle = 45 },
+            inactive_border = "${palette.hypr "overlay0" "aa"}",
           },
         },
 
@@ -175,6 +208,32 @@
         blur = true,
       })
 
+      -- Rofi runs as a layer surface too: its theme is translucent, so it
+      -- needs the same blur as wlogout to frost what sits behind it.
+      hl.layer_rule({
+        name = "rofi-blur",
+        match = { namespace = "^rofi$" },
+        blur = true,
+      })
+
+      -- Scratchpads: a terminal and a btop monitor parked on special
+      -- workspaces. SUPER + S and SUPER + SHIFT + S spawn them on first use
+      -- and toggle them afterwards (see home/scratchpad.nix).
+      hl.window_rule({
+        name = "scratchpad-terminal",
+        match = { class = "^com\\.mitchellh\\.ghostty\\.scratch$" },
+        workspace = "special:scratch silent",
+        size = { "(monitor_w*0.55)", "(monitor_h*0.6)" },
+        center = true,
+      })
+      hl.window_rule({
+        name = "scratchpad-btop",
+        match = { class = "^com\\.mitchellh\\.ghostty\\.btop-scratch$" },
+        workspace = "special:btop silent",
+        size = { "(monitor_w*0.8)", "(monitor_h*0.8)" },
+        center = true,
+      })
+
       -- Usable area of a monitor (global logical coordinates), minus bars/dock
       local gap = 10
       local function usable_area(mon)
@@ -251,6 +310,9 @@
       -- Application launcher
       hl.bind(mainMod .. " + SPACE", hl.dsp.exec_cmd("rofi -show drun"))
 
+      -- Mullvad VPN: SUPER + R toggles the tunnel and reports the result.
+      hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("${vpnToggle}/bin/mullvad-toggle"))
+
       -- File manager
       hl.bind(mainMod .. " + E", hl.dsp.exec_cmd("thunar"))
 
@@ -289,10 +351,21 @@
       hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
       hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))
 
-      -- Screenshots
-      hl.bind("Print", hl.dsp.exec_cmd("grimblast copy area"))
+      -- Screenshots: Print annotates, SUPER + Print copies, SHIFT + Print saves
+      hl.bind("Print", hl.dsp.exec_cmd("${screenshotAnnotate}"))
+      hl.bind(mainMod .. " + Print", hl.dsp.exec_cmd("grimblast copy area"))
       hl.bind("SHIFT + Print", hl.dsp.exec_cmd("grimblast save output"))
       hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprpicker | wl-copy"))
+
+      -- Area screen recording (toggle); the waybar indicator follows it
+      hl.bind(mainMod .. " + SHIFT + R", hl.dsp.exec_cmd("${config.local.screenRecord.command}"))
+
+      -- Emoji picker, typed straight into the focused window
+      hl.bind(mainMod .. " + period", hl.dsp.exec_cmd("rofimoji --action type"))
+
+      -- Scratchpads: dropdown terminal and system monitor
+      hl.bind(mainMod .. " + S", hl.dsp.exec_cmd("${config.local.scratchpad.command} term"))
+      hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("${config.local.scratchpad.command} btop"))
 
       -- Lock screen
       hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("loginctl lock-session"))
