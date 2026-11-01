@@ -49,7 +49,7 @@ let
       while IFS= read -r event; do
         count="$(printf '%s\n' "$event" | jq -r '.text // "0"')"
         case "$count" in
-          *[!0-9]*|) count=0 ;;
+          *[!0-9]*) count=0 ;;
         esac
         if [ "$count" != "$last" ]; then
           write_icon "$count"
