@@ -18,6 +18,22 @@ in
     # through OPENCODE_CLI_CONFIG_CONTENT, so activation no longer moves the
     # user's existing cli.json to a .hm-bak file.
     mutableSettings = true;
+    settings = {
+      # Let OpenCode choose among the configured web-search providers. The
+      # first use may require connecting a provider with /connect.
+      websearch.provider = "random";
+
+      # Browser automation through the official Playwright MCP server.
+      mcp.servers.playwright = {
+        type = "local";
+        command = [
+          "npx"
+          "-y"
+          "@playwright/mcp@latest"
+          "--headless"
+        ];
+      };
+    };
     cli = {
       theme = {
         name = "catppuccin-mael";
