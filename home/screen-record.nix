@@ -32,6 +32,8 @@ in
             hyprland
             coreutils
             procps
+            libva-utils
+            gnugrep
           ];
           text = ''
             state="''${XDG_RUNTIME_DIR:?}/screen-recording.start"
@@ -49,8 +51,25 @@ in
                 mkdir -p "$dir"
                 geometry="$(slurp)" || exit 0
                 date +%s > "$state"
+                file="$dir/recording-$(date +'%Y-%m-%d_%H-%M-%S').mp4"
+
+                # Encode on the GPU when the session exposes a VA-API
+                # encoder. x264 on the CPU at 60 fps and 2560x1600 takes
+                # several cores and stutters whatever is being recorded;
+                # the Iris Xe has a dedicated H.264 encoder that leaves the
+                # CPU alone. vainfo lists the encode entrypoints, so it
+                # doubles as the probe: the QEMU test VM has no VA-API
+                # driver, and there the recording falls back to the CPU
+                # codec instead of failing. grep reads its whole input, so
+                # vainfo cannot die to a SIGPIPE and flip the result under
+                # pipefail.
+                codec=()
+                if vainfo 2>/dev/null | grep VAEntrypointEncSlice > /dev/null; then
+                  codec=(--codec h264_vaapi --device /dev/dri/renderD128)
+                fi
+
                 wf-recorder --framerate 60 --geometry "$geometry" \
-                  --file "$dir/recording-$(date +'%Y-%m-%d_%H-%M-%S').mp4" &
+                  "''${codec[@]}" --file "$file" &
               fi
               # Refresh the waybar indicator now instead of at the next poll.
               pkill -RTMIN+8 -x waybar || true

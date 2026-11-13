@@ -14,31 +14,9 @@ let
   });
 in
 
-# LibrePods talks to AirPods over Bluetooth. It pauses the MPRIS player when a
-# bud leaves an ear and resumes it when the bud goes back in, and its Waybar
-# tray icon switches between noise cancellation, transparency and adaptive
-# mode and shows the battery levels.
+# LibrePods is available for manually requested AirPods controls, but it must
+# not start its own connection loop alongside Blueman and PipeWire. The latter
+# are responsible for connecting paired Bluetooth audio devices.
 {
   home.packages = [ librepods ];
-
-  systemd.user.services.librepods = {
-    Unit = {
-      Description = "LibrePods AirPods tray";
-      PartOf = [ "graphical-session.target" ];
-      After = [
-        "graphical-session.target"
-        "tray.target"
-      ];
-      Requires = [ "tray.target" ];
-    };
-
-    Service = {
-      # --hide keeps the main window closed; the tray icon opens it.
-      ExecStart = "${librepods}/bin/librepods --hide";
-      Restart = "on-failure";
-      RestartSec = 5;
-    };
-
-    Install.WantedBy = [ "graphical-session.target" ];
-  };
 }

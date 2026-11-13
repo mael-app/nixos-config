@@ -39,8 +39,7 @@
     grim
     slurp
     grimblast
-    # Screenshot annotation editor (Print) and area recorder (SUPER + SHIFT + R)
-    satty
+    # Area recorder (SUPER + SHIFT + R)
     wf-recorder
     # Emoji picker on SUPER + .
     rofimoji
@@ -57,6 +56,7 @@
     # Editors and terminal tools
     vscode
     jetbrains.rider
+    jetbrains.webstorm
     neovim
     tmux
     btop

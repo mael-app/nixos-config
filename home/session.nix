@@ -19,6 +19,10 @@
         key = "Tab";
         switch_workspaces = false;
         filter_by = [ ];
+        # Scratchpads live on special workspaces and are not selectable windows.
+        # Excluding them also avoids hyprshell trying to resolve their synthetic
+        # workspace id when collecting the switcher entries.
+        exclude_workspaces = "special:.*";
       };
     };
   };

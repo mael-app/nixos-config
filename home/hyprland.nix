@@ -6,18 +6,6 @@
 }:
 
 let
-  # Print freezes the frame, picks an area and opens it in satty for
-  # annotation; the editor copies or saves on exit. SUPER + Print skips the
-  # editor and copies the area straight away.
-  screenshotAnnotate = pkgs.writeShellScript "screenshot-annotate" ''
-    dir="$HOME/Pictures/Screenshots"
-    mkdir -p "$dir"
-    ${pkgs.grimblast}/bin/grimblast --freeze save area - | ${pkgs.satty}/bin/satty \
-      --filename - \
-      --early-exit \
-      --output-filename "$dir/screenshot-$(${pkgs.coreutils}/bin/date +'%Y-%m-%d_%H-%M-%S').png"
-  '';
-
   vpnToggle = pkgs.writeShellApplication {
     name = "mullvad-toggle";
     runtimeInputs = with pkgs; [
@@ -351,8 +339,8 @@ in
       hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
       hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))
 
-      -- Screenshots: Print annotates, SUPER + Print copies, SHIFT + Print saves
-      hl.bind("Print", hl.dsp.exec_cmd("${screenshotAnnotate}"))
+      -- Screenshots: Print and SUPER + Print copy the selected area, SHIFT + Print saves
+      hl.bind("Print", hl.dsp.exec_cmd("grimblast copy area"))
       hl.bind(mainMod .. " + Print", hl.dsp.exec_cmd("grimblast copy area"))
       hl.bind("SHIFT + Print", hl.dsp.exec_cmd("grimblast save output"))
       hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprpicker | wl-copy"))
