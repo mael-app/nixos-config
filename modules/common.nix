@@ -74,6 +74,15 @@
     };
   };
 
+  # The weekly garbage collector walks the store and unlinks paths while
+  # the machine may be in use. The idle scheduling classes make the kernel
+  # run it only when no foreground work wants the core or the I/O: a
+  # delayed collection costs nothing, a stuttering game or build does.
+  systemd.services.nix-gc.serviceConfig = {
+    CPUSchedulingPolicy = "idle";
+    IOSchedulingClass = "idle";
+  };
+
   # Only the non-free packages we explicitly use.
   nixpkgs.config.allowUnfreePredicate =
     pkg:
@@ -93,6 +102,7 @@
       "steam-unwrapped"
       "lunarclient"
       "rider"
+      "webstorm"
     ];
 
   security.sudo.wheelNeedsPassword = true;

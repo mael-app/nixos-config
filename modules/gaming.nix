@@ -3,6 +3,22 @@
 # Gaming, on the machines that have the laptop's GPU. Not imported by the
 # test VM, which has no use for a Proton sized closure.
 {
+  # Games running through Proton regularly execute "split locked"
+  # instructions, which the kernel slows down hard by default
+  # (kernel.split_lock_mitigate). Windows 11 applies no such penalty, so
+  # leaving detection on is one of the few ways this machine can be slower
+  # than its Windows install. The mitigation protects multi-tenant hosts
+  # from cross-VM denial of service, which is not a threat on a personal
+  # laptop, so matching Windows behaviour here costs nothing real.
+  boot.kernelParams = [ "split_lock_detect=off" ];
+
+  # GameMode asks power-profiles-daemon for the performance profile while a
+  # game runs and restores the previous one on exit, so a gaming session no
+  # longer depends on remembering the profile buttons in the notification
+  # center. Games opt in per title with `gamemoderun %command%` in their
+  # Steam launch options, or `gamemoderun <cmd>` anywhere else.
+  programs.gamemode.enable = true;
+
   programs.gamescope.enable = true;
 
   # The module is what makes Steam work: it wraps the client with the FHS

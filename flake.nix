@@ -116,6 +116,8 @@
         nixos-usb = mkHost "nixos-usb" [
           ./modules/howdy.nix
           ./modules/laptop.nix
+          ./modules/ananicy.nix
+          ./modules/scx.nix
           ./modules/gaming.nix
           ./modules/roblox.nix
           ./modules/gpu-tools.nix
@@ -126,6 +128,8 @@
         nixos-laptop = mkHost "nixos-laptop" [
           ./modules/howdy.nix
           ./modules/laptop.nix
+          ./modules/ananicy.nix
+          ./modules/scx.nix
           ./modules/gaming.nix
           ./modules/roblox.nix
           ./modules/gpu-tools.nix

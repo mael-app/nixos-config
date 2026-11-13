@@ -107,7 +107,9 @@ sudo mkfs.btrfs -f -L nixos-sys /dev/mapper/laptop-cryptroot
 sudo mkfs.btrfs -f -L nixos-home /dev/mapper/laptop-crypthome
 
 step "4. Subvolumes and mounting"
-opts="compress=zstd,noatime"
+# zstd level 1: nearly the default ratio for about half the compression CPU
+# time. Matches the mount options in hosts/nixos-laptop/hardware-configuration.nix.
+opts="compress=zstd:1,noatime"
 
 sudo mount /dev/mapper/laptop-cryptroot /mnt
 sudo btrfs subvolume create /mnt/@ /mnt/@nix

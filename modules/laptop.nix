@@ -1,8 +1,55 @@
 { pkgs, ... }:
 
+let
+  # Community thermal profile for the 2023 LG Gram 17. It avoids the
+  # firmware's very early performance limit while retaining the CPU's
+  # hardware thermal protection.
+  lgGramThermalConfig = pkgs.writeText "lg-gram-thermal-conf.xml" ''
+    <?xml version="1.0"?>
+    <ThermalConfiguration>
+      <Platform>
+        <Name>LG Gram 17 2023</Name>
+        <ProductName>17Z90R-G.AD78F</ProductName>
+        <Preference>PERFORMANCE</Preference>
+        <ThermalZones>
+          <ThermalZone>
+            <Type>auto_zone_0</Type>
+            <TripPoints>
+              <TripPoint>
+                <SensorType>SEN2</SensorType>
+                <Temperature>75000</Temperature>
+                <Type>Active</Type>
+                <CoolingDevice>
+                  <Type>TFN2</Type>
+                  <SamplingPeriod>3</SamplingPeriod>
+                  <TargetState>28000000</TargetState>
+                </CoolingDevice>
+              </TripPoint>
+              <TripPoint>
+                <SensorType>SEN2</SensorType>
+                <Temperature>95000</Temperature>
+                <Type>Active</Type>
+                <CoolingDevice>
+                  <Type>B0D4</Type>
+                  <SamplingPeriod>3</SamplingPeriod>
+                </CoolingDevice>
+              </TripPoint>
+            </TripPoints>
+          </ThermalZone>
+        </ThermalZones>
+      </Platform>
+    </ThermalConfiguration>
+  '';
+in
+
 # Hardware settings for the laptop itself (Intel Raptor Lake, Iris Xe),
 # shared by the USB drive and the internal disk installs.
 {
+  # Prefer suspend-to-RAM (S3) over s2idle. The latter is currently selected
+  # by default on this Gram and can leave the machine warm or drain the battery
+  # overnight because some devices remain in a shallow idle state.
+  boot.kernelParams = [ "mem_sleep_default=deep" ];
+
   # Wi-Fi, Bluetooth and GPU firmware.
   hardware = {
     enableRedistributableFirmware = true;
@@ -33,8 +80,13 @@
     HandleLidSwitchExternalPower = "ignore";
   };
 
-  # Raptor Lake throttles hard without an active thermal policy.
-  services.thermald.enable = true;
+  # The stock firmware profile throttles this Gram around 70-75 °C. This
+  # profile starts the fan at 75 °C and applies passive cooling at 95 °C,
+  # matching the community configuration for the 2023 17Z90R series.
+  services.thermald = {
+    enable = true;
+    configFile = lgGramThermalConfig;
+  };
 
   # Compressed swap in RAM instead of a swap partition (fewer SSD writes).
   zramSwap.enable = true;
@@ -81,5 +133,22 @@
     TIMELINE_LIMIT_WEEKLY = 4;
     TIMELINE_LIMIT_MONTHLY = 3;
     TIMELINE_LIMIT_YEARLY = 0;
+  };
+
+  # Snapper's helpers carry no priority of their own upstream: a timeline
+  # snapshot or a cleanup pass that happens to run during a game or a build
+  # competes for the CPU and the disk like any foreground work. The idle
+  # scheduling classes make the kernel run them only when nothing else
+  # wants the core or the I/O. btrfs-scrub already sets both upstream, so
+  # only the two snapper helpers need it here.
+  systemd.services = {
+    snapper-timeline.serviceConfig = {
+      CPUSchedulingPolicy = "idle";
+      IOSchedulingClass = "idle";
+    };
+    snapper-cleanup.serviceConfig = {
+      CPUSchedulingPolicy = "idle";
+      IOSchedulingClass = "idle";
+    };
   };
 }

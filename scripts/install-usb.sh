@@ -77,7 +77,9 @@ sudo mount /dev/mapper/cryptroot /mnt
 sudo btrfs subvolume create /mnt/@ /mnt/@home /mnt/@nix
 sudo umount /mnt
 
-opts="compress=zstd,noatime"
+# zstd level 1: nearly the default ratio for about half the compression CPU
+# time. Matches the mount options in hosts/nixos-usb/hardware-configuration.nix.
+opts="compress=zstd:1,noatime"
 sudo mount -o "subvol=@,$opts" /dev/mapper/cryptroot /mnt
 sudo mkdir -p /mnt/home /mnt/nix /mnt/boot
 sudo mount -o "subvol=@home,$opts" /dev/mapper/cryptroot /mnt/home

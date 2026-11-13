@@ -39,13 +39,17 @@
     extraModulePackages = [ ];
   };
 
+  # Level 1 instead of btrfs' default 3: nearly the same compression ratio
+  # for about half the CPU spent on writes. Only new writes are affected;
+  # data written before the change keeps its original compression. The
+  # install script mounts with the same option.
   fileSystems = {
     "/" = {
       device = "/dev/mapper/laptop-cryptroot";
       fsType = "btrfs";
       options = [
         "subvol=@"
-        "compress=zstd"
+        "compress=zstd:1"
         "noatime"
       ];
     };
@@ -54,7 +58,7 @@
       fsType = "btrfs";
       options = [
         "subvol=@nix"
-        "compress=zstd"
+        "compress=zstd:1"
         "noatime"
       ];
     };
@@ -63,7 +67,7 @@
       fsType = "btrfs";
       options = [
         "subvol=@home"
-        "compress=zstd"
+        "compress=zstd:1"
         "noatime"
       ];
     };
