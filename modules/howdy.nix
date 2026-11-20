@@ -21,10 +21,9 @@
     services.hyprlock.howdy.enable = true;
   };
 
-  # Ask for the password first and only start the camera when it is wrong. The
-  # default stack puts howdy before pam_unix; move it just after, so a correct
-  # password succeeds and stops before the camera runs, and a wrong one falls
-  # through to the face check.
+  # Try face authentication first; a failed match falls through to the usual
+  # password prompt. Keeping Howdy before pam_unix also avoids relying on the
+  # password module's failure path to invoke the camera.
   security.pam.services.hyprlock.rules.auth.howdy.order =
-    config.security.pam.services.hyprlock.rules.auth.unix.order + 10;
+    config.security.pam.services.hyprlock.rules.auth.unix.order - 10;
 }
