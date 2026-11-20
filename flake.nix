@@ -117,6 +117,7 @@
           ./modules/howdy.nix
           ./modules/laptop.nix
           ./modules/ananicy.nix
+          ./modules/prowlarr.nix
           ./modules/scx.nix
           ./modules/gaming.nix
           ./modules/roblox.nix
@@ -129,6 +130,7 @@
           ./modules/howdy.nix
           ./modules/laptop.nix
           ./modules/ananicy.nix
+          ./modules/prowlarr.nix
           ./modules/scx.nix
           ./modules/gaming.nix
           ./modules/roblox.nix
