@@ -5,6 +5,40 @@
   ...
 }:
 
+let
+  # Claude plan usage (5h session and weekly limits) for the bar. It reads
+  # the Claude Code OAuth login in ~/.claude/.credentials.json, talks only to
+  # api.anthropic.com and platform.claude.com, refreshes the token like
+  # Claude Code does, and caches responses for 60s in ~/.cache/claudebar.
+  # Pinned to a reviewed commit: bump rev and hash deliberately.
+  claudebar = pkgs.stdenvNoCC.mkDerivation {
+    pname = "claudebar";
+    version = "0-unstable-2026-11-11";
+    src = pkgs.fetchFromGitHub {
+      owner = "mryll";
+      repo = "claudebar";
+      rev = "d0f2c59b17c1cb937f116bf5a8aaba22b77411ae";
+      hash = "sha256-P0/tLQ+c2Arv0VK43BXeZvyOry2xOtlTal8ilbqqoVk=";
+    };
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    dontBuild = true;
+    installPhase = ''
+      install -Dm755 claudebar $out/bin/claudebar
+      patchShebangs $out/bin/claudebar
+      wrapProgram $out/bin/claudebar --prefix PATH : ${
+        pkgs.lib.makeBinPath [
+          pkgs.coreutils
+          pkgs.curl
+          pkgs.jq
+          pkgs.gawk
+          pkgs.gnused
+          pkgs.util-linux
+          pkgs.libnotify
+        ]
+      }
+    '';
+  };
+in
 {
   programs.waybar = {
     enable = true;
@@ -32,6 +66,7 @@
           "pulseaudio"
           "backlight"
           "custom/kbd-backlight"
+          "custom/claude"
           "cpu"
           "memory"
           "battery"
@@ -210,6 +245,16 @@
             ${pkgs.libnotify}/bin/notify-send -a "Power" -t 3000 \
               "Power mode" "''${labels[$choice]#*  } enabled"
           '';
+        };
+        # Claude usage: 5h session % and weekly %. The tooltip has the reset
+        # countdowns and per-model limits; a click opens the usage page.
+        "custom/claude" = {
+          return-type = "json";
+          interval = 300;
+          signal = 13;
+          exec = "${claudebar}/bin/claudebar --format '{icon}  {session_pct}% · {weekly_pct}%'";
+          on-click = "xdg-open https://claude.ai/settings/usage";
+          on-click-right = "${claudebar}/bin/claudebar --refresh >/dev/null; pkill -RTMIN+13 waybar";
         };
         cpu = {
           format = "󰍛  {usage}%";
