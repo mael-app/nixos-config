@@ -1,9 +1,9 @@
 { pkgs, palette, ... }:
 
 let
-  # Same design language as waybar and the dock: a translucent pill on a
-  # blurred backdrop (the blur comes from the rofi layer rule in
-  # hyprland.nix) with the shared Catppuccin accents.
+  # Same design language as waybar and the dock, with shared Catppuccin
+  # accents. Rofi is intentionally not layer-blurred: it also serves compact
+  # menus and SSH askpass, and the fullscreen layer would blur the whole screen.
   theme = pkgs.writeText "rofi-catppuccin.rasi" ''
     * {
       bg:          ${palette.rgba "base" "0.92"};

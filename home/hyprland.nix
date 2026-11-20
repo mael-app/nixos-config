@@ -196,14 +196,6 @@ in
         blur = true,
       })
 
-      -- Rofi runs as a layer surface too: its theme is translucent, so it
-      -- needs the same blur as wlogout to frost what sits behind it.
-      hl.layer_rule({
-        name = "rofi-blur",
-        match = { namespace = "^rofi$" },
-        blur = true,
-      })
-
       -- Scratchpads: a terminal and a btop monitor parked on special
       -- workspaces. SUPER + S and SUPER + SHIFT + S spawn them on first use
       -- and toggle them afterwards (see home/scratchpad.nix).
