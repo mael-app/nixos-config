@@ -18,6 +18,10 @@
     };
 
     nix-index-database.comma.enable = true;
+
+    # A loader for prebuilt binaries that expect a normal FHS layout. VS Code
+    # extensions, language servers and toolchain installers routinely download
+    # such binaries, and they cannot run on NixOS without it.
     nix-ld.enable = true;
   };
 
@@ -30,9 +34,6 @@
     wget
   ];
 
-  # A loader for prebuilt binaries that expect a normal FHS layout. VS Code
-  # extensions, language servers and toolchain installers routinely download
-  # such binaries, and they cannot run on NixOS without it.
   # Rootless: the daemon runs as the desktop user inside a user namespace, so
   # nobody needs the "docker" group. That group is root on the host - the
   # socket happily starts a container that bind mounts / - which would undo

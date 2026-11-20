@@ -2,7 +2,7 @@
 
 # Mael's Home Manager configuration, one file per concern. Anything that only
 # this user runs belongs here; the system, its services and other users are
-# configured under ../../modules.
+# configured under ../modules.
 {
   imports = [
     ./airpods.nix

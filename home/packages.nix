@@ -26,7 +26,7 @@
     v4l-utils
     guvcview
 
-    # Wallpaper daemon and dock, started by the user services below
+    # Wallpaper daemon and dock, started by the user services in ./session.nix and ./dock.nix
     awww
     nwg-dock-hyprland
 
@@ -35,7 +35,7 @@
     # tray icon opens from its context menu.
     networkmanagerapplet
 
-    # Bound to keys in the Hyprland configuration further down
+    # Bound to keys in ./hyprland.nix
     grim
     slurp
     grimblast
@@ -50,7 +50,7 @@
     playerctl
     libnotify
 
-    # ALT + Tab window selector, started by the user service below
+    # ALT + Tab window selector, started by the user service in ./session.nix
     hyprshell
 
     # Editors and terminal tools

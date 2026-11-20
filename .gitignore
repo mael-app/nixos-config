@@ -4,3 +4,7 @@ result-*
 .env
 *.key
 *.pem
+
+# Local agent state: OpenCode skills and Playwright MCP page snapshots
+.opencode/
+.playwright-mcp/
