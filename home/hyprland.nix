@@ -168,12 +168,27 @@ in
       -- VLC's fullscreen controller is its own window titled "vlc", which
       -- VLC places itself at the bottom of the screen. Sizing and centering
       -- it here drew it as a blank square in the middle of the video.
+      --
+      -- No size here: static rules run on every map, so a fixed size
+      -- stretched every window to the same box each time it opened, fixed
+      -- size layouts such as Mullvad's reopened from the tray included.
+      -- Windows open at the size they ask for, and persistent_size brings
+      -- back the size a window of the same class and title was last
+      -- resized to.
       local floatRule = hl.window_rule({
         name = "float-by-default",
         match = { class = ".*", title = "negative:^vlc$" },
         float = true,
-        size = { "(monitor_w*0.6)", "(monitor_h*0.65)" },
+        persistent_size = true,
         center = true,
+      })
+
+      -- Ghostty asks for a small terminal grid; keep the box it opened in
+      -- when the default rule above still sized every window.
+      hl.window_rule({
+        name = "terminal-size",
+        match = { class = "^com\\.mitchellh\\.ghostty$" },
+        size = { "(monitor_w*0.6)", "(monitor_h*0.65)" },
       })
       local autoTile = false
 
