@@ -138,6 +138,11 @@ in
           disable_splash_rendering = true,
           mouse_move_enables_dpms = true,
           key_press_enables_dpms = true,
+          -- Honour activation requests. Clicking a link in Claude Desktop
+          -- hands Firefox an xdg-activation token; with this off Hyprland
+          -- only marks the window urgent and leaves it behind the app the
+          -- link came from. Same for xdg-open on PDFs and every other file.
+          focus_on_activate = true,
         },
 
         xwayland = {
