@@ -46,15 +46,28 @@
   systemd.user.services.session-login-sound = {
     Unit = {
       Description = "Play a sound when the graphical session starts";
+      # Started with the graphical session rather than default.target, which
+      # is reached before the session exists. Ordering after the target
+      # keeps the target from waiting on this oneshot.
+      PartOf = [ "graphical-session.target" ];
       After = [
+        "graphical-session.target"
         "pipewire.service"
         "pipewire-pulse.service"
+        "wireplumber.service"
       ];
+      # The retries below need room within the start limit.
+      StartLimitBurst = 10;
+      StartLimitIntervalSec = 30;
     };
     Service = {
       Type = "oneshot";
       ExecStart = "${pkgs.pipewire}/bin/pw-play ${pkgs.sound-theme-freedesktop}/share/sounds/freedesktop/stereo/service-login.oga";
+      # WirePlumber publishes the output a moment after it starts, and
+      # pw-play fails with "no target node available" until then.
+      Restart = "on-failure";
+      RestartSec = 1;
     };
-    Install.WantedBy = [ "default.target" ];
+    Install.WantedBy = [ "graphical-session.target" ];
   };
 }
