@@ -11,13 +11,18 @@ let
     exec ${config.programs.rofi.finalPackage}/bin/rofi \
       -dmenu -password -p "SSH" -mesg "$1" < /dev/null
   '';
+
+  # How long the agent keeps the decrypted key. Anything running as this
+  # user can sign or log in with it without a prompt, so the window is
+  # bounded; the timer below asks for the passphrase again when it ends.
+  keyLifetime = "8h";
 in
 
 # The SSH client, the agent that carries the key for the session, and the unit
 # that unlocks it once at login. Together they let the private key stay
 # encrypted on disk without a passphrase prompt on every push or signed
 # commit: git reads the key through the agent, which holds it decrypted in its
-# own memory until logout.
+# own memory for keyLifetime.
 {
   programs.ssh = {
     enable = true;
@@ -29,7 +34,7 @@ in
     # Hand the key to the agent the first time ssh itself uses it, which
     # covers the case where the session service below was cancelled.
     settings = {
-      "*".AddKeysToAgent = "yes";
+      "*".AddKeysToAgent = keyLifetime;
 
       # The Raspberry Pi running the Minecraft server. sshd there listens on a
       # non-default port, and the alias spares typing the address, port and
@@ -72,7 +77,7 @@ in
       ConditionPathExists = "%h/.ssh/id_ed25519";
     };
     Service = {
-      ExecStart = "${pkgs.openssh}/bin/ssh-add %h/.ssh/id_ed25519";
+      ExecStart = "${pkgs.openssh}/bin/ssh-add -t ${keyLifetime} %h/.ssh/id_ed25519";
       Environment = [
         "SSH_ASKPASS=${askpass}"
         # Without this, ssh-add prefers a terminal it does not have here and
@@ -81,6 +86,18 @@ in
         "SSH_AUTH_SOCK=%t/${config.services.ssh-agent.socket}"
       ];
     };
+    Install.WantedBy = [ "graphical-session.target" ];
+  };
+
+  # The agent drops the key after keyLifetime, and a signed commit cannot
+  # load it back by itself (see above). Run the unlock again at that moment,
+  # so the passphrase prompt appears instead of the next commit failing.
+  systemd.user.timers.ssh-add-key = {
+    Unit = {
+      Description = "Unlock the SSH key again when the agent drops it";
+      PartOf = [ "graphical-session.target" ];
+    };
+    Timer.OnUnitActiveSec = keyLifetime;
     Install.WantedBy = [ "graphical-session.target" ];
   };
 }
