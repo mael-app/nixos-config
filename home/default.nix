@@ -21,6 +21,7 @@
     ./ghostty.nix
     ./os-tracker.nix
     ./npm.nix
+    ./office.nix
     ./packages.nix
     ./power-menu.nix
     ./rofi.nix
