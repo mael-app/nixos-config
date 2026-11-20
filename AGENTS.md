@@ -13,8 +13,10 @@
 ## Working Style
 
 - Preserve the existing technical behavior and make focused changes.
-- Validate changes with `nix flake check --no-build` and, when appropriate,
-	evaluate or build the affected host configuration before applying it.
+- The user is always connected through a VPN and applies NixOS changes
+  themselves. Do not run Nix evaluation, check, build, rebuild, or switch
+  commands unless the user explicitly asks. Give them the relevant command to
+  run when useful.
 - Run `nix fmt` before committing. The formatter is `nixfmt-tree`, so it takes
 	the whole repository; `nix fmt -- --ci` checks it without keeping the
 	result. Avoid unrelated refactoring.
