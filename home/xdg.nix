@@ -26,6 +26,8 @@ _:
         "x-scheme-handler/https" = "firefox.desktop";
         "x-scheme-handler/about" = "firefox.desktop";
         "x-scheme-handler/unknown" = "firefox.desktop";
+        # Firefox's built-in viewer: fast to open, and it only views.
+        "application/pdf" = "firefox.desktop";
         "application/zip" = "org.gnome.FileRoller.desktop";
         "application/x-7z-compressed" = "org.gnome.FileRoller.desktop";
         "application/x-rar" = "org.gnome.FileRoller.desktop";

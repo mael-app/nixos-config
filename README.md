@@ -79,7 +79,7 @@ sudo reboot
   Rofi, SwayNC, Hyprlock and Hypridle, nwg-dock, hyprshell (Alt + Tab),
   awww and mpvpaper wallpapers, hyprsunset, Catppuccin Mocha theme,
   French AZERTY layout
-- **Applications:** Ghostty, Firefox, Thunar, File Roller, ONLYOFFICE,
+- **Applications:** Ghostty, Firefox, Thunar, File Roller, LibreOffice,
   Spotify, mpv, VLC, imv, Discord, Signal, WeChat, Notion, Termius,
   qBittorrent, 1Password
 - **Development:** VS Code, Rider, WebStorm, Neovim, tmux, Git with SSH
