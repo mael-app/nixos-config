@@ -379,8 +379,32 @@ in
         hl.bind("CTRL + code:" .. (9 + i), hl.dsp.exec_cmd("wtype -M ctrl " .. i .. " -m ctrl"))
       end
 
-      -- ALT + Tab is registered by the hyprshell service, which provides the
-      -- window selector used for switching applications.
+      -- ALT + Tab is registered by the hyprshell service. Hyprland 0.57 can
+      -- miss a modifier-release bind when Tab is still held, leaving the
+      -- switcher open. Observe the raw key event as a fallback and ask
+      -- hyprshell to commit its current selection when the last Alt is released.
+      local altKeys = { [64] = true, [108] = true }
+      local altHeld = {}
+      local altTabOpen = false
+      hl.on("input.keyboard.key", function(keycode, _, state)
+        if altKeys[keycode] then
+          if state == 1 then
+            altHeld[keycode] = true
+          elseif state == 0 then
+            altHeld[keycode] = nil
+            if altTabOpen and not next(altHeld) then
+              altTabOpen = false
+              hl.exec_cmd("${pkgs.hyprshell}/bin/hyprshell socat '{\"CloseSwitch\":{\"switch\":true}}'")
+            end
+          end
+        elseif keycode == 23 then -- Tab
+          if state == 1 and next(altHeld) then
+            altTabOpen = true
+          elseif state == 0 and not next(altHeld) then
+            altTabOpen = false
+          end
+        end
+      end)
 
       -- Move windows
       hl.bind(mainMod .. " + SHIFT + left", hl.dsp.window.move({ direction = "left" }))
