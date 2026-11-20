@@ -21,15 +21,32 @@ jobs:
     # 58 minutes; the cap only stops a hung fetch from running for 6 hours.
     timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: cachix/install-nix-action@v31
+      - uses: cachix/install-nix-action@3dc140bfc76c49fbd4dd958429132e3746bcb086 # v31.11.5
         with:
           extra_nix_config: |
             experimental-features = nix-command flakes
 
       - name: nix flake update
         run: nix flake update
+
+      # nixpkgs is fetched from a Chinese mirror (see flake.nix), and the lock
+      # file trusts whatever commit the mirror called nixos-unstable. Git
+      # checks that the files match that commit, but not that the commit is
+      # upstream's: a compromised mirror could serve its own. Refuse the
+      # update unless GitHub's nixos-unstable contains the locked commit.
+      - name: verify the nixpkgs commit against GitHub
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          rev=$(jq -r '.nodes.nixpkgs.locked.rev' flake.lock)
+          status=$(gh api "repos/NixOS/nixpkgs/compare/$rev...nixos-unstable" --jq .status)
+          echo "nixpkgs $rev: $status relative to NixOS/nixpkgs nixos-unstable"
+          case "$status" in
+            identical|ahead) ;;
+            *) echo "::error::$rev is not on NixOS/nixpkgs nixos-unstable"; exit 1 ;;
+          esac
 
       # A pull request opened with GITHUB_TOKEN does not start another
       # workflow, so check.yml would never run on it. The same evaluation runs
@@ -45,7 +62,7 @@ jobs:
         run: nix run --inputs-from . nixpkgs#deadnix -- --fail .
 
       - name: open the pull request
-        uses: peter-evans/create-pull-request@v8
+        uses: peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1 # v8.1.3
         with:
           branch: update/flake-lock
           # Reuses the same branch every week, so a pending update is amended
