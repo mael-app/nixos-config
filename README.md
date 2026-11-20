@@ -8,11 +8,16 @@ NixOS + Home Manager configuration.
 | --- | --- | --- |
 | `nixos-test` | QEMU/KVM VM in virt-manager | `sudo nixos-rebuild switch --flake .#nixos-test` |
 | `nixos-usb` | External USB SSD booted on the laptop, see [docs/install-usb.md](docs/install-usb.md) | `sudo nixos-rebuild switch --flake .#nixos-usb` |
-| `nixos-laptop` | Laptop internal NVMe, encrypted with a separate `/home`, see [docs/install-laptop.md](docs/install-laptop.md) | `sudo nixos-rebuild switch --flake .#nixos-laptop` |
+| `nixos-laptop` | Laptop internal NVMe, encrypted with a separate `/home`, Secure Boot and TPM unlocking, see [docs/install-laptop.md](docs/install-laptop.md) | `sudo nixos-rebuild switch --flake .#nixos-laptop` |
+
+On an installed system, `nh os switch` rebuilds the current host: each host is
+named after its hostname, and nh already knows where this repository lives.
+`nh clean` runs weekly and keeps at least the last five generations.
 
 ## Layout
 
-    flake.nix         hosts, and the host/username passed to every module
+    flake.nix         hosts, the laptop module list, and the host/username
+                      passed to every module
     modules/          the system: one file per concern
     home/             the desktop account, one file per concern
     hosts/<name>/     boot, hardware, screen and anything else per machine
@@ -23,8 +28,8 @@ through `specialArgs`.
 
 ## Network mirrors
 
-The default `nixpkgs` input and binary substituter use the TUNA mirrors for
-connections from China. When a VPN is active, use the upstream GitHub input and
+The default `nixpkgs` input comes from the TUNA git mirror and the binary cache
+from the SJTU mirror, for connections from China. When a VPN is active, use the upstream GitHub input and
 cache instead:
 
 ```bash
@@ -70,44 +75,27 @@ sudo reboot
 
 ## Included
 
-- Hyprland Lua configuration
-- French AZERTY keyboard layout
-- greetd
-- Kitty
-- Waybar
-- Rofi
-- SwayNC notification center
-- Hyprlock
-- Thunar
-- File Roller
-- Firefox
-- Spotify
-- mpv
-- imv
-- Grimblast
-- Hyprpicker
-- PipeWire
-- NetworkManager
-- Git
-- Zsh + Starship
-- direnv + nix-direnv
-- nh
-- nix-index database
-- os-tracker presence daemon
-- Neovim
-- tmux
-- Docker (rootless)
-- Podman
-- GitHub CLI
-- kubectl
-- Helm
-- Terraform
-- OpenTofu
-- Ansible
-- Python
-- Ruby
-- Node.js
-- Go
+- **Desktop:** Hyprland (Lua configuration), ReGreet on greetd, Waybar,
+  Rofi, SwayNC, Hyprlock and Hypridle, nwg-dock, hyprshell (Alt + Tab),
+  awww and mpvpaper wallpapers, hyprsunset, Catppuccin Mocha theme,
+  French AZERTY layout
+- **Applications:** Ghostty, Firefox, Thunar, File Roller, ONLYOFFICE,
+  Spotify, mpv, VLC, imv, Discord, Signal, WeChat, Notion, Termius,
+  qBittorrent, 1Password
+- **Development:** VS Code, Rider, WebStorm, Neovim, tmux, Git with SSH
+  signing, GitHub and GitLab CLIs, Zsh + Starship, direnv + nix-direnv,
+  Python, Ruby, Node.js, Go, Rust, .NET
+- **AI tools:** Claude Code, Claude Desktop, OpenCode, Playwright MCP, rtk
+- **DevOps:** Docker (rootless), Podman, minikube, kubectl, Helm,
+  Terraform, OpenTofu, Ansible
+- **System:** PipeWire, Bluetooth with AirPods support, NetworkManager,
+  Mullvad VPN, nh, nix-index database, iPhone over USB
+- **Laptop hosts:** lanzaboote Secure Boot, TPM unlocking, Howdy face unlock
+  on the lock screen, Snapper snapshots of `/home`, btrfs scrub, thermald,
+  sched_ext (`scx_lavd`), ananicy-cpp, Prowlarr
+- **Gaming (laptop hosts):** Steam with Proton-GE, GameMode, Gamescope,
+  MangoHud, xpadneo, Heroic, Prism Launcher, Lunar Client, Sober (Roblox)
+- **os-tracker** presence daemon
 
 ## os-tracker
 
