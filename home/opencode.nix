@@ -12,17 +12,6 @@ let
     dark = palette.hex name;
     light = palette.hex name;
   };
-  playwrightConfig = pkgs.writeText "playwright-mcp.json" (
-    builtins.toJSON {
-      browser = {
-        browserName = "chromium";
-        launchOptions = {
-          executablePath = "${pkgs.chromium}/bin/chromium";
-          headless = true;
-        };
-      };
-    }
-  );
 in
 {
   # OpenCode 2 reads the CLI theme from cli.json. Keep the theme declarative
@@ -39,15 +28,15 @@ in
       # first use may require connecting a provider with /connect.
       websearch.provider = "random";
 
-      # Browser automation through the official Playwright MCP server.
+      # Browser automation through the nixpkgs Playwright MCP build, the
+      # same one Claude Code uses (./claude-code.nix). `npx -y ...@latest`
+      # would fetch and run whatever npm serves on every start, unpinned.
       mcp.servers.playwright = {
         type = "local";
         command = [
-          "npx"
-          "-y"
-          "@playwright/mcp@latest"
-          "--config"
-          "${playwrightConfig}"
+          "${pkgs.playwright-mcp}/bin/playwright-mcp"
+          "--browser"
+          "firefox"
           "--headless"
         ];
       };
