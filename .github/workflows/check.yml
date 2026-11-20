@@ -5,10 +5,15 @@ on:
   pull_request:
   workflow_dispatch:
 
+# Reads the checkout and nothing else.
+permissions:
+  contents: read
+
 jobs:
   flake:
     name: flake check
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
 
@@ -24,10 +29,10 @@ jobs:
         run: nix flake check --no-build
 
       - name: statix
-        run: nix run nixpkgs#statix -- check .
+        run: nix run --inputs-from . nixpkgs#statix -- check .
 
       - name: deadnix
-        run: nix run nixpkgs#deadnix -- --fail .
+        run: nix run --inputs-from . nixpkgs#deadnix -- --fail .
 
       # --ci formats the checkout and fails if anything changed.
       - name: nix fmt

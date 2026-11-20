@@ -17,6 +17,9 @@ jobs:
   flake-lock:
     name: update the flake inputs
     runs-on: ubuntu-latest
+    # Resolving nixos-unstable on the Chinese mirror from a US runner took
+    # 58 minutes; the cap only stops a hung fetch from running for 6 hours.
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v7
 
@@ -36,10 +39,10 @@ jobs:
         run: nix flake check --no-build
 
       - name: statix
-        run: nix run nixpkgs#statix -- check .
+        run: nix run --inputs-from . nixpkgs#statix -- check .
 
       - name: deadnix
-        run: nix run nixpkgs#deadnix -- --fail .
+        run: nix run --inputs-from . nixpkgs#deadnix -- --fail .
 
       - name: open the pull request
         uses: peter-evans/create-pull-request@v8

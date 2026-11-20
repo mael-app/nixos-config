@@ -33,15 +33,18 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Pinned to a reviewed commit: its OpenCode plugin runs as this user, so
+    # the weekly update must not pull new code unread. Bump the rev by hand.
     i-have-adhd = {
-      url = "github:ayghri/i-have-adhd";
+      url = "github:ayghri/i-have-adhd/1ecea1993b7fce257ffbd686c070948b5e07eda6";
       flake = false;
     };
 
     # "Lazy senior dev" Claude Code skill. Only skills/ponytail is used, not
-    # the plugin and its hooks. Wired in ./home/claude-code.nix.
+    # the plugin and its hooks. Wired in ./home/claude-code.nix. Pinned for
+    # the same reason as i-have-adhd: its text steers the coding agents.
     ponytail = {
-      url = "github:DietrichGebert/ponytail";
+      url = "github:DietrichGebert/ponytail/96608e078b2d5ea607c5c3b8b5a54d1c1fba6846";
       flake = false;
     };
 

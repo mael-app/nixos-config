@@ -84,7 +84,8 @@
       "original": {
         "owner": "ayghri",
         "repo": "i-have-adhd",
-        "type": "github"
+        "type": "github",
+        "rev": "1ecea1993b7fce257ffbd686c070948b5e07eda6"
       }
     },
     "lanzaboote": {
@@ -180,7 +181,8 @@
       "original": {
         "owner": "DietrichGebert",
         "repo": "ponytail",
-        "type": "github"
+        "type": "github",
+        "rev": "96608e078b2d5ea607c5c3b8b5a54d1c1fba6846"
       }
     },
     "pre-commit": {
