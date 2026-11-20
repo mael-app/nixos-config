@@ -8,18 +8,20 @@
 # NixOS on the laptop's internal 1 TB NVMe (replaces Pop!_OS).
 # Windows stays untouched on the second NVMe.
 {
-  # Build and sign Unified Kernel Images so Secure Boot and the TPM can
-  # authenticate the complete kernel/initrd boot chain.
-  boot.loader.systemd-boot.enable = false;
-  boot.lanzaboote = {
-    enable = true;
-    pkiBundle = "/var/lib/sbctl";
+  boot = {
+    # Build and sign Unified Kernel Images so Secure Boot and the TPM can
+    # authenticate the complete kernel/initrd boot chain.
+    loader.systemd-boot.enable = false;
+    lanzaboote = {
+      enable = true;
+      pkiBundle = "/var/lib/sbctl";
+    };
+
+    # Internal install: register NixOS in the firmware so it boots by default.
+    loader.efi.canTouchEfiVariables = true;
   };
 
   environment.systemPackages = [ pkgs.sbctl ];
-
-  # Internal install: register NixOS in the firmware so it boots by default.
-  boot.loader.efi.canTouchEfiVariables = true;
 
   # / and /nix are subvolumes of the same LUKS container, so scrubbing both
   # would read laptop-cryptroot twice. /home is a separate container.

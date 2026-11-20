@@ -1,5 +1,4 @@
 {
-  config,
   lib,
   pkgs,
   ...
@@ -9,9 +8,6 @@
 # window rules in hyprland.nix park these windows on special workspaces;
 # this script spawns the app when it is not running yet and toggles the
 # workspace afterwards, so no daemon keeps them alive in between.
-let
-  cfg = config.local.scratchpad;
-in
 {
   options.local.scratchpad = {
     command = lib.mkOption {

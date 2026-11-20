@@ -12,33 +12,35 @@
   # laptop, so matching Windows behaviour here costs nothing real.
   boot.kernelParams = [ "split_lock_detect=off" ];
 
-  # GameMode asks power-profiles-daemon for the performance profile while a
-  # game runs and restores the previous one on exit, so a gaming session no
-  # longer depends on remembering the profile buttons in the notification
-  # center. Games opt in per title with `gamemoderun %command%` in their
-  # Steam launch options, or `gamemoderun <cmd>` anywhere else.
-  programs.gamemode.enable = true;
+  programs = {
+    # GameMode asks power-profiles-daemon for the performance profile while a
+    # game runs and restores the previous one on exit, so a gaming session no
+    # longer depends on remembering the profile buttons in the notification
+    # center. Games opt in per title with `gamemoderun %command%` in their
+    # Steam launch options, or `gamemoderun <cmd>` anywhere else.
+    gamemode.enable = true;
 
-  programs.gamescope.enable = true;
+    gamescope.enable = true;
 
-  # The module is what makes Steam work: it wraps the client with the FHS
-  # environment it expects and turns on hardware.graphics.enable32Bit, which
-  # the 32-bit half of Proton and older titles need. Installing the package
-  # on its own gives a client that cannot run most of the library.
-  programs.steam = {
-    enable = true;
+    # The module is what makes Steam work: it wraps the client with the FHS
+    # environment it expects and turns on hardware.graphics.enable32Bit, which
+    # the 32-bit half of Proton and older titles need. Installing the package
+    # on its own gives a client that cannot run most of the library.
+    steam = {
+      enable = true;
 
-    # Every openFirewall here stays at its default of false. Remote Play,
-    # local network game transfers and dedicated servers each want inbound
-    # ports, and none of them is used on this machine; opening them would
-    # undo what ./common.nix narrows elsewhere. Turn one on the day the
-    # feature is actually wanted.
+      # Every openFirewall here stays at its default of false. Remote Play,
+      # local network game transfers and dedicated servers each want inbound
+      # ports, and none of them is used on this machine; opening them would
+      # undo what ./common.nix narrows elsewhere. Turn one on the day the
+      # feature is actually wanted.
 
-    # Proton is what runs Windows titles. The stock one ships with Steam;
-    # this adds the community build, which carries the media codecs and
-    # patches Valve cannot distribute, selectable per game under
-    # Compatibility.
-    extraCompatPackages = [ pkgs.proton-ge-bin ];
+      # Proton is what runs Windows titles. The stock one ships with Steam;
+      # this adds the community build, which carries the media codecs and
+      # patches Valve cannot distribute, selectable per game under
+      # Compatibility.
+      extraCompatPackages = [ pkgs.proton-ge-bin ];
+    };
   };
 
   # The in-tree hid_xpad driver pairs unreliably with the Xbox wireless

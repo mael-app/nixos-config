@@ -82,16 +82,18 @@
     gnome.gnome-keyring.enable = true;
   };
 
-  # Unlock the login keyring with the password typed at the greeter. Howdy
-  # only runs on hyprlock, so greetd always gets a password.
-  security.pam.services.greetd.enableGnomeKeyring = true;
+  security = {
+    # Unlock the login keyring with the password typed at the greeter. Howdy
+    # only runs on hyprlock, so greetd always gets a password.
+    pam.services.greetd.enableGnomeKeyring = true;
 
-  security.polkit.enable = true;
+    polkit.enable = true;
 
-  # hyprlock is configured by Home Manager, which only writes its config; the
-  # PAM service is what lets it check the password. programs.hyprlock is not
-  # used here because it would also enable the NixOS hypridle unit on top of
-  # the Home Manager one.
-  security.pam.services.hyprlock = { };
+    # hyprlock is configured by Home Manager, which only writes its config; the
+    # PAM service is what lets it check the password. programs.hyprlock is not
+    # used here because it would also enable the NixOS hypridle unit on top of
+    # the Home Manager one.
+    pam.services.hyprlock = { };
+  };
 
 }

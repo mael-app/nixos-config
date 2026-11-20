@@ -32,60 +32,62 @@ in
     Install.WantedBy = [ "graphical-session.target" ];
   };
 
-  xdg.dataFile."applications/discord.desktop".text = ''
-    [Desktop Entry]
-    Type=Application
-    Name=Discord
-    GenericName=Instant Messenger
-    Comment=All-in-one voice and text chat
-    Exec=Discord %U
-    Icon=${discordBaseIcon}
-    Categories=Network;InstantMessaging;
-    MimeType=x-scheme-handler/discord;
-  '';
+  xdg = {
+    dataFile."applications/discord.desktop".text = ''
+      [Desktop Entry]
+      Type=Application
+      Name=Discord
+      GenericName=Instant Messenger
+      Comment=All-in-one voice and text chat
+      Exec=Discord %U
+      Icon=${discordBaseIcon}
+      Categories=Network;InstantMessaging;
+      MimeType=x-scheme-handler/discord;
+    '';
 
-  # Apps pinned in the dock, in order. Each entry is a .desktop file name
-  # without the extension (see /run/current-system/sw/share/applications).
-  # The file is read-only, so right-click > Pin in the dock no longer persists.
-  xdg.cacheFile."nwg-dock-pinned".text = lib.concatLines [
-    "firefox"
-    "com.mitchellh.ghostty"
-    "thunar"
-    "spotify"
-    "code"
-    "com.anthropic.Claude"
-    "discord"
-    "signal"
-    "1password"
-    "mullvad-vpn"
-  ];
+    # Apps pinned in the dock, in order. Each entry is a .desktop file name
+    # without the extension (see /run/current-system/sw/share/applications).
+    # The file is read-only, so right-click > Pin in the dock no longer persists.
+    cacheFile."nwg-dock-pinned".text = lib.concatLines [
+      "firefox"
+      "com.mitchellh.ghostty"
+      "thunar"
+      "spotify"
+      "code"
+      "com.anthropic.Claude"
+      "discord"
+      "signal"
+      "1password"
+      "mullvad-vpn"
+    ];
 
-  xdg.configFile."nwg-dock-hyprland/style.css".text = ''
-    window {
-      background: ${palette.rgba "base" "0.85"};
-      border-radius: 14px;
-      border: 2px solid ${palette.rgba "blue" "0.3"};
-    }
+    configFile."nwg-dock-hyprland/style.css".text = ''
+      window {
+        background: ${palette.rgba "base" "0.85"};
+        border-radius: 14px;
+        border: 2px solid ${palette.rgba "blue" "0.3"};
+      }
 
-    #box {
-      padding: 6px;
-    }
+      #box {
+        padding: 6px;
+      }
 
-    button {
-      background: transparent;
-      border: none;
-      border-radius: 10px;
-      padding: 4px;
-      margin: 0 2px;
-      color: ${palette.hex "text"};
-    }
+      button {
+        background: transparent;
+        border: none;
+        border-radius: 10px;
+        padding: 4px;
+        margin: 0 2px;
+        color: ${palette.hex "text"};
+      }
 
-    button:hover {
-      background: ${palette.rgba "text" "0.1"};
-    }
+      button:hover {
+        background: ${palette.rgba "text" "0.1"};
+      }
 
-    button:focus {
-      background: ${palette.rgba "blue" "0.2"};
-    }
-  '';
+      button:focus {
+        background: ${palette.rgba "blue" "0.2"};
+      }
+    '';
+  };
 }

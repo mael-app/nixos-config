@@ -1,5 +1,4 @@
 {
-  config,
   lib,
   pkgs,
   ...
@@ -8,9 +7,6 @@
 # Area screen recording (SUPER + SHIFT + R), following the same pattern as
 # the bluetooth menu: one script with a subcommand per caller, so the
 # Hyprland bind and the waybar indicator share a single definition.
-let
-  cfg = config.local.screenRecord;
-in
 {
   options.local.screenRecord = {
     command = lib.mkOption {
