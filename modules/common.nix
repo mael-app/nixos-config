@@ -26,9 +26,15 @@
   # network is looked up by hostname. Both make resolved parse unauthenticated
   # multicast traffic from anyone on the same Wi-Fi, so they are pure attack
   # surface on a public network.
+  #
+  # FallbackDNS is emptied because resolved otherwise falls back to a list
+  # compiled into systemd (Cloudflare, Google, Quad9) whenever no link has a
+  # DNS server, and those queries leave in the clear. With nothing configured
+  # a lookup fails instead, which is what should happen with no network.
   services.resolved.settings.Resolve = {
     LLMNR = "no";
     MulticastDNS = "no";
+    FallbackDNS = [ ];
   };
 
   time.timeZone = "Asia/Shanghai";
