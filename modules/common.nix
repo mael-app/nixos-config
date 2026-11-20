@@ -68,24 +68,10 @@
       # dirtyRev, so a generation built this way is still identifiable.
       warn-dirty = false;
 
-      # Keep the Nix store small: dedupe identical files and drop old
-      # generations every week.
+      # Keep the Nix store small by deduplicating identical files. Old
+      # generations are dropped by programs.nh.clean, see ./devops.nix.
       auto-optimise-store = true;
     };
-    gc = {
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 14d";
-    };
-  };
-
-  # The weekly garbage collector walks the store and unlinks paths while
-  # the machine may be in use. The idle scheduling classes make the kernel
-  # run it only when no foreground work wants the core or the I/O: a
-  # delayed collection costs nothing, a stuttering game or build does.
-  systemd.services.nix-gc.serviceConfig = {
-    CPUSchedulingPolicy = "idle";
-    IOSchedulingClass = "idle";
   };
 
   # Adds pkgs.claude-desktop (see the claude-desktop flake input).

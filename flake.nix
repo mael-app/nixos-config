@@ -73,6 +73,19 @@
       # palette.nix for the helpers (hex, rgba, hypr) built on it.
       palette = import ./palette.nix { inherit (nixpkgs) lib; };
 
+      # Everything the laptop's hardware runs, whichever disk it boots from.
+      laptopModules = [
+        ./modules/howdy.nix
+        ./modules/laptop.nix
+        ./modules/ananicy.nix
+        ./modules/prowlarr.nix
+        ./modules/scx.nix
+        ./modules/gaming.nix
+        ./modules/roblox.nix
+        ./modules/gpu-tools.nix
+        ./modules/mangohud.nix
+      ];
+
       # Modules shared by every machine. Each host adds its own
       # configuration.nix and hardware-configuration.nix, plus whatever
       # hardware modules it needs.
@@ -127,30 +140,10 @@
         nixos-test = mkHost "nixos-test" [ ];
 
         # External USB SSD, booted on the laptop
-        nixos-usb = mkHost "nixos-usb" [
-          ./modules/howdy.nix
-          ./modules/laptop.nix
-          ./modules/ananicy.nix
-          ./modules/prowlarr.nix
-          ./modules/scx.nix
-          ./modules/gaming.nix
-          ./modules/roblox.nix
-          ./modules/gpu-tools.nix
-          ./modules/mangohud.nix
-        ];
+        nixos-usb = mkHost "nixos-usb" laptopModules;
 
         # Laptop internal NVMe
-        nixos-laptop = mkHost "nixos-laptop" [
-          ./modules/howdy.nix
-          ./modules/laptop.nix
-          ./modules/ananicy.nix
-          ./modules/prowlarr.nix
-          ./modules/scx.nix
-          ./modules/gaming.nix
-          ./modules/roblox.nix
-          ./modules/gpu-tools.nix
-          ./modules/mangohud.nix
-        ];
+        nixos-laptop = mkHost "nixos-laptop" laptopModules;
       };
 
       # nixfmt-tree wraps nixfmt in treefmt, so `nix fmt` formats the whole

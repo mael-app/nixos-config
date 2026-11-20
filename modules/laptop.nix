@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, username, ... }:
 
 let
   # Community thermal profile for the 2023 LG Gram 17. It avoids the
@@ -124,7 +124,7 @@ in
 
   services.snapper.configs.home = {
     SUBVOLUME = "/home";
-    ALLOW_USERS = [ "mael" ];
+    ALLOW_USERS = [ username ];
     TIMELINE_CREATE = true;
     TIMELINE_CLEANUP = true;
     TIMELINE_LIMIT_HOURLY = 6;

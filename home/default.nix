@@ -40,8 +40,6 @@
   ];
 
   home = {
-    username = "mael";
-    homeDirectory = "/home/mael";
     stateVersion = "25.11";
 
     sessionVariables = {

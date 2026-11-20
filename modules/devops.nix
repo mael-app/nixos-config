@@ -1,10 +1,20 @@
-{ pkgs, ... }:
+{ pkgs, username, ... }:
 
 {
   programs = {
     nh = {
       enable = true;
-      flake = "/home/mael/nixos-config";
+      flake = "/home/${username}/nixos-config";
+
+      # Replaces nix.gc. `--delete-older-than` alone would leave only the
+      # current generation after two weeks without a rebuild; --keep always
+      # leaves a few to roll back to. nh also removes stale gcroots such as
+      # old direnv shells.
+      clean = {
+        enable = true;
+        dates = "weekly";
+        extraArgs = "--keep 5 --keep-since 14d";
+      };
     };
 
     nix-index-database.comma.enable = true;
@@ -52,6 +62,15 @@
   systemd.services."user@" = {
     overrideStrategy = "asDropin";
     serviceConfig.Delegate = "cpu cpuset io memory pids";
+  };
+
+  # The weekly clean walks the store and unlinks paths while the machine may
+  # be in use. The idle scheduling classes make the kernel run it only when
+  # no foreground work wants the core or the I/O: a delayed collection costs
+  # nothing, a stuttering game or build does.
+  systemd.services.nh-clean.serviceConfig = {
+    CPUSchedulingPolicy = "idle";
+    IOSchedulingClass = "idle";
   };
 
   # Installs git system-wide.
