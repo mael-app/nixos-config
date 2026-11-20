@@ -359,8 +359,8 @@ in
       -- Notification center
       hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("swaync-client -t -sw"))
 
-      -- Exit Hyprland
-      hl.bind(mainMod .. " + M", hl.dsp.exit())
+      -- Exit Hyprland. Shift keeps a stray SUPER + M from closing every app.
+      hl.bind(mainMod .. " + SHIFT + M", hl.dsp.exit())
 
       -- Window focus
       hl.bind(mainMod .. " + left", hl.dsp.focus({ direction = "left" }))

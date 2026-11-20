@@ -15,6 +15,12 @@
         general = {
           lock_cmd = "pidof hyprlock || hyprlock";
           before_sleep_cmd = "loginctl lock-session";
+          # The screen may have been switched off by the listener below
+          # before the machine slept; turn it back on when it wakes.
+          after_sleep_cmd = "hyprctl dispatch 'hl.dsp.dpms({ action = \"enable\" })'";
+          # Hold the suspend until hyprlock reports the session locked, so the
+          # desktop is never shown for a moment on wake.
+          inhibit_sleep = 3;
         };
         listener = [
           {
