@@ -1,4 +1,9 @@
-{ inputs, palette, ... }:
+{
+  inputs,
+  palette,
+  pkgs,
+  ...
+}:
 
 let
   # OpenCode's theme loader supports named definitions and expects both
@@ -7,6 +12,17 @@ let
     dark = palette.hex name;
     light = palette.hex name;
   };
+  playwrightConfig = pkgs.writeText "playwright-mcp.json" (
+    builtins.toJSON {
+      browser = {
+        browserName = "chromium";
+        launchOptions = {
+          executablePath = "${pkgs.chromium}/bin/chromium";
+          headless = true;
+        };
+      };
+    }
+  );
 in
 {
   # OpenCode 2 reads the CLI theme from cli.json. Keep the theme declarative
@@ -30,6 +46,8 @@ in
           "npx"
           "-y"
           "@playwright/mcp@latest"
+          "--config"
+          "${playwrightConfig}"
           "--headless"
         ];
       };

@@ -20,6 +20,12 @@ _:
       defaultApplications = {
         # VS Code also claims directories, so without this it can win over Thunar.
         "inode/directory" = "thunar.desktop";
+        # Chromium is installed for Playwright; keep it from becoming the browser.
+        "text/html" = "firefox.desktop";
+        "x-scheme-handler/http" = "firefox.desktop";
+        "x-scheme-handler/https" = "firefox.desktop";
+        "x-scheme-handler/about" = "firefox.desktop";
+        "x-scheme-handler/unknown" = "firefox.desktop";
         "application/zip" = "org.gnome.FileRoller.desktop";
         "application/x-7z-compressed" = "org.gnome.FileRoller.desktop";
         "application/x-rar" = "org.gnome.FileRoller.desktop";

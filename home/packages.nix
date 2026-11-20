@@ -82,6 +82,9 @@
       '';
     }))
     opencode
+    # Browser used by the Playwright MCP server; its NixOS executable path is
+    # configured explicitly in home/opencode.nix.
+    chromium
     # Compresses command output before the agents read it, cutting tokens.
     rtk
 
