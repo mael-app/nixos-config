@@ -90,7 +90,21 @@ in
   # Compressed swap in RAM instead of a swap partition (fewer SSD writes).
   zramSwap.enable = true;
 
-  services.fstrim.enable = true;
+  # The kernel's defaults are tuned for swap on a disk. Swapping to zram costs
+  # a decompression, not a seek, so the kernel can swap earlier, and reading
+  # ahead neighbouring pages only wastes CPU. These are the values Fedora and
+  # Pop!_OS ship for zram.
+  boot.kernel.sysctl = {
+    "vm.swappiness" = 180;
+    "vm.page-cluster" = 0;
+    "vm.watermark_boost_factor" = 0;
+    "vm.watermark_scale_factor" = 125;
+  };
+
+  # btrfs already discards freed blocks as it goes (discard=async, its default
+  # on SSDs), and allowDiscards passes them through LUKS. The weekly fstrim
+  # would trim the same space a second time.
+  services.fstrim.enable = false;
 
   # Both installs put / , /nix and /home on btrfs. Scrub them monthly to catch
   # silent corruption while it is still only a checksum error. The mount points
