@@ -45,10 +45,9 @@ in
 # Hardware settings for the laptop itself (Intel Raptor Lake, Iris Xe),
 # shared by the USB drive and the internal disk installs.
 {
-  # Prefer suspend-to-RAM (S3) over s2idle. The latter is currently selected
-  # by default on this Gram and can leave the machine warm or drain the battery
-  # overnight because some devices remain in a shallow idle state.
-  boot.kernelParams = [ "mem_sleep_default=deep" ];
+  # This Gram supports both s2idle and deep (S3). Deep suspend failed to resume
+  # reliably, while s2idle resumed correctly, so select the tested mode at boot.
+  boot.kernelParams = [ "mem_sleep_default=s2idle" ];
 
   # Wi-Fi, Bluetooth and GPU firmware.
   hardware = {
