@@ -92,7 +92,7 @@ sudo reboot
   Mullvad VPN, nh, nix-index database, iPhone over USB
 - **Laptop hosts:** lanzaboote Secure Boot, TPM unlocking, Howdy face unlock
   on the lock screen, Snapper snapshots of `/home`, btrfs scrub, thermald,
-  sched_ext (`scx_lavd`), ananicy-cpp, Prowlarr
+  sched_ext (`scx_lavd`), ananicy-cpp
 - **Gaming (laptop hosts):** Steam with Proton-GE, GameMode, Gamescope,
   MangoHud, xpadneo, Heroic, Prism Launcher, Lunar Client, Sober (Roblox)
 - **os-tracker** presence daemon
