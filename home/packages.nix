@@ -55,6 +55,8 @@
 
     # Editors and terminal tools
     vscode
+    # Jinja template linter used by the djLint VS Code extension
+    djlint
     jetbrains.rider
     jetbrains.webstorm
     neovim
@@ -67,6 +69,8 @@
     jq
     yq
     unzip
+    parted
+    e2fsprogs
     ripgrep
     fd
     bind
