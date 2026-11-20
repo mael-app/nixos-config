@@ -75,7 +75,16 @@
     # output) and WebP.
     tumbler.enable = true;
     upower.enable = true;
+
+    # Secret Service provider (org.freedesktop.secrets). Electron apps such as
+    # Claude Desktop store their sign-in through it; without one they fall
+    # back to plain text and refuse to keep the session.
+    gnome.gnome-keyring.enable = true;
   };
+
+  # Unlock the login keyring with the password typed at the greeter. Howdy
+  # only runs on hyprlock, so greetd always gets a password.
+  security.pam.services.greetd.enableGnomeKeyring = true;
 
   security.polkit.enable = true;
 

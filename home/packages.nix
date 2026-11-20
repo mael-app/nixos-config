@@ -73,6 +73,14 @@
 
     # AI coding assistants
     claude-code
+    # Electron only uses the Secret Service on desktops it recognizes;
+    # under Hyprland it falls back to plain text and drops the sign-in.
+    (claude-desktop.overrideAttrs (old: {
+      nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ makeBinaryWrapper ];
+      postFixup = (old.postFixup or "") + ''
+        wrapProgram $out/bin/claude-desktop --add-flags --password-store=gnome-libsecret
+      '';
+    }))
     opencode
     # Compresses command output before the agents read it, cutting tokens.
     rtk

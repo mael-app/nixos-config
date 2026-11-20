@@ -37,6 +37,20 @@
       url = "github:ayghri/i-have-adhd";
       flake = false;
     };
+
+    # "Lazy senior dev" Claude Code skill. Only skills/ponytail is used, not
+    # the plugin and its hooks. Wired in ./home/claude-code.nix.
+    ponytail = {
+      url = "github:DietrichGebert/ponytail";
+      flake = false;
+    };
+
+    # Official Claude Desktop Linux beta (.deb from Anthropic's APT repo),
+    # repackaged for Nix. Applied as an overlay in ./modules/common.nix.
+    claude-desktop = {
+      url = "github:poeck/claude-desktop-nix-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

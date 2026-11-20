@@ -53,6 +53,7 @@ in
     "thunar"
     "spotify"
     "code"
+    "com.anthropic.Claude"
     "discord"
     "signal"
     "1password"

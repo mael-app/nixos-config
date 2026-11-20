@@ -1,4 +1,9 @@
-{ lib, host, ... }:
+{
+  lib,
+  host,
+  inputs,
+  ...
+}:
 
 # Settings shared by every machine.
 {
@@ -83,6 +88,9 @@
     IOSchedulingClass = "idle";
   };
 
+  # Adds pkgs.claude-desktop (see the claude-desktop flake input).
+  nixpkgs.overlays = [ inputs.claude-desktop.overlays.default ];
+
   # Only the non-free packages we explicitly use.
   nixpkgs.config.allowUnfreePredicate =
     pkg:
@@ -97,6 +105,7 @@
       "1password"
       "1password-cli"
       "claude-code"
+      "claude-desktop"
       "rtk"
       "steam"
       "steam-unwrapped"
