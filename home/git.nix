@@ -1,5 +1,4 @@
 {
-  lib,
   osConfig,
   pkgs,
   ...
@@ -43,8 +42,7 @@ in
       # "GitLab LogIT PAT" 1Password item and is read by the helper above, so
       # nothing is written to ~/.git-credentials. Commits are still signed with
       # the SSH key.
-      credential."https://gitlab.logi-it.com".helper =
-        lib.getExe' gitlabCredentialHelper "git-credential-1password";
+      credential."https://gitlab.logi-it.com".helper = "${gitlabCredentialHelper}";
     };
     signing = {
       key = "~/.ssh/id_ed25519.pub";
