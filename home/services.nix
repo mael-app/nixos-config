@@ -36,7 +36,11 @@
       };
     };
 
-    # Clipboard history (SUPER + SHIFT + V)
+    # Clipboard history (SUPER + SHIFT + V). Entries a password manager marks
+    # as secret are never stored: wl-paste --watch flags them through
+    # CLIPBOARD_STATE=sensitive and `cliphist store` skips them. The history
+    # is still plain text on disk, so it is also wiped at every session start
+    # (see the unit override below).
     cliphist.enable = true;
 
     # Notification daemon. The module owns the unit, the settings and the
@@ -140,4 +144,11 @@
   };
 
   xsession.preferStatusNotifierItems = true;
+
+  # Start each session with an empty clipboard history, so whatever was
+  # copied in an earlier one, a password the manager did not flag included,
+  # does not stay readable on disk indefinitely. Wiping at start rather than
+  # at stop also covers a session that ended in a crash or a power cut.
+  systemd.user.services.cliphist.Service.ExecStartPre =
+    "${config.services.cliphist.package}/bin/cliphist wipe";
 }
