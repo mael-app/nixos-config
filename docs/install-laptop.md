@@ -57,7 +57,24 @@ Enter the passphrase, then log in.
 
 ## 3. Automatic TPM unlocking
 
-To stop entering the passphrase at every boot:
+The TPM only releases the key while Secure Boot is on with this machine's
+own keys, so enroll them first. Windows' BitLocker may ask for its recovery
+key after the change: save it from account.microsoft.com/devices/recoverykey
+beforehand.
+
+1. In the BIOS, delete all Secure Boot keys (Setup Mode) and leave Secure
+   Boot disabled.
+2. Boot NixOS and enroll the keys generated at install, keeping Microsoft's
+   so Windows and the firmware's option ROMs still boot:
+
+   ```sh
+   sudo sbctl enroll-keys --microsoft
+   ```
+
+3. Reboot, enable Secure Boot in the BIOS, and check that
+   `sudo sbctl status` reports it enabled.
+
+Then, to stop entering the passphrase at every boot:
 
 ```sh
 cd ~/nixos-config
@@ -92,5 +109,5 @@ sudo nixos-rebuild switch --flake .#nixos-laptop
 | --- | --- |
 | "the disk contains the running system" | The script targets `/dev/nvme0n1` by default; check with `lsblk` and override with `TARGET=...` |
 | The system does not boot after installation | Boot from the USB drive, mount the volumes again, and rerun `bash scripts/install-laptop.sh --install-only` |
-| The passphrase is requested twice | systemd caching did not work: check that `boot.initrd.systemd.enable` is enabled |
+| The firmware skips NixOS and boots Windows | Secure Boot is on but the keys are not enrolled: redo the steps of section 3 |
 | The TPM requests the passphrase again | Secure Boot or BIOS state changed: rerun `scripts/enroll-tpm.sh` |
