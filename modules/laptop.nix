@@ -67,16 +67,15 @@ in
     fwupd.enable = true;
   };
 
-  # On mains power, closing the lid does nothing. The default suspends, which
-  # cuts a download or a build short and, through hypridle's before_sleep_cmd,
-  # locks the session; neither is wanted when the laptop is deliberately left
-  # working with the screen shut. hypridle still blanks the screen after its
-  # own timeout, and the Waybar idle inhibitor still suppresses that when it
-  # is on. On battery the lid suspends, so a closed machine does not keep
-  # running and draining in a bag.
+  # On mains power, closing the lid only locks the session. The default
+  # suspends, which cuts a download or a build short; that is not wanted when
+  # the laptop is deliberately left working with the screen shut. Locking
+  # keeps the work running without leaving an open session behind the lid
+  # until hypridle's own timeout. On battery the lid suspends, so a closed
+  # machine does not keep running and draining in a bag.
   services.logind.settings.Login = {
     HandleLidSwitch = "suspend";
-    HandleLidSwitchExternalPower = "ignore";
+    HandleLidSwitchExternalPower = "lock";
   };
 
   # The stock firmware profile throttles this Gram around 70-75 °C. This
