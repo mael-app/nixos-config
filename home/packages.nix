@@ -8,6 +8,7 @@
   # rofi, waybar, wlogout, hyprlock and the tray applets all come with theirs.
   home.packages = with pkgs; [
     # Desktop applications
+    brave
     discord
     signal-desktop
     wechat

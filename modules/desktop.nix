@@ -33,6 +33,17 @@
     dconf.enable = true;
   };
 
+  # 1Password only talks to browsers whose binary it recognizes. Brave from
+  # nixpkgs runs out of the Nix store, so the app rejects its extension, which
+  # then shows as signed in with an empty vault. Listing the process name here
+  # allows it.
+  environment.etc."1password/custom_allowed_browsers" = {
+    text = ''
+      brave
+    '';
+    mode = "0755";
+  };
+
   # Run Electron/Chromium apps (VS Code, Discord, 1Password...) as native
   # Wayland clients instead of through XWayland: sharp text with fractional
   # scaling. NixOS wrappers only add the Wayland flags when this is set.
