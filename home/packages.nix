@@ -100,6 +100,10 @@
     kubectl
     (lib.lowPrio minikube)
     kubernetes-helm
+    fluxcd
+    # Encrypts the Kubernetes secrets committed to the cluster repository.
+    sops
+    age
     terraform
     opentofu
     ansible
