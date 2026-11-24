@@ -19,8 +19,8 @@ _:
     enableExcludeWrapper = false;
   };
 
-  # Keep access to the LAN outside the Mullvad tunnel. The main route table
-  # selects Ethernet for this network when the wired connection is available.
+  # Keep access to the LAN outside the Mullvad tunnel: the wired network, plus
+  # any 192.168.0.0/16 network (home Wi-Fi, friends' LANs for games).
   #
   # Only packets that already leave outside the tunnel are marked. Mullvad's
   # `suppress_prefixlength 0` rule lets a route for this subnet in the main
@@ -31,11 +31,12 @@ _:
     enable = true;
     ruleset = ''
       define ETHERNET_LAN = 172.29.94.0/24
+      define PRIVATE_192 = 192.168.0.0/16
 
       table inet mullvad-ethernet-exclude {
         chain excludeOutgoing {
           type route hook output priority -10; policy accept;
-          ip daddr $ETHERNET_LAN oifname != "wg0-mullvad" ct mark set 0x00000f41 meta mark set 0x6d6f6c65;
+          ip daddr { $ETHERNET_LAN, $PRIVATE_192 } oifname != "wg0-mullvad" ct mark set 0x00000f41 meta mark set 0x6d6f6c65;
         }
       }
     '';
