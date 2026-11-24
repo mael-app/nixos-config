@@ -56,6 +56,7 @@
 
     # Editors and terminal tools
     vscode
+    zed-editor
     # Jinja template linter used by the djLint VS Code extension
     djlint
     jetbrains.rider
