@@ -20,7 +20,15 @@
         la = "eza -la";
         lt = "eza --tree --level=2";
         cat = "bat";
+        cc = "claude";
       };
+      # The nixpkgs VS Code wrapper adds Wayland flags (NIXOS_OZONE_WL) that
+      # the `code` CLI does not know and warns about; drop those lines only.
+      initContent = ''
+        code() {
+          command code "$@" 2> >(grep -v "is not in the list of known options" >&2)
+        }
+      '';
     };
 
     # Starship renders the prompt; oh-my-zsh is kept only for its plugins.
